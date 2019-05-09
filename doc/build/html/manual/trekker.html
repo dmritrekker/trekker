@@ -1,0 +1,593 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>trekker &mdash; trekker 0.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to cite?" href="../publications/publications.html" />
+    <link rel="prev" title="Tutorial 2: Trekker’s pathways" href="../tutorials/tutorial_2.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Download and install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html">Where to get trekker?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#source-code">Source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#stand-alone-executables">Stand alone executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#supported-systems">Supported systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#extensions">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#external-tools">External tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/installationInstructions.html">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#dependencies-and-configuration">Dependencies and configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#linux">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#windows">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#mac-os">MAC OS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Get started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial_1.html">Tutorial 1: The short trek</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_1.html#tracking-with-trekker">Tracking with Trekker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_1.html#visualizing-results">Visualizing results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial_2.html">Tutorial 2: Trekker’s pathways</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#defining-pathway-rules">Defining pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#whole-brain-tractography">Whole brain tractography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#tracking-in-order">Tracking in order</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">trekker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tracking-options">Tracking options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#probe-options">Probe options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#seeding-options">Seeding options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-options">Output options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pathway-options">Pathway options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-options">Advanced options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-options">Other options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications/publications.html">How to cite?</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/licenseAndWarranty.html">License and warranty</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/contact.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">trekker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>trekker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/manual/trekker.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="trekker">
+<h1>trekker<a class="headerlink" href="#trekker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p>diffusion MRI based fiber tracking using parallel transport tractography</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trekker</span> <span class="p">[</span> <span class="n">options</span> <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>To track fibers using a diffusion MRI images, trekker expects at the following inputs to be specified:</p>
+<ul class="simple">
+<li>trekker generates streamlines from a fiber orientation distribution (FOD) image provided by the user with the option <em>-fod</em>.</li>
+<li>trekker expects the user to provide a seed image with the option <em>-seed_image</em> or a list of seed coordinates with the option <em>-seed_coordinates</em>.</li>
+<li>If a seed image is provided, the user can provide the number of streamlines to be generated either with the option <em>-seed_count</em> or <em>-seed_countPerVoxel</em>. If <em>-seed_coordinates</em> options is used, trekker will generate one streamline for each specified coordinate. Alternatively the <em>-timeLimit</em> option can be used to stop tracking after a certain amount of time.</li>
+<li>Lastly the user has to provide the output path with <em>-output</em> followed by the path and name of the output file. trekker’s output file format is *.vtk. An additional .json formatted metadata is also saved.</li>
+<li>All unspecified parameters will be set to trekker’s default values.</li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 1</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">SEED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 2</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_coordinates</span> <span class="n">COORDINATES</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 3</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">SEED</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">timeLimit</span> <span class="mi">15</span> \ <span class="c1"># time limit is in minutes</span>
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tracking-options">
+<h3>Tracking options<a class="headerlink" href="#tracking-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>-fod &lt;nifti image&gt;</strong> Path to FOD image. Accepted file extensions are: nii, nii.gz. FOD contains <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_harmonics#Spherical_harmonics_expansion">spherical harmonics coefficients</a>. Only even degreed FODs are supported. Each coefficient should be stored as a separate volume in the following order with respect to spherical harmonic degree, l and m (i.e: MRtrix convention):</p>
+<table border="1" class="docutils" id="id1">
+<caption><span class="caption-text">The format of the FOD image</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="5%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="8%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&#160;</td>
+<td>vol1</td>
+<td>vol2</td>
+<td>vol3</td>
+<td>vol4</td>
+<td>vol5</td>
+<td>vol6</td>
+<td>vol7</td>
+<td>vol8</td>
+<td>vol9</td>
+<td>…</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>…</td>
+</tr>
+<tr class="row-odd"><td>m</td>
+<td>0</td>
+<td>-2</td>
+<td>-1</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>-4</td>
+<td>-3</td>
+<td>-2</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p><strong>-minFODamp &lt;positive real number&gt;</strong> Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.01.</p>
+<p><strong>-minRadiusOfCurvature &lt;positive real number&gt;</strong> Minimum radius of curvature. Default=1/4 x the smallest of the FOD voxel dimensions.</p>
+<p><strong>-stepSize &lt;positive real number&gt;</strong> Step size. Default=1/40 x the smallest of the FOD voxel dimensions.</p>
+<p><strong>-writeInterval &lt;positive integer&gt;</strong> Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeInterval enables skipping of a number of steps before saving them in the disk. This parameter does not change the propagation algorithm, internally trekker always walks with the specified <em>-stepSize</em>. <em>-writeInterval</em> by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.</p>
+<p><strong>-minLength &lt;positive real number&gt;</strong> Minimum length of the tracks. Default=0.</p>
+<p><strong>-maxLength &lt;positive real number&gt;</strong> Maximum length of the tracks. Default=infinite.</p>
+<p><strong>-atMaxLength &lt;either “stop” or “discard”&gt;</strong> If set to “stop”, when maxLength is reached the propation stops and the streamline is written in the output. If set to “discard”, the streamline is not written in the output. Default=discard.</p>
+<p><strong>-directionality &lt;either “one_sided” or “two_sided”&gt;</strong> If set to “two_sided”, tracking is done along both directions starting from the seed point. If set to “one_sided”, tracking is only done along the other way. Default=two_sided.</p>
+<p><strong>-useBestAtInit</strong> If used, during initialization, random sampling is skipped and an estimate for the curve that would give the best data support is used.</p>
+</div>
+<div class="section" id="probe-options">
+<h3>Probe options<a class="headerlink" href="#probe-options" title="Permalink to this headline">¶</a></h3>
+<p>Trekker uses probes for estimating future propagation steps. A probe is a cylinderical model of the connections.</p>
+<p><strong>-probeLength &lt;positive real number&gt;</strong> Length of the probe. Default=1/4 x the smallest of the FOD voxel dimensions.</p>
+<p><strong>-probeRadius &lt;positive real number&gt;</strong> Radius of the probe. Default=0.</p>
+</div>
+<div class="section" id="seeding-options">
+<h3>Seeding options<a class="headerlink" href="#seeding-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>-seed_image &lt;nifti image&gt; {optional:labelNo}</strong> Path to seed image and optionally a label no. If label is not specified all voxels with values larger than zero are used to seed points. Accepted file extensions are: nii, nii.gz.</p>
+<p><strong>-seed_count &lt;positive integer&gt;</strong> Number of seeds to randomly sample from the seed image.</p>
+<p><strong>-seed_countPerVoxel &lt;positive integer&gt;</strong> Number of seeds to randomly sample per each voxel of the seed image.</p>
+<p><strong>-seed_coordinates &lt;coordinate list file&gt; {optional:initial direction list file}</strong> Path to an ASCII formatted list of the physical locations of the seed coordinates. This text file for the coordinates can optionally be followed with another ASCII formatted list that specifies the initial directions for propagation. Each of the listed seeds is used to generate a single streamline, seed_count and seed_countPerVoxels options do not have any affect when seed_coordinates is used. Example for the contents of a COORDINATES file is given below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span>
+<span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span>
+<span class="mf">0.121323</span> <span class="mf">0.21323</span> <span class="mf">0.123213123</span>
+<span class="mf">1.231232</span><span class="o">.</span><span class="mf">1.2313213</span> <span class="mf">2.5545435</span>
+<span class="mf">12.2323213</span> <span class="mf">213.2321323</span> <span class="mf">235.2321321</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 4</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_coordinates</span> <span class="n">COORDINATES</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 5</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_coordinates</span> <span class="n">COORDINATES</span> <span class="n">DIRECTIONS</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-seed_maxTrials &lt;positive integer&gt;</strong> Sets the maximum number of attempts to generate streamline from the seed point. Default=1000000.</p>
+</div>
+<div class="section" id="output-options">
+<h3>Output options<a class="headerlink" href="#output-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>-output &lt;vtk file&gt;</strong> Output file path. Trekker saves tractograms in .vtk format. An additional output file with .json extension is also saved which contains metadata about tracking parameters and information about the results.</p>
+<p><strong>-enableOutputOverwrite</strong> If used, output file will be overwritten in the case that it already exists in the specified path. Default=off.</p>
+<p><strong>-writeSeedCoordinates</strong> If used, seed coordinates of each streamline is written in the output.</p>
+<p><strong>-writeColors</strong> If used, direction coded colors are written for each segment in the output tractogram. Default=off. (If this is enabled, you can visualize the tracks in the familiar tractography RGB type coloring in Paraview. For that load the .vtk file in Paraview, choose “colors” as the coloring option and make sure that “Map Scalars” option is not selected.)</p>
+<p><strong>-writeTangents</strong>, <strong>-writek1axes</strong>, <strong>-writek2axes</strong>, <strong>-writek1s</strong>, <strong>-writek2s</strong>, <strong>-writeCurvatures</strong>, <strong>-writePriors</strong>, <strong>-writeLikelihoods</strong>, <strong>-writePosteriors</strong> options can be used separately to write these values for each segment in the output. Prior values are currently always 1 and not used. It is included for possible future development. Likelihoods are the computed data supports. Posteriors are Prior x Likelihood.</p>
+</div>
+<div class="section" id="pathway-options">
+<h3>Pathway options<a class="headerlink" href="#pathway-options" title="Permalink to this headline">¶</a></h3>
+<p>Starting from the seed point, trekker first propagates along one direction to find one end of the connection. Propagation is then done towards the opposition direction from the seed to find the other end of the connection. (This “two_sided” tracking is the default option in trekker and can be changed to “one_sided” using the <strong>-directionality</strong> option.) The two different sides of propagation are named as <strong>A</strong> and <strong>B</strong> in trekker.</p>
+<p>Trekker allows two options to define rules for pathways:</p>
+<ol class="arabic simple">
+<li>Rules can be defined for either propagation direction, using options starting with <strong>-pathway=</strong>. These options define rules for “A or B” not for “A and B”.</li>
+<li>Rules can be defined for each propagation direction separately, using options <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong>.</li>
+</ol>
+<p>Notes:</p>
+<ul class="simple">
+<li>Trekker accepts multiple pathway rules which are either defined using option 1 or 2, i.e.: if a pathway rule is defined using <strong>-pathway=</strong>, all other rules have to start with <strong>-pathway=</strong>. Or, if a pathway rule is defined using <strong>-pathway_A=</strong>, all other rules have to start either with <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</li>
+<li>Rules for <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong> are considered seperate therefore are treated independent of each other. A rule or rules can be defined using  <strong>-pathway_A=</strong> at the same time nothing can be specified using <strong>-pathway_B=</strong>.</li>
+<li>Users do not need to think about which side trekker considers to be side A or B. The decision is done automatically based on the first rule that is satisfied. For example, consider the case <strong>-seed_image THAL -pathway_A=require_entry GRAYMATTER -pathway_B=stop_at_exit THAL</strong>. Here, starting from the seed point, trekker propagates towards one direction which will soon exit THAL. But because this is a stopping condition for side B, propagation will stop here and this part will be considered as side B. Trekker then will return back to seed point and start propagating towards the other side which is from now on considered as side A.</li>
+</ul>
+<p>Trekker allows the specification of the following pathway rules:</p>
+<p><strong>-pathway=require_entry &lt;nifti image&gt; {optional:labelNo}</strong> All tracks are required to enter the ROI present in the specified image.</p>
+<p><strong>-pathway_A=require_entry &lt;nifti image&gt; {optional:labelNo}</strong> One side of all tracks are required to enter the ROI present in the specified image.</p>
+<p><strong>-pathway_B=require_entry &lt;nifti image&gt; {optional:labelNo}</strong> The other side of all tracks are required to enter the ROI present in the specified image.</p>
+<p>Example: The following will generate connections from left precentral gyrus (Left_PCG) back to Left_PCG.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 6</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=stop_at_entry &lt;nifti image&gt; {optional:labelNo}</strong> All tracks will stop propagating if they enter the ROI present in the specified image.</p>
+<p><strong>-pathway_A=stop_at_entry &lt;nifti image&gt; {optional:labelNo}</strong> One side of all tracks will stop propagating if they enter the ROI present in the specified image.</p>
+<p><strong>-pathway_B=stop_at_entry &lt;nifti image&gt; {optional:labelNo}</strong> The other side of all tracks will stop propagating if they enter the ROI present in the specified image.</p>
+<p>Example: The following will generate connections from left precentral gyrus (Left_PCG) back to Left_PCG. Tracking stops at both ends when they enter the Left_PCG ROI.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 7</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">stop_at_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">stop_at_entry</span> <span class="n">Left_PCG</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=require_exit &lt;nifti image&gt; {optional:labelNo}</strong> All tracks are required to enter and exit the ROI present in the specified image.</p>
+<p><strong>-pathway_A=require_exit &lt;nifti image&gt; {optional:labelNo}</strong> One side of all tracks are required to enter and exit the ROI present in the specified image.</p>
+<p><strong>-pathway_B=require_exit &lt;nifti image&gt; {optional:labelNo}</strong> The other side of all tracks are required to enter and exit the ROI present in the specified image.</p>
+<p>Example: At least one end of each streamline will end outside white matter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 8</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway</span><span class="o">=</span><span class="n">require_exit</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p>Example: All streamline end points will be outside the white matter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 9</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">require_exit</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">require_exit</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=discard_if_ends_inside &lt;nifti image&gt; {optional:labelNo}</strong> Tracks are not allowed to stop inside the ROI present in the specified image.</p>
+<p><strong>-pathway_A=discard_if_ends_inside &lt;nifti image&gt; {optional:labelNo}</strong> One side of tracks are not allowed to stop inside the ROI present in the specified image.</p>
+<p><strong>-pathway_B=discard_if_ends_inside &lt;nifti image&gt; {optional:labelNo}</strong> The other side of tracks are not allowed to stop inside the ROI present in the specified image.</p>
+<p>Example: Non of the streamlines will terminate inside the white matter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 10</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway</span><span class="o">=</span><span class="n">discard_if_ends_inside</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=stop_at_exit &lt;nifti image&gt; {optional:labelNo}</strong> All tracks that enter the ROI present in the specified image will stop propagating if they exit the ROI.</p>
+<p><strong>-pathway_A=stop_at_exit &lt;nifti image&gt; {optional:labelNo}</strong> One side of all tracks that enter the ROI present in the specified image will stop propagating if they exit the ROI.</p>
+<p><strong>-pathway_B=stop_at_exit &lt;nifti image&gt; {optional:labelNo}</strong> The other side of all tracks that enter the ROI present in the specified image will stop propagating if they exit the ROI.</p>
+<p>Example: Non of the streamlines will terminate inside the white matter and all streamlines will stop if they reach the end of gray matter.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 11</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">discard_if_ends_inside</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">stop_at_exit</span> <span class="n">GRAYMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">discard_if_ends_inside</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">stop_at_exit</span> <span class="n">GRAYMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=discard_if_enters &lt;nifti image&gt; {optional:labelNo}</strong> Tracks are not allowed to enter the ROI present in the specified image.</p>
+<p><strong>-pathway_A=discard_if_enters &lt;nifti image&gt; {optional:labelNo}</strong> One side of tracks are not allowed to enter the ROI present in the specified image.</p>
+<p><strong>-pathway_B=discard_if_enters &lt;nifti image&gt; {optional:labelNo}</strong> The other side of tracks are not allowed to enter the ROI present in the specified image.</p>
+<p>Example: Non of the streamlines generated by the following example ends inside the white matter or projects to CSF.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 12</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway</span><span class="o">=</span><span class="n">discard_if_ends_inside</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway</span><span class="o">=</span><span class="n">discard_if_enters</span> <span class="n">CSF</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=discard_if_exits &lt;nifti image&gt; {optional:labelNo}</strong> Tracks are allowed to enter but not to exit the ROI present in the specified image.</p>
+<p><strong>-pathway_A=discard_if_exits &lt;nifti image&gt; {optional:labelNo}</strong> One side of tracks are allowed to enter but not to exit the ROI present in the specified image.</p>
+<p><strong>-pathway_B=discard_if_exits &lt;nifti image&gt; {optional:labelNo}</strong> The other side of tracks are allowed to enter but not to exit the ROI present in the specified image.</p>
+<p>Example: All connections within hippocampus. Nothing projects inside or outside.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 13</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">HIPPOCAMPUS</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">discard_if_exits</span> <span class="n">HIPPOCAMPUS</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">discard_if_exits</span> <span class="n">HIPPOCAMPUS</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+<p><strong>-pathway=satisfy_requirements_in_order</strong> If enabled all pathway requirements are going to be satisfied in the order that they are input to trekker. All pathway options should be defined for pathway_A/pathway_B in order to use this option.</p>
+<p>Example: Only generates those streamlines that go from the start of ROI_1 till the end of ROI_5 <em>in order</em> where ROI_3 is the seed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 14</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">ROI_3</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \
+          <span class="o">-</span><span class="n">pathway</span><span class="o">=</span><span class="n">satisfy_requirements_in_order</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">ROI_4</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_A</span><span class="o">=</span><span class="n">require_exit</span> <span class="n">ROI_5</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">require_entry</span> <span class="n">ROI_2</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">pathway_B</span><span class="o">=</span><span class="n">require_exit</span> <span class="n">ROI_1</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-options">
+<h3>Advanced options<a class="headerlink" href="#advanced-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>-probeCount &lt;integer between 1 and 100&gt;</strong> probeCount determines the number of lines outside the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.</p>
+<p><strong>-probeQuality &lt;integer between 1 and 100&gt;</strong> This parameter sets the number of segments to split the cylinder along the length of the probe. The larger the value is, the slower the computation gets. Default=4.</p>
+<p><strong>-maxSamplingPerStep &lt;positive integer&gt;</strong> This option limits the number of samples that can be tested for rejection sampling during propagation. Default=10000.</p>
+<p><strong>-initMaxEstTrials &lt;positive integer&gt;</strong> This option sets the number of samples used to estimate the maximum data support for initialization. This estimate is used for rejection sampling. By default, this number is adaptively determined based on the success rate of previous estimates.</p>
+<p><strong>-propMaxEstTrials &lt;positive integer&gt;</strong> This option sets the number of samples used to estimate the maximum data support for propagation. This estimate is used for rejection sampling. By default, this number is adaptively determined based on the success rate of previous estimates.</p>
+</div>
+<div class="section" id="other-options">
+<h3>Other options<a class="headerlink" href="#other-options" title="Permalink to this headline">¶</a></h3>
+<p><strong>-numberOfThreads &lt;positive integer&gt;</strong> Number of parallel threads to run during tracking. Default=number of CPU cores of the local processor</p>
+<p><strong>-timeLimit &lt;positive real number&gt;</strong> Sets the maximum allowed duration in minutes for trekker to continue tracking. If any of the <em>-seed_coordinates</em>, <em>-seed_count</em> or <em>-seed_countPerVoxel</em> options are used together with <em>-timeLimit</em>, tracking stops either when the required number of streamlines are reconstructed or the time limit is hit, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.</p>
+<p><strong>-verboseLevel &lt;integer between 0 and 4&gt;</strong> Determines the level of information displayed on the terminal. Verbose level must be between 0-4. A verbose level of 0 displays no information. Default=1.</p>
+<p><strong>-help</strong> Displays this manual.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../publications/publications.html" class="btn btn-neutral float-right" title="How to cite?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../tutorials/tutorial_2.html" class="btn btn-neutral" title="Tutorial 2: Trekker’s pathways" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dogu Baran Aydogan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

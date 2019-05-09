@@ -1,0 +1,347 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial 1: The short trek &mdash; trekker 0.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 2: Trekker’s pathways" href="tutorial_2.html" />
+    <link rel="prev" title="Installation instructions" href="../installation/installationInstructions.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Download and install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html">Where to get trekker?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#source-code">Source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#stand-alone-executables">Stand alone executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#supported-systems">Supported systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#extensions">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#external-tools">External tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/installationInstructions.html">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#dependencies-and-configuration">Dependencies and configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#linux">Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#windows">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#mac-os">MAC OS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Get started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 1: The short trek</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-with-trekker">Tracking with Trekker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualizing-results">Visualizing results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_2.html">Tutorial 2: Trekker’s pathways</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#defining-pathway-rules">Defining pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#whole-brain-tractography">Whole brain tractography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#tracking-in-order">Tracking in order</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../manual/trekker.html">trekker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#tracking-options">Tracking options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#probe-options">Probe options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#seeding-options">Seeding options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#output-options">Output options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#pathway-options">Pathway options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#advanced-options">Advanced options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#other-options">Other options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications/publications.html">How to cite?</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/licenseAndWarranty.html">License and warranty</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/contact.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">trekker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial 1: The short trek</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/tutorial_1.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial-1-the-short-trek">
+<h1>Tutorial 1: The short trek<a class="headerlink" href="#tutorial-1-the-short-trek" title="Permalink to this headline">¶</a></h1>
+<p>This short tutorial shows the basic usage of Trekker. It also shows how to visualize the trekker output using Paraview software.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">We <strong>strongly recommend</strong> you to continue reading other examples and tutorials for <em>better ways</em> of obtaining whole brain tractograms. This very first example shown below is the simplest to get started with Trekker but it is not the best approach.</p>
+</div>
+<div class="section" id="tracking-with-trekker">
+<h2>Tracking with Trekker<a class="headerlink" href="#tracking-with-trekker" title="Permalink to this headline">¶</a></h2>
+<p>Trekker does not have a graphical user interface. In order to use it you need to run the <code class="code docutils literal notranslate"><span class="pre">trekker</span></code> executable (under <code class="code docutils literal notranslate"><span class="pre">build/bin</span></code>) in a terminal. Running <code class="code docutils literal notranslate"><span class="pre">trekker</span></code> alone shows the manual for the executable.</p>
+<p>The example below shows probably the simplest approach to obtain a whole brain tractogram using Trekker.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tutorial 1 - Example 1</span>
+<span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \                <span class="c1"># Input FOD image</span>
+          <span class="o">-</span><span class="n">seed_image</span> <span class="n">WHITEMATTER</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \ <span class="c1"># Input seed image</span>
+          <span class="o">-</span><span class="n">seed_count</span> <span class="mi">1000</span> \               <span class="c1"># Number of random seeds to generate</span>
+          <span class="o">-</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="o">.</span><span class="n">vtk</span>               <span class="c1"># Output</span>
+</pre></div>
+</div>
+<p>Trekker options start with a “-” sign. All parameters and constraints are set using the corresponding option defined in the <a class="reference external" href="../manual/trekker.html">manual</a>. The order of the options does not matter.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Trekker does not require input nifti files to be in the same image space, i.e.: spatial dimensions of the FOD image can be 100x100x100 and the seed image can be 128x128x60. As long as images are in the same physical space, Trekker will handle nifti files with different headers.</p>
+<p class="last">This feature is valid also for images used to specify pathway rules.</p>
+</div>
+<p>Trekker sets all unspecified parameters to default values which are indicated in the <a class="reference external" href="../manual/trekker.html">manual</a>; however the user must provide the following:</p>
+<ul class="simple">
+<li><strong>an FOD image</strong>: specified with option <strong>-fod</strong>, that consists of spherical harmonics coefficients (even orders only),</li>
+<li><strong>a seed image</strong> or <strong>a list of coordinates</strong>: specified with either <strong>-seed_image</strong> or <strong>-seed_coordinates</strong>,</li>
+<li><strong>a seed count</strong>, <strong>seed count per voxel</strong> or <strong>-timeLimit</strong>: if a seed image is specified, <strong>-seed_count</strong> or <strong>-seed_countPerVoxel</strong> options specify the number of streamlines to compute. Trekker generates 1 streamline per seed. If non of the two parameters were specified then <strong>-timeLimit</strong> option must be used to limit the duration of tracking. Tracking stops either when the required number of streamlines are reconstructed or the time limit is reached, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.</li>
+</ul>
+<p>During tracking, Trekker displays information on the terminal screen showing the parameters as well as the progress. At the end, an additional output with the same file name as output but with .json ending is saved. This file contains meta-information about the parameters and also the result. The .json file can be opened using a web browser.</p>
+</div>
+<div class="section" id="visualizing-results">
+<h2>Visualizing results<a class="headerlink" href="#visualizing-results" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Trekker saves tractograms in binary formatted <strong>.vtk</strong> files.</li>
+<li>All streamlines are saved in the physical coordinate space.</li>
+<li>Trekker <strong>.vtk</strong> output can be read using Matlab with the function provided under <code class="code docutils literal notranslate"><span class="pre">extensions/matlab</span></code>.</li>
+<li><strong>.vtk</strong> files can be visualized using several third party software including <a class="reference external" href="https://www.paraview.org/">Paraview</a>, <a class="reference external" href="https://www.slicer.org/">3DSlicer</a> and <a class="reference external" href="http://cabeen.io/qitwiki">Qit</a>.</li>
+</ul>
+<p>Paraview interface is very simple to use and it provides professional 3D rendering capability. Trekker output can be visualized simply by dragging and dropping the <strong>.vtk</strong> file into Paraview window.</p>
+<p>Below are examples drawn by Paraview using the trekker command shown in this tutorial applied on the Human Connectome Project subject 100307.</p>
+<div class="figure" id="id1">
+<a class="reference internal image-reference" href="../_images/tut1_0.png"><img alt="Paraview rendering 1" src="../_images/tut1_0.png" style="width: 555.0px; height: 411.5px;" /></a>
+<p class="caption"><span class="caption-text">Paraview by default renders streamlines using a solid (single) color.</span></p>
+</div>
+<div class="figure" id="id2">
+<a class="reference internal image-reference" href="../_images/tut1_1.png"><img alt="Paraview rendering 2" src="../_images/tut1_1.png" style="width: 555.0px; height: 411.5px;" /></a>
+<p class="caption"><span class="caption-text">It is possible to display tractograms in the familiar direction coded RGB scheme as shown here. With Trekker you write the segment colors using the <strong>-writeColors</strong> option. Notice that by default colors are not written in order to save hard drive space. To show the segment colors, please select <em>colors</em> as the coloring option in Paraview and make sure that <strong>Map Scalars</strong> option is <strong>NOT</strong> selected.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Trekker can save many other information in the output that can be visualized in Paraview, such as the local curvature with <strong>-writeCurvature</strong> option. You can view the other output options by clicking <a class="reference external" href="../manual/trekker.html#output-options">here</a>.</p>
+</div>
+<div class="figure" id="id3">
+<a class="reference internal image-reference" href="../_images/tut1_2.png"><img alt="Paraview rendering 2" src="../_images/tut1_2.png" style="width: 555.0px; height: 411.5px;" /></a>
+<p class="caption"><span class="caption-text">Streamlines can also be rendered as tubes with Paraview. For this option go to Filters-&gt;Search-&gt; Write “tube” in the search box and click enter.</span></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial_2.html" class="btn btn-neutral float-right" title="Tutorial 2: Trekker’s pathways" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../installation/installationInstructions.html" class="btn btn-neutral" title="Installation instructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Dogu Baran Aydogan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.4',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

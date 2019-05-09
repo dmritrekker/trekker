@@ -1,0 +1,3 @@
+Tracking,Seeding,Pathway,,Output
+-fod <nifti>,-seed_image <nifti>,Preemble,Postemble,-output <vtk>
+-stepSize <number>,,-pathway=,require_entry,
