@@ -22,6 +22,8 @@ Installation
 **Building from source:**
 
 	git clone https://github.com/dmritrekker/trekker
+	
+	cd trekker
 
 	make
 
