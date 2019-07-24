@@ -9,8 +9,10 @@ public:
 	FOD_Image();
 	~FOD_Image();
 	bool  		 readImage();
-	int 		 getSHorder(){return (sqrt(8*nim->nt+1)-3)/2;};
+	int 		 getSHorder();
 	float 		 getSmallestPixdim();
+
+	bool 		 iseven; // True if it is even ordered
 };
 
 #endif

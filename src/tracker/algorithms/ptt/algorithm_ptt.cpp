@@ -31,7 +31,6 @@ TrackWith_PTT::~TrackWith_PTT() {
 	if (initial_curve!=NULL) 	delete 	 initial_curve;
 	if (curve!=NULL) 			delete   curve;
 	if (FOD!=NULL) 				delete[] FOD;
-	PTF_CONSTS::cleanPTFCoefficients();
 }
 
 

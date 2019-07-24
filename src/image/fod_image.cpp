@@ -1,6 +1,8 @@
 #include "../image/fod_image.h"
 
-FOD_Image::FOD_Image() { }
+FOD_Image::FOD_Image() {
+	iseven = true;
+}
 
 FOD_Image::~FOD_Image() { }
 
@@ -11,6 +13,21 @@ float FOD_Image::getSmallestPixdim() {
 			smallestPixelDim = nim->pixdim[i];
 	}
 	return smallestPixelDim;
+}
+
+int FOD_Image::getSHorder() {
+
+	int order = sqrt(nim->nt);
+	if ((order*order)!=nim->nt) {
+		if (GENERAL::verboseLevel>ON) std::cout << "Symmetric FOD with order " << (sqrt(8*nim->nt+1)-3)/2 << std::endl << std::flush;
+		return (sqrt(8*nim->nt+1)-3)/2;
+	}
+	else {
+		if (GENERAL::verboseLevel>ON) std::cout << "Asymmetric FOD with order " << sqrt(nim->nt)-1 << std::endl << std::flush;
+		iseven = false;
+		return order-1;
+	}
+
 }
 
 bool FOD_Image::readImage() {

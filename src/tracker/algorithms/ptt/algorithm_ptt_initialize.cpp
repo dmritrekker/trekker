@@ -13,9 +13,8 @@ void TrackWith_PTT::get_initial_curve() {
 }
 
 
-
-
 Initialization_Decision TrackWith_PTT::initialize() {
+
 
 	// Sample initial curve by rejection sampling
 	curve->prior 	= 1;
@@ -28,6 +27,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	posteriorMax 	= 0;
 
 	for (tries=0; tries < (int)current_init_postEstItCount; tries++) {
+
 		get_initial_curve();
 		if (curve->posterior > posteriorMax) {
 			posteriorMax = curve->posterior;
@@ -36,7 +36,6 @@ Initialization_Decision TrackWith_PTT::initialize() {
 		}
 	}
 	posteriorMax *= DEFAULT_PTT_MAXPOSTESTCOMPENS; // initial compensation for underestimation
-
 
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
@@ -86,6 +85,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 		}
 		return INIT_CONTINUE;
 	}
+
 
 }
 

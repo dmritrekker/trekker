@@ -13,7 +13,6 @@ extern float*  k1;
 extern float*  k2;
 extern float*  k;
 extern  bool*  isvalid;
-// extern std::vector<float>* t;
 
 extern float** curve_consts;
 extern float** probe_consts;
@@ -32,8 +31,5 @@ void precomputePTFCoefficients(size_t _k_resolution);
 void cleanPTFCoefficients();
 
 }
-
-
-
 
 #endif

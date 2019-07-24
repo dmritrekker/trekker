@@ -41,6 +41,47 @@ Tractogram::~Tractogram() {
 	}
 }
 
+void Tractogram::reset() {
+
+	for (std::vector<Streamline*>::iterator it=streamlines.begin(); it!=streamlines.end(); it++){
+		delete *it;
+	}
+
+	streamlines.clear();
+
+	streamlineCount                             = 0;
+
+	total_tried 								= 0;
+	total_generated 							= 0;
+	total_success 								= 0;
+	total_discard 								= 0;
+	total_fail 									= 0;
+
+	total_success_REACHED_MAXLENGTH_LIMIT 		= 0;
+	total_success_REACHED_MINDATASUPPORT_LIMIT 	= 0;
+	total_success_SATISFIED_PATHWAY_RULES 		= 0;
+
+	total_discard_TOO_SHORT 					= 0;
+	total_discard_TOO_LONG 						= 0;
+	total_discard_DISCARD_ROI_REACHED 			= 0;
+	total_discard_REQUIRED_ROI_NOT_MET 			= 0;
+	total_discard_REQUIRED_ROI_ORDER_NOT_MET 	= 0;
+	total_discard_ENDED_INSIDE_DISCARD_ROI 		= 0;
+	total_discard_REACHED_TIME_LIMIT 			= 0;
+	total_UNEXPECTED_TRACKING_STATUS 			= 0;
+
+	total_failed_DISCARDED_BY_THE_ALGORITHM_DURING_INITIALIZATION 	= 0;
+	total_failed_DISCARDED_BY_THE_ALGORITHM 						= 0;
+	total_failed_REACHED_TRIAL_LIMIT_DURING_INITIALIZATION 			= 0;
+	total_failed_REACHED_TRIAL_LIMIT 								= 0;
+
+	total_propagationCount 						= 0;
+
+	totalPointCount 							= 0;
+	countGoodStreamlines 						= 0;
+
+}
+
 void Tractogram::printBaseSummary(int &lineCountToFlush) {
 
 	if (GENERAL::verboseLevel <= ON) {

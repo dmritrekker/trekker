@@ -1,9 +1,5 @@
 #include "algorithm_ptt.h"
 
-void TrackWith_PTT::precomputeCurveConstants() {
-	PTF_CONSTS::precomputePTFCoefficients(501);
-}
-
 void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 
 	// Handle stepSize
@@ -113,7 +109,6 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 		if (GENERAL::verboseLevel>ON) std::cout << "useBestATinit             : OFF" << std::endl;
 	}
 
-	precomputeCurveConstants();
 }
 
 void TrackWith_PTT::print() {

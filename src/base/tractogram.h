@@ -15,6 +15,7 @@ class Tractogram {
 public:
 	Tractogram();
 	virtual ~Tractogram();
+	virtual void reset();
 
 	virtual void writeOutput() = 0;
 	virtual void writeMetadataOutput() = 0;

@@ -33,7 +33,6 @@ public:
 
 private:
 
-	void 		 	 precomputeCurveConstants();
 	void 		 	 get_initial_curve();
 	void 		 	 get_a_candidate_curve();
 	void 			 estimatePosteriorMax();

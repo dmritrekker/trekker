@@ -3,6 +3,10 @@
 
 #ifdef BUILD_FOR_WINDOWS
 #include <windows.h>
+#include <io.h>
+#undef max
+#else
+#include <unistd.h>
 #endif
 
 #ifdef ENABLE_MULTITHREADING
@@ -14,7 +18,6 @@
 #include <iomanip>
 #include <chrono>
 #include <ctime>
-#include <unistd.h>
 #include "notset.h"
 
 #define MAXTIMELIMIT std::numeric_limits<int>::max()

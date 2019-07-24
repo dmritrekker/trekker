@@ -1,9 +1,16 @@
 #include "doRandomThings.h"
 
 RandomDoer::RandomDoer() {
-	unsigned int lo,hi;
-	__asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+	
+
+#ifdef BUILD_FOR_WINDOWS
+	std::random_device rd;
+	unsigned long randSeed = rd();
+#else
+	unsigned int lo, hi;
+	__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 	unsigned long randSeed = ((unsigned long long)hi << 32) | lo;
+#endif
 
 	gen.seed(randSeed);
 	unidis_01  				= new std::uniform_real_distribution<float>(0,std::nextafter(1, FLT_MAX));

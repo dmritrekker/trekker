@@ -235,7 +235,7 @@ void InputParser::parse_verboseLevel() {
 	}
 	GENERAL::verboseLevel = VerboseLevel(atoi(argv[argv_index]));
 
-	if ((GENERAL::verboseLevel<0) || (GENERAL::verboseLevel>3)) {
+	if ((GENERAL::verboseLevel<0) || (GENERAL::verboseLevel>4)) {
 		std::cout << "-verboseLevel can only be 0, 1, 2, 3, 4" << std::endl;
 		exit(EXIT_FAILURE);
 	}

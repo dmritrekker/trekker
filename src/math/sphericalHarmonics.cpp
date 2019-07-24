@@ -15,14 +15,19 @@ float  *precomputedPhiComponent 				= NULL;
 float  *precomputedThetaComponent            	= NULL;
 
 int sphPlmInd(int l,int m) {
-	return (l*(l+1))/2+m;
+
+	if (TRACKER::img_FOD->iseven)
+		return (l*(l+1))/2+m;
+	else
+		return l*l+l+m;
+
 }
 
 void computeLegendrePolynomials(double *plm, double x, int order) {
 
 	plm[0] = 1.0/std::sqrt(4.0*PI);
 
-	for(double m = 1; m <= order; m++) {
+	for(double m=1; m <= order; m++) {
 		plm[sphPlmInd(m,m)] = -std::sqrt((2*m+1)*(1-x*x)/(2*m))*plm[sphPlmInd(m-1,m-1)];
 	}
 
@@ -30,7 +35,7 @@ void computeLegendrePolynomials(double *plm, double x, int order) {
 		plm[sphPlmInd(m+1,m)] = std::sqrt(2*m+3)*x*plm[sphPlmInd(m,m)];
 	}
 
-	for(double m =  0; m <= order; m++)
+	for(double m=0; m <= order; m++)
 		for(double l = m+2; l <= order; l++) {
 			plm[sphPlmInd(l,m)] = std::sqrt(((2.0*l+1)*(2.0*l-1)) / ((l+m)*(l-m)))*x*plm[sphPlmInd(l-1,m)]-std::sqrt( (2.0*l+1)*(l-m-1.0)*(l+m-1.0) / ((2.0*l-3)*(l-m)*(l+m)))*plm[sphPlmInd(l-2,m)];
 		}
@@ -54,8 +59,8 @@ void precompute(size_t num) {
 	sphericalHarmonicOrder   				= TRACKER::img_FOD->getSHorder();
 	numberOfSphericalHarmonicCoefficients 	= TRACKER::img_FOD->getNim()->nt;
 
-	double delta_phi 	 					= 2/(double)(numberOfSamples_phi-1);
-	double delta_theta 						= 2/(double)(numberOfSamples_theta -1);
+	double delta_phi 	 					= 2/(double)(numberOfSamples_phi   - 1);
+	double delta_theta 						= 2/(double)(numberOfSamples_theta - 1);
 
 	scalingFactor_phi 						= 1/delta_phi;
 	scalingFactor_theta 					= 1/delta_theta;
@@ -74,19 +79,32 @@ void precompute(size_t num) {
 			double phi 		= std::atan2(y,x);
 
 			precomputedPhiComponent[c++] = 1;
-			for(double l = 2; l <= sphericalHarmonicOrder; l+=2) {
-				for(double m = -l; m <= l; m++) {
-					double ang = (fabs((double)m))*phi;
-					if (m<0)  		precomputedPhiComponent[c++] = std::sin(ang);
-					else if (m==0)  precomputedPhiComponent[c++] = 1;
-					else 			precomputedPhiComponent[c++] = std::cos(ang);
+
+			if (TRACKER::img_FOD->iseven) {
+				for(double l = 2; l <= sphericalHarmonicOrder; l+=2) {
+					for(double m = -l; m <= l; m++) {
+						double ang = (fabs((double)m))*phi;
+						if (m<0)  		precomputedPhiComponent[c++] = std::sin(ang);
+						else if (m==0)  precomputedPhiComponent[c++] = 1;
+						else 			precomputedPhiComponent[c++] = std::cos(ang);
+					}
+				}
+			}
+			else {
+				for(double l = 1; l <= sphericalHarmonicOrder; l+=1) {
+					for(double m = -l; m <= l; m++) {
+						double ang = (fabs((double)m))*phi;
+						if (m<0)  		precomputedPhiComponent[c++] = std::sin(ang);
+						else if (m==0)  precomputedPhiComponent[c++] = 1;
+						else 			precomputedPhiComponent[c++] = std::cos(ang);
+					}
 				}
 			}
 
 		}
 	}
 
-	double *plm  = new double[(sphericalHarmonicOrder*(sphericalHarmonicOrder+1))/2+sphericalHarmonicOrder+1];
+	double *plm = new double[numberOfSphericalHarmonicCoefficients];
 
 	c = 0;
 	for (size_t k=0; k<numberOfSamples_theta; k++) {
@@ -95,11 +113,23 @@ void precompute(size_t num) {
 		computeLegendrePolynomials(plm, theta, sphericalHarmonicOrder);
 
 		precomputedThetaComponent[c++] = plm[sphPlmInd(0,0)];
-		for(float l = 2; l <= sphericalHarmonicOrder; l+=2) {
-			for(float m = -l; m <= l; m++) {
-				if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
-				else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
-				else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
+
+		if (TRACKER::img_FOD->iseven) {
+			for(float l = 2; l <= sphericalHarmonicOrder; l+=2) {
+				for(float m = -l; m <= l; m++) {
+					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
+				}
+			}
+		} else {
+			for(float l = 1; l <= sphericalHarmonicOrder; l+=1) {
+				for(float m = -l; m <= l; m++) {
+					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
+
+				}
 			}
 		}
 

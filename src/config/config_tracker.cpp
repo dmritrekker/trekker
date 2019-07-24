@@ -61,6 +61,9 @@ void cleanConfigTracker() {
 	SH::clean();
 	delete method;
 	delete tractogram;
+
+	if (TRACKER::algorithm == PTT)
+		PTF_CONSTS::cleanPTFCoefficients();
 }
 
 void setDefaultParametersWhenNecessary() {
@@ -87,6 +90,8 @@ void setDefaultParametersWhenNecessary() {
 	}
 
 	method->setDefaultParametersWhenNecessary();
+	if (TRACKER::algorithm == PTT)
+		PTF_CONSTS::precomputePTFCoefficients(501);
 
 	SH::precompute(1024);
 	defaultsSet = true;

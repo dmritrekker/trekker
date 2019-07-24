@@ -7,6 +7,20 @@
 #include "algorithms/ptt/algorithm_ptt.h"
 #include "algorithms/local_probabilistic/algorithm_local_probabilistic.h"
 
+#ifdef ENABLE_MULTITHREADING
+
+void* getStreamline(void *_tracker) {
+	TrackingThread* tracker 	= ((TrackingThread *)_tracker);
+	tracker->track(NULL);
+	pthread_mutex_lock(&GENERAL::lock);
+	tracker->isReady 	= true;
+	tracker->updateTractogram();
+	sem_post(&GENERAL::exit_sem);
+	pthread_exit(NULL);
+	return NULL;
+}
+
+#endif
 
 TrackingThread::TrackingThread() {
 
@@ -73,7 +87,6 @@ TrackingThread::~TrackingThread() {
 	delete   tracker_FOD;
 	delete   tracker_SEED;
 	delete 	 tracker_randomThings;
-
 	delete   method;
 
 	for (std::vector<ROI_Image*>::iterator it = tracker_ROI.begin(); it != tracker_ROI.end(); ++it) {(*it)->destroyCopy(); delete *it;}
