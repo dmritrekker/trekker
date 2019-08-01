@@ -23,6 +23,18 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+// Define EXPORTED for any platform
+#ifdef _WIN32
+# ifdef WIN_EXPORT
+#   define EXPORTED  __declspec( dllexport )
+# else
+#   define EXPORTED  __declspec( dllimport )
+# endif
+#else
+# define EXPORTED
+#endif
+
 /*=================*/
 
 /*****===================================================================*****/
@@ -280,16 +292,16 @@ int   nifti_swap_as_analyze( nifti_analyze75 *h );
 
 /* main read/write routines */
 
-nifti_image *nifti_image_read_bricks(const char *hname , int nbricks,
+EXPORTED nifti_image *nifti_image_read_bricks(const char *hname , int nbricks,
                                      const int *blist, nifti_brick_list * NBL);
 int          nifti_image_load_bricks(nifti_image *nim , int nbricks,
                                      const int *blist, nifti_brick_list * NBL);
 void         nifti_free_NBL( nifti_brick_list * NBL );
 
-nifti_image *nifti_image_read    ( const char *hname , int read_data ) ;
-int          nifti_image_load    ( nifti_image *nim ) ;
-void         nifti_image_unload  ( nifti_image *nim ) ;
-void         nifti_image_free    ( nifti_image *nim ) ;
+EXPORTED nifti_image *nifti_image_read    ( const char *hname , int read_data ) ;
+EXPORTED int          nifti_image_load    ( nifti_image *nim ) ;
+EXPORTED void         nifti_image_unload  ( nifti_image *nim ) ;
+EXPORTED void         nifti_image_free    ( nifti_image *nim ) ;
 
 int          nifti_read_collapsed_image( nifti_image * nim, const int dims [8],
                                          void ** data );
@@ -298,10 +310,10 @@ int          nifti_read_subregion_image( nifti_image * nim,
                                          int *start_index, int *region_size,
                                          void ** data );
 
-void         nifti_image_write   ( nifti_image * nim ) ;
+EXPORTED void         nifti_image_write   ( nifti_image * nim ) ;
 void         nifti_image_write_bricks(nifti_image * nim, 
                                       const nifti_brick_list * NBL);
-void         nifti_image_infodump( const nifti_image * nim ) ;
+EXPORTED void         nifti_image_infodump( const nifti_image * nim ) ;
 
 void         nifti_disp_lib_hist( void ) ;     /* to display library history */
 void         nifti_disp_lib_version( void ) ;  /* to display library version */

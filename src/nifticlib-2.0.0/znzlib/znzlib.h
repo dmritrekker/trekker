@@ -54,6 +54,17 @@ extern "C" {
 */
 /* #define HAVE_FDOPEN */
 
+// Define EXPORTED for any platform
+#ifdef _WIN32
+# ifdef WIN_EXPORT
+#   define EXPORTED  __declspec( dllexport )
+# else
+#   define EXPORTED  __declspec( dllimport )
+# endif
+#else
+# define EXPORTED
+#endif
+
 
 #ifdef HAVE_ZLIB
 #if defined(ITKZLIB)
@@ -86,32 +97,32 @@ typedef struct znzptr * znzFile;
    use_compression!=0 uses zlib (gzip) compression
 */
 
-znzFile znzopen(const char *path, const char *mode, int use_compression);
+EXPORTED znzFile znzopen(const char *path, const char *mode, int use_compression);
 
-znzFile znzdopen(int fd, const char *mode, int use_compression);
+EXPORTED znzFile znzdopen(int fd, const char *mode, int use_compression);
 
-int Xznzclose(znzFile * file);
+EXPORTED int Xznzclose(znzFile * file);
 
-size_t znzread(void* buf, size_t size, size_t nmemb, znzFile file);
+EXPORTED size_t znzread(void* buf, size_t size, size_t nmemb, znzFile file);
 
-size_t znzwrite(const void* buf, size_t size, size_t nmemb, znzFile file);
+EXPORTED size_t znzwrite(const void* buf, size_t size, size_t nmemb, znzFile file);
 
-long znzseek(znzFile file, long offset, int whence);
+EXPORTED long znzseek(znzFile file, long offset, int whence);
 
-int znzrewind(znzFile stream);
+EXPORTED int znzrewind(znzFile stream);
 
-long znztell(znzFile file);
+EXPORTED long znztell(znzFile file);
 
-int znzputs(const char *str, znzFile file);
+EXPORTED int znzputs(const char *str, znzFile file);
 
-char * znzgets(char* str, int size, znzFile file);
+EXPORTED char * znzgets(char* str, int size, znzFile file);
 
-int znzputc(int c, znzFile file);
+EXPORTED int znzputc(int c, znzFile file);
 
-int znzgetc(znzFile file);
+EXPORTED int znzgetc(znzFile file);
 
 #if !defined(WIN32)
-int znzprintf(znzFile stream, const char *format, ...);
+EXPORTED int znzprintf(znzFile stream, const char *format, ...);
 #endif
 
 /*=================*/

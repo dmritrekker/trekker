@@ -1,7 +1,7 @@
 #ifndef SRC_CONFIG_CONFIG_GENERAL_H_
 #define SRC_CONFIG_CONFIG_GENERAL_H_
 
-#ifdef BUILD_FOR_WINDOWS
+#if defined(_MSC_VER)
 #include <windows.h>
 #endif
 
@@ -14,9 +14,12 @@
 #include <iomanip>
 #include <chrono>
 #include <ctime>
+#if !defined(_MSC_VER)
 #include <unistd.h>
+#endif
 #include "notset.h"
 
+#undef max
 #define MAXTIMELIMIT std::numeric_limits<int>::max()
 
 typedef enum {

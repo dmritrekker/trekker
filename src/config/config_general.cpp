@@ -31,7 +31,7 @@ void setDefaultParametersWhenNecessary() {
 		numberOfThreads = 1;
 	} else {
 		if (numberOfThreads==NOTSET) {
-#ifdef BUILD_FOR_WINDOWS
+#if defined(_MSC_VER)
 			SYSTEM_INFO sysinfo;
 			GetSystemInfo(&sysinfo);
 			numberOfThreads = sysinfo.dwNumberOfProcessors;

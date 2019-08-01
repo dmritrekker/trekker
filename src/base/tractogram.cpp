@@ -339,7 +339,7 @@ FILE* Tractogram::writeBaseMetadataOutput() {
 	fprintf(out,("\n\"verbose level\":" + std::to_string(GENERAL::verboseLevel)).c_str());
 	fprintf(out,(",\n\"number of threads\":" + std::to_string(GENERAL::numberOfThreads)).c_str());
 
-	if (GENERAL::timeLimit==MAXTIMELIMIT)
+	if (GENERAL::timeLimit == MAXTIMELIMIT)
 		tmp = "infinite minutes";
 	else {
 		tmp = std::to_string(float(timeLimit)/60.0);

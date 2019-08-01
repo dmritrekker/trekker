@@ -7,6 +7,12 @@
 #include "math_aux.h"
 #include "coordinate.h"
 
+#ifdef _MSC_VER
+# include <intrin.h>
+#else
+# include <x86intrin.h>
+#endif
+
 class RandomDoer {
 
 public:
