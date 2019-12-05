@@ -10,14 +10,17 @@ std::chrono::steady_clock::time_point 	startTime 			= std::chrono::steady_clock:
 int 									timeLimit           = NOTSET;
 bool 									usingAPI 			= false;
 
-#ifdef ENABLE_MULTITHREADING
-sem_t 			 exit_sem;
-pthread_mutex_t  lock;
-#endif
+
+// sem_t 			 exit_sem;
+std::condition_variable     exit_cv;
+std::mutex                  exit_mx;
+std::mutex                  tracker_lock;
+
 
 int runTime() {
 	return int(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startTime).count());
 }
+
 
 void setDefaultParametersWhenNecessary() {
 
@@ -25,7 +28,6 @@ void setDefaultParametersWhenNecessary() {
 	if (verboseLevel==VERBOSELEVEL_NOTSET) 	verboseLevel 	= MINIMAL;
 
 	// Handle numberOfThreads
-#ifdef ENABLE_MULTITHREADING
 	if ( (verboseLevel>ON) && (numberOfThreads != 1) ) {
 		if (verboseLevel!=QUITE) std::cout << std::endl << "-numberOfThreads option is ignored and forced to be 1 since verbose level is bigger than 1." << std::endl;
 		numberOfThreads = 1;
@@ -40,12 +42,6 @@ void setDefaultParametersWhenNecessary() {
 #endif
 		}
 	}
-#else
-	if ( (numberOfThreads != 1) && (numberOfThreads != NOTSET) && (verboseLevel!=QUITE))
-		std::cout << std::endl << "-numberOfThreads option is ignored and forced to be 1 since multithreading is not enabled during compilation." << std::endl;
-	numberOfThreads = 1;
-#endif
-
 
 	if (timeLimit<=0) {
 		if (verboseLevel!=QUITE) std::cout << "Setting time limit to infinite" << std::endl;
@@ -53,6 +49,7 @@ void setDefaultParametersWhenNecessary() {
 	}
 
 }
+
 
 void print() {
 	std::cout << std::endl;

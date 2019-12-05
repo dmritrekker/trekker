@@ -9,10 +9,10 @@
 #include <unistd.h>
 #endif
 
-#ifdef ENABLE_MULTITHREADING
-#include <pthread.h>
-#include <semaphore.h>
-#endif
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+// #include <semaphore.h>
 
 #include <iostream>
 #include <iomanip>
@@ -40,10 +40,12 @@ extern std::chrono::steady_clock::time_point  	startTime;
 extern int 									    timeLimit;
 extern bool 									usingAPI;
 
-#ifdef ENABLE_MULTITHREADING
-extern sem_t 			exit_sem;
-extern pthread_mutex_t  lock;
-#endif
+
+// extern sem_t 			exit_sem;
+extern std::condition_variable 	exit_cv;
+extern std::mutex               exit_mx;
+extern std::mutex               tracker_lock;
+
 
 int    runTime();
 void   setDefaultParametersWhenNecessary();

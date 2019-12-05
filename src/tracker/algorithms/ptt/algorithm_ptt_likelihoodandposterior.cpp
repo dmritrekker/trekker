@@ -27,7 +27,7 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
 	}
 
 	curve->likelihood *= PTF_CONSTS::probeNormalizer;
+    curve->likelihood  = std::pow(curve->likelihood,TRACKER::dataSupportExponent);
 	curve->posterior   = curve->likelihood*curve->prior;
 
 }
-

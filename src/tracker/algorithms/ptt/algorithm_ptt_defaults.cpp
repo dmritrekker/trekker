@@ -62,8 +62,14 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeQuality      : " << TRACKER::probeQuality << std::endl;
 	}
 
+	// Handle dataSupportExponent
+	if (TRACKER::dataSupportExponent<0.0) TRACKER::dataSupportExponent = DEFAULT_DATASUPPORTEXPONENT;
+	
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
+    
+    // Update minFODamp
+    TRACKER::minFODamp           = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);
 
 	// Handle writeStepSize
 	if (TRACKER::writeInterval<=0.0) {
@@ -123,7 +129,8 @@ void TrackWith_PTT::print() {
 	std::cout << "probeCount           : "  << TRACKER::probeCount	        	<< std::endl;
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
-	std::cout << "minFODamp            : "  << TRACKER::minFODamp 				<< std::endl;
+	std::cout << "minFODamp            : "  << std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent)    << std::endl;
+    std::cout << "dataSupportExponent  : "  << TRACKER::dataSupportExponent 	<< std::endl;
 
 	std::cout << "minLength            : ";
 	if (TRACKER::minLength<(DEFAULT_PTT_MINLENGTH*1.01))	std::cout 			<< "0" 							<< std::endl;

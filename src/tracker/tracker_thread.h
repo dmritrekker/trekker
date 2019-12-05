@@ -20,8 +20,6 @@ class TractographyAlgorithm;
 class TrackWith_Trekker;
 class Tractogram;
 
-void* getStreamline(void *_tracker);
-
 class TrackingThread {
 public:
 
@@ -79,5 +77,7 @@ public:
 	StreamlineStatus 	    run(bool side);
 
 };
+
+void getStreamline(TrackingThread* tracker);
 
 #endif

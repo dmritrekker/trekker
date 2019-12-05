@@ -62,6 +62,7 @@ void InputParser::parse() {
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
 		else if (Option("-minFODamp"))        		parse_minFODamp();
+        else if (Option("-dataSupportExponent"))    parse_dataSupportExponent();
 		else if (Option("-minLength"))        		parse_minLength();
 		else if (Option("-maxLength"))        		parse_maxLength();
 		else if (Option("-atMaxLength"))        	parse_atMaxLength();
@@ -569,6 +570,23 @@ void InputParser::parse_minFODamp() {
 		exit(EXIT_FAILURE);
 	}
 	minFODamp = atof(argv[argv_index]);
+	argv_index++;
+
+}
+
+void InputParser::parse_dataSupportExponent() {
+
+	if (dataSupportExponent != NOTSET) {
+		std::cout << "Cannot use -dataSupportExponent option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	argv_index++;
+	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
+		std::cout << "Input data support exponent after -dataSupportExponent" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	dataSupportExponent = atof(argv[argv_index]);
 	argv_index++;
 
 }

@@ -211,6 +211,7 @@ void cleanPTFCoefficients() {
 
 		valid_indices.clear();
 	}
+	
 }
 
 }

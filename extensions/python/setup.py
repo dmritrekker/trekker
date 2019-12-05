@@ -25,7 +25,7 @@ LIBS              = ["Trekker","z","pthread"]
 
 setup(
     name='Trekker',
-    version='0.4',
+    version='0.5',
     setup_requires=[
         'setuptools>=18.0',
         'cython>=0.28.4',
@@ -45,6 +45,6 @@ setup(
         ),
     cmdclass=dict(build_ext=TrekkerBuildExt),
     author="Dogu Baran Aydogan",
-    author_email="baran.aydogan@aalto.edu",
+    author_email="baran.aydogan@aalto.fi",
     description="Trekker",
 )

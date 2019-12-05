@@ -2,9 +2,22 @@
 
 PROJECT(Trekker)
 
+
+# Verify compiler support for c++11
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    message(STATUS "Your compiler (${CMAKE_CXX_COMPILER}) does not support C++11 support. Please use a compatible compiler.")
+endif()
+
+
+
 add_definitions(-DCMAKE_BUILD_TYPE=Release)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS OFF)
+
 
 # Set output names
 set(trekkerExe trekker)
@@ -13,16 +26,14 @@ if(UNIX AND NOT APPLE)
 
 	message(STATUS "Building for Linux")
 
-	# Needed for copying the library
-	set(trekkerLibName libTrekker.a)
-
 	# Set up manual page
 	add_definitions(-DSHOWMANUAL="man ${CMAKE_SOURCE_DIR}/doc/build/man/trekker")
 
+	# FOR STATIC BUILD
 	# Build and link only static libraries and executables
-	set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-static -static-libgcc -static-libstdc++")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-
+	
 	# Check for zlib support
 	find_package(ZLIB)
 	if(ZLIB_LIBRARIES)
@@ -32,21 +43,12 @@ if(UNIX AND NOT APPLE)
 		message(STATUS "Disabled zlib support")
 	endif()	
 
-	# Check for multithreading support
-	set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-	find_package(Threads)
-	if(CMAKE_USE_PTHREADS_INIT)
-		add_definitions(-D ENABLE_MULTITHREADING)
-		find_library(PTHREAD_LIBRARIES NAMES libpthread.a)
-		message(STATUS ${PTHREAD_LIBRARIES})
-		message(STATUS "Enabled multithreading support")
-	else()
-		message(STATUS "Disabled multithreading support")
-	endif()
+    # Needed for copying the library
+	set(trekkerLibName libTrekker.a)
 
 elseif(MSVC)
 
-    	message(STATUS "Building for Windows")
+    message(STATUS "Building for Windows")
 
 	# Building for Windows
 	add_definitions(-D BUILD_FOR_WINDOWS)
@@ -61,6 +63,8 @@ elseif(MSVC)
 	add_compile_options(/wd4305) # truncation from 'double' to 'float'
 	add_compile_options(/wd4101) # unreferenced local variable
 
+	# No zlib support at the moment
+	
 	# Needed for copying the library
 	set(trekkerLibName Trekker.lib)
 else()
@@ -76,9 +80,9 @@ endif()
 find_package(Python3)
 if(Python3_FOUND)
 	message(WARNING "Please change Python path if necessary: ${Python3_EXECUTABLE}")
-	message(STATUS "Enabled Python wrapper")
+	message(STATUS "Enabled Python wrapper. A Python package will be build.")
 else()
-	message(STATUS "Disabled Python wrapper")
+	message(STATUS "Disabled Python wrapper. A Python package will not be build.")
 endif()
 
 file(GLOB_RECURSE SRCS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
@@ -99,6 +103,7 @@ set(trekkerLib ${CMAKE_BINARY_DIR}/${trekkerLibName})
 #	DEPENDS tmp ${ZLIB_LIBRARIES} ${PTHREAD_LIBRARIES}
 #        )
 
+# ENABLE THIS
 add_custom_target(combined
         COMMAND ar -x $<TARGET_FILE:tmp>
         COMMAND ar -qcs ${trekkerLib} *.o
@@ -111,13 +116,26 @@ add_dependencies(c combined)
 set_target_properties(c PROPERTIES IMPORTED_LOCATION ${trekkerLib})
 
 add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-# target_link_libraries(${trekkerExe} c)
-target_link_libraries(${trekkerExe} c ${PTHREAD_LIBRARIES} ${ZLIB_LIBRARIES})
+
+
+# FOR REGULAR COMPILATION
+target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
 
 INSTALL(TARGETS ${trekkerExe} DESTINATION ${CMAKE_BINARY_DIR}/install/bin)
 INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/${trekkerLibName} ${CMAKE_BINARY_DIR}/install/lib/${trekkerLibName} COPYONLY)")
 INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_BINARY_DIR}/install/include/trekker.h COPYONLY)")
-INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_SOURCE_DIR}/extensions/python/cython/trekker.h COPYONLY)")
-INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/install/lib/${trekkerLibName} ${CMAKE_SOURCE_DIR}/extensions/python/cython/${trekkerLibName} COPYONLY)")
-INSTALL(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/extensions/python/setup.py bdist_wheel WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/extensions/python)")
+INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/extensions/python/setup.py ${CMAKE_BINARY_DIR}/install/extensions/python/setup.py COPYONLY)")
+INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/extensions/python/cython/Trekker.pyx ${CMAKE_BINARY_DIR}/install/extensions/python/cython/Trekker.pyx COPYONLY)")
+INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_BINARY_DIR}/install/extensions/python/cython/trekker.h COPYONLY)")
+INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/install/lib/${trekkerLibName} ${CMAKE_BINARY_DIR}/install/extensions/python/cython/${trekkerLibName} COPYONLY)")
+INSTALL(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_BINARY_DIR}/install/extensions/python/setup.py bdist_wheel WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/install/extensions/python)")
 
+
+# Add a custom clean-all target
+add_custom_target(clean-all
+   COMMAND ${CMAKE_BUILD_TOOL} clean
+   COMMAND rm -rf ${CMAKE_BINARY_DIR}/extensions
+   COMMAND rm -rf ${CMAKE_BINARY_DIR}/install
+   COMMAND rm -f ${CMAKE_BINARY_DIR}/*.o
+   COMMAND rm -f ${CMAKE_BINARY_DIR}/*.a
+)

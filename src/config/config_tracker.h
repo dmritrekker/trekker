@@ -51,6 +51,7 @@ extern FOD_Image 	  *img_FOD;
 extern float 		   stepSize;
 extern float 		   minRadiusOfCurvature;
 extern float		   minFODamp;
+extern float		   dataSupportExponent;
 extern float		   minLength;
 extern float		   maxLength;
 extern AtMaxLength 	   atMaxLength;

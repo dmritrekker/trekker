@@ -2,10 +2,10 @@
 # It requires 3 packages: (1) g++-mingw-w64 (2) libz-mingw-w64 (3) libz-mingw-w64-dev
 # Last 2 are for zlib support used for decompressing .nii.gz files
 BUILD_FOR_WINDOWS     = NO
-DEBUG_MODE            = NO
+DEBUG_MODE            = YES
 ENABLE_ZLIB 	      = NO
 ENABLE_MULTITHREADING = NO
-BUILD_SHARED 		  = NO
+BUILD_SHARED 	      = NO
 
 SHELL:=/bin/bash
 

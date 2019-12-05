@@ -49,6 +49,7 @@ private:
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
 	void parse_minFODamp();
+    void parse_dataSupportExponent();
 	void parse_minLength();
 	void parse_maxLength();
 	void parse_atMaxLength();

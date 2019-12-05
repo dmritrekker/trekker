@@ -37,6 +37,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	}
 	posteriorMax *= DEFAULT_PTT_MAXPOSTESTCOMPENS; // initial compensation for underestimation
 
+
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization

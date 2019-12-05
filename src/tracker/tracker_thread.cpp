@@ -7,20 +7,17 @@
 #include "algorithms/ptt/algorithm_ptt.h"
 #include "algorithms/local_probabilistic/algorithm_local_probabilistic.h"
 
-#ifdef ENABLE_MULTITHREADING
 
-void* getStreamline(void *_tracker) {
-	TrackingThread* tracker 	= ((TrackingThread *)_tracker);
+void getStreamline(TrackingThread* tracker) {
 	tracker->track(NULL);
-	pthread_mutex_lock(&GENERAL::lock);
+    GENERAL::tracker_lock.lock();
 	tracker->isReady 	= true;
 	tracker->updateTractogram();
-	sem_post(&GENERAL::exit_sem);
-	pthread_exit(NULL);
-	return NULL;
+    
+    std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
+    GENERAL::exit_cv.notify_all();
+	//sem_post(&GENERAL::exit_sem);
 }
-
-#endif
 
 TrackingThread::TrackingThread() {
 

@@ -24,6 +24,7 @@ Tractogram            *tractogram 		= NULL;
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
 float minFODamp      					= NOTSET;
+float dataSupportExponent      			= NOTSET;
 float minLength      					= NOTSET;
 float maxLength      					= NOTSET;
 AtMaxLength atMaxLength 				= ATMAXLENGTH_NOTSET;
@@ -57,13 +58,13 @@ AtInit atInit 							= ATINIT_NOTSET;
 neighborhoodMode neighborhoodSamplingMode = NEIGHBORHOODMODE_NOTSET;
 
 void cleanConfigTracker() {
+
 	delete img_FOD;
 	SH::clean();
 	delete method;
 	delete tractogram;
-
 	if (TRACKER::algorithm == PTT)
-		PTF_CONSTS::cleanPTFCoefficients();
+	 	PTF_CONSTS::cleanPTFCoefficients();
 }
 
 void setDefaultParametersWhenNecessary() {

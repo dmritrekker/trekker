@@ -299,7 +299,8 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,(",\n\"probeRadius\":" 			+ std::to_string(TRACKER::probeRadius)).c_str());
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());
 	fprintf(out,(",\n\"probeQuality\":" 		+ std::to_string(TRACKER::probeQuality)).c_str());
-	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(TRACKER::minFODamp)).c_str());
+	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent))).c_str());
+    fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());
 
 	if (TRACKER::maxLength==DEFAULT_PTT_MAXLENGTH)
