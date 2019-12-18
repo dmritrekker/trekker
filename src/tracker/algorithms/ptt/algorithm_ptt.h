@@ -17,7 +17,7 @@ public:
 	~TrackWith_PTT();
 
 	virtual Initialization_Decision initialize();
-	virtual Propagation_Decision 	propagate(int count);
+	virtual Propagation_Decision 	propagate(int stepCounter);
 	virtual void setSeed();
 	virtual void flip();
 	virtual void append();
@@ -39,9 +39,10 @@ private:
 	void 		 	 rejectionSample();
 
 	FPTF 			*initial_curve;
-
+    float 		 	 initialPosteriorMax;
+    
 	float 		 	 posteriorMax;
-
+    
 	size_t 		 	 current_init_postEstItCount;
 	size_t 		 	 current_prop_postEstItCount;
 

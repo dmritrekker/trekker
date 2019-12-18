@@ -24,6 +24,7 @@ Tractogram            *tractogram 		= NULL;
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
 float minFODamp      					= NOTSET;
+int   maxEstInterval                    = NOTSET;
 float dataSupportExponent      			= NOTSET;
 float minLength      					= NOTSET;
 float maxLength      					= NOTSET;
@@ -43,6 +44,7 @@ int   probeCount 						= NOTSET;
 // Derived parameters
 float maxCurvature   					= NOTSET;
 float writeStepSize                  	= NOTSET;
+float maxEstStepSize                    = NOTSET;
 float smallestPixDim 					= 0.0;
 float varCurvature   					= NOTSET;
 float varStraighten   					= NOTSET;
@@ -56,6 +58,8 @@ float posteriorMaxEstimationStepSize 	= NOTSET;
 AtInit atInit 							= ATINIT_NOTSET;
 
 neighborhoodMode neighborhoodSamplingMode = NEIGHBORHOODMODE_NOTSET;
+OrderOfDirections orderOfDirections       = ORDEROFDIRECTIONS_NOTSET;
+std::string       orderOfDirectionsTextInput;
 
 void cleanConfigTracker() {
 
@@ -69,7 +73,13 @@ void cleanConfigTracker() {
 
 void setDefaultParametersWhenNecessary() {
 
-	smallestPixDim = img_FOD->getSmallestPixdim();
+	smallestPixDim     = img_FOD->getSmallestPixdim();
+
+    // Handle OrderOfDirections
+    if (orderOfDirections==ORDEROFDIRECTIONS_NOTSET) {
+        orderOfDirections=XYZ;
+        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using order of directions    : XYZ " << std::endl;
+    }
 
 	// Handle algorithm
 	if (algorithm==ALGORITHM_NOTSET) {
@@ -114,6 +124,11 @@ void print() {
 	if (GENERAL::verboseLevel>ON) std::cout << std::endl << "-----------------" << std::endl;
 	std::cout << "fod                  : "  << img_FOD->getFilePath()  << std::endl;
 	if (GENERAL::verboseLevel>ON) img_FOD->printInfo();
+    
+    if (TRACKER::orderOfDirectionsTextInput=="")
+        std::cout << "orderOfDirections    : XYZ"  << std::endl;
+    else
+        std::cout << "orderOfDirections    : "  << TRACKER::orderOfDirectionsTextInput  << std::endl;
 	if (GENERAL::verboseLevel>ON) std::cout << "-----------------" << std::endl << std::endl;
 }
 

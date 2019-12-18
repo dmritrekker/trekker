@@ -58,10 +58,12 @@ void InputParser::parse() {
 
 		// Tracker config
 		else if (Option("-fod"))        			parse_fod();
+        else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
 		else if (Option("-minFODamp"))        		parse_minFODamp();
+        else if (Option("-maxEstInterval"))        	parse_maxEstInterval();
         else if (Option("-dataSupportExponent"))    parse_dataSupportExponent();
 		else if (Option("-minLength"))        		parse_minLength();
 		else if (Option("-maxLength"))        		parse_maxLength();
@@ -73,6 +75,7 @@ void InputParser::parse() {
 		else if (Option("-propMaxEstTrials"))       parse_propMaxEstTrials();
 		else if (Option("-useBestAtInit"))       	parse_useBestAtInit();
 
+        
 		else if (Option("-probeLength"))        	parse_probeLength();
 		else if (Option("-probeRadius"))        	parse_probeRadius();
 		else if (Option("-probeCount"))     		parse_probeCount();
@@ -449,6 +452,75 @@ void InputParser::parse_fod() {
 	argv_index++;
 }
 
+void InputParser::parse_orderOfDirections() {
+
+	if (TRACKER::orderOfDirections != ORDEROFDIRECTIONS_NOTSET) {
+		std::cout << "Cannot use -orderOfDirections option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	argv_index++;
+    
+    TRACKER::orderOfDirectionsTextInput=std::string(argv[argv_index]);
+    
+    if      (Option("XYZ")) TRACKER::orderOfDirections = XYZ;
+    else if (Option("XYz")) TRACKER::orderOfDirections = XYz;
+    else if (Option("XyZ")) TRACKER::orderOfDirections = XyZ;
+    else if (Option("Xyz")) TRACKER::orderOfDirections = Xyz;
+    else if (Option("xYZ")) TRACKER::orderOfDirections = xYZ;
+    else if (Option("xYz")) TRACKER::orderOfDirections = xYz;
+    else if (Option("xyZ")) TRACKER::orderOfDirections = xyZ;
+    else if (Option("xyz")) TRACKER::orderOfDirections = xyz;
+	else if (Option("XZY")) TRACKER::orderOfDirections = XZY;
+    else if (Option("XZy")) TRACKER::orderOfDirections = XZy;
+    else if (Option("XzY")) TRACKER::orderOfDirections = XzY;
+    else if (Option("Xzy")) TRACKER::orderOfDirections = Xzy;
+    else if (Option("xZY")) TRACKER::orderOfDirections = xZY;
+    else if (Option("xZy")) TRACKER::orderOfDirections = xZy;
+    else if (Option("xzY")) TRACKER::orderOfDirections = xzY;
+    else if (Option("xzy")) TRACKER::orderOfDirections = xzy;
+    else if (Option("YXZ")) TRACKER::orderOfDirections = YXZ;
+    else if (Option("YXz")) TRACKER::orderOfDirections = YXz;
+    else if (Option("YxZ")) TRACKER::orderOfDirections = YxZ;
+    else if (Option("Yxz")) TRACKER::orderOfDirections = Yxz;
+    else if (Option("yXZ")) TRACKER::orderOfDirections = yXZ;
+    else if (Option("yXz")) TRACKER::orderOfDirections = yXz;
+    else if (Option("yxZ")) TRACKER::orderOfDirections = yxZ;
+    else if (Option("yxz")) TRACKER::orderOfDirections = yxz;
+    else if (Option("YZX")) TRACKER::orderOfDirections = YZX;
+    else if (Option("YZx")) TRACKER::orderOfDirections = YZx;
+    else if (Option("YzX")) TRACKER::orderOfDirections = YzX;
+    else if (Option("Yzx")) TRACKER::orderOfDirections = Yzx;
+    else if (Option("yZX")) TRACKER::orderOfDirections = yZX;
+    else if (Option("yZx")) TRACKER::orderOfDirections = yZx;
+    else if (Option("yzX")) TRACKER::orderOfDirections = yzX;
+    else if (Option("yzx")) TRACKER::orderOfDirections = yzx;
+    else if (Option("ZYX")) TRACKER::orderOfDirections = ZYX;
+    else if (Option("ZYx")) TRACKER::orderOfDirections = ZYx;
+    else if (Option("ZyX")) TRACKER::orderOfDirections = ZyX;
+    else if (Option("Zyx")) TRACKER::orderOfDirections = Zyx;
+    else if (Option("zYX")) TRACKER::orderOfDirections = zYX;
+    else if (Option("zYx")) TRACKER::orderOfDirections = zYx;
+    else if (Option("zyX")) TRACKER::orderOfDirections = zyX;
+    else if (Option("zyx")) TRACKER::orderOfDirections = zyx;
+    else if (Option("ZXY")) TRACKER::orderOfDirections = ZXY;
+    else if (Option("ZXy")) TRACKER::orderOfDirections = ZXy;
+    else if (Option("ZxY")) TRACKER::orderOfDirections = ZxY;
+    else if (Option("Zxy")) TRACKER::orderOfDirections = Zxy;
+    else if (Option("zXY")) TRACKER::orderOfDirections = zXY;
+    else if (Option("zXy")) TRACKER::orderOfDirections = zXy;
+    else if (Option("zxY")) TRACKER::orderOfDirections = zxY;
+    else if (Option("zxy")) TRACKER::orderOfDirections = zxy;
+    else {
+		std::cout << "Unknown order of directions: " << argv[argv_index] << ", valid options are e.g.\"xYz\", \"ZyX\" etc. "<< std::endl;
+		exit(EXIT_FAILURE);
+	}
+    
+	argv_index++;
+
+}
+
+
 void InputParser::parse_stepSize() {
 
 	if (stepSize != NOTSET) {
@@ -570,6 +642,23 @@ void InputParser::parse_minFODamp() {
 		exit(EXIT_FAILURE);
 	}
 	minFODamp = atof(argv[argv_index]);
+	argv_index++;
+
+}
+
+void InputParser::parse_maxEstInterval() {
+
+	if (maxEstInterval != NOTSET) {
+		std::cout << "Cannot use -maxEstInterval option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	argv_index++;
+	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
+		std::cout << "Input how many steps after should the maximum posterior probability be updated after -maxEstInterval" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	maxEstInterval = atoi(argv[argv_index]);
 	argv_index++;
 
 }

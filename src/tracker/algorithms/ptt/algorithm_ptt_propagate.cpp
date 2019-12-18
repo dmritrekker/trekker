@@ -7,12 +7,13 @@ void TrackWith_PTT::get_a_candidate_curve() {
 	calcLikelihoodAndPosterior();
 }
 
-Propagation_Decision TrackWith_PTT::propagate(int ) {
+Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {
 
 	curve->walk();
 
-	// Estimate posterior maximum
-	estimatePosteriorMax();
+    // Estimate posterior
+    if (stepCounter%maxEstInterval==0)
+        estimatePosteriorMax();
 
 	// Rejection sample
 	rejectionSample();

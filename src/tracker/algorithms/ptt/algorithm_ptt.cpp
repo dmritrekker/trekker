@@ -53,6 +53,7 @@ void TrackWith_PTT::flip() {
 
 	initial_curve->flip();
 	curve->swap(initial_curve);
+    posteriorMax = initialPosteriorMax;
 
 }
 

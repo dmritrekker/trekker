@@ -45,10 +45,12 @@ private:
 
 	// Tracker config
 	void parse_fod();
+    void parse_orderOfDirections();
 	void parse_algorithm();
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
 	void parse_minFODamp();
+    void parse_maxEstInterval();
     void parse_dataSupportExponent();
 	void parse_minLength();
 	void parse_maxLength();
@@ -59,7 +61,7 @@ private:
 	void parse_initMaxEstTrials();
 	void parse_propMaxEstTrials();
 	void parse_useBestAtInit();
-
+    
 	void parse_probeLength();
 	void parse_probeRadius();
 	void parse_probeCount();

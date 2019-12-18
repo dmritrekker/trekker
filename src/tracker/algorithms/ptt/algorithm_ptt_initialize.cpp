@@ -35,8 +35,8 @@ Initialization_Decision TrackWith_PTT::initialize() {
 			initial_curve->swap(curve);
 		}
 	}
-	posteriorMax *= DEFAULT_PTT_MAXPOSTESTCOMPENS; // initial compensation for underestimation
-
+	posteriorMax       *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent); // initial compensation for underestimation
+    initialPosteriorMax = posteriorMax;
 
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 

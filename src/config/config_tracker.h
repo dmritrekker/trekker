@@ -38,6 +38,17 @@ typedef enum {
 	ATINIT_REJECTIONSAMPLE
 } AtInit;
 
+typedef enum {
+	ORDEROFDIRECTIONS_NOTSET = -1,
+    XYZ,XYz,XyZ,Xyz,xYZ,xYz,xyZ,xyz,
+    XZY,XZy,XzY,Xzy,xZY,xZy,xzY,xzy,
+    YXZ,YXz,YxZ,Yxz,yXZ,yXz,yxZ,yxz,
+    YZX,YZx,YzX,Yzx,yZX,yZx,yzX,yzx,
+    ZYX,ZYx,ZyX,Zyx,zYX,zYx,zyX,zyx,
+    ZXY,ZXy,ZxY,Zxy,zXY,zXy,zxY,zxy
+} OrderOfDirections;
+
+
 namespace TRACKER {
 
 extern Algorithm       			algorithm;
@@ -51,6 +62,7 @@ extern FOD_Image 	  *img_FOD;
 extern float 		   stepSize;
 extern float 		   minRadiusOfCurvature;
 extern float		   minFODamp;
+extern int             maxEstInterval;
 extern float		   dataSupportExponent;
 extern float		   minLength;
 extern float		   maxLength;
@@ -77,11 +89,13 @@ extern float 		   gaussianPeakLocationFactor;
 extern int 		       posteriorMaxEstimationInterval;
 extern int 		       triesPerRejectionSampling;
 extern float           writeStepSize;
+extern float           maxEstStepSize;
 extern float           posteriorMaxEstimationStepSize;
 extern AtInit 		   atInit;
 
-extern neighborhoodMode neighborhoodSamplingMode;
-
+extern neighborhoodMode  neighborhoodSamplingMode;
+extern OrderOfDirections orderOfDirections;
+extern std::string       orderOfDirectionsTextInput;
 
 
 // Functions

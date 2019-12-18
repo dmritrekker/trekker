@@ -63,14 +63,25 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	}
 
 	// Handle dataSupportExponent
-	if (TRACKER::dataSupportExponent<0.0) TRACKER::dataSupportExponent = DEFAULT_DATASUPPORTEXPONENT;
+	if (TRACKER::dataSupportExponent<0.0) TRACKER::dataSupportExponent = DEFAULT_PTT_DATASUPPORTEXPONENT;
 	
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
     
     // Update minFODamp
-    TRACKER::minFODamp           = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);
+    TRACKER::minFODamp           = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
+    
+    	// Handle maxEstInterval
+	if (TRACKER::maxEstInterval<=0.0) {
+		TRACKER::maxEstStepSize = TRACKER::smallestPixDim*DEFAULT_PTT_MAXESTINTERVAL_IN_PIXELDIM;
+		TRACKER::maxEstInterval = ceil(TRACKER::maxEstStepSize/TRACKER::stepSize);
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default maxEstInterval : " << TRACKER::maxEstInterval << std::endl;
+	}
 
+	TRACKER::maxEstStepSize = TRACKER::maxEstInterval*TRACKER::stepSize;
+	if (GENERAL::verboseLevel>ON) std::cout << "   posterior maximum is updated at every : " << TRACKER::maxEstStepSize << img_FOD->getUnit() << std::endl;
+    
+    
 	// Handle writeStepSize
 	if (TRACKER::writeInterval<=0.0) {
 		TRACKER::writeStepSize = TRACKER::smallestPixDim*DEFAULT_PTT_WRITEINTERVAL_IN_PIXELDIM;
@@ -130,6 +141,7 @@ void TrackWith_PTT::print() {
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
 	std::cout << "minFODamp            : "  << std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent)    << std::endl;
+    std::cout << "maxEstInterval       : "  << TRACKER::maxEstInterval 			<< std::endl;
     std::cout << "dataSupportExponent  : "  << TRACKER::dataSupportExponent 	<< std::endl;
 
 	std::cout << "minLength            : ";

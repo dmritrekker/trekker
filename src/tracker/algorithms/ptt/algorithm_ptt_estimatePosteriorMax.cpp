@@ -11,6 +11,6 @@ void TrackWith_PTT::estimatePosteriorMax() {
 			posteriorMax = curve->posterior;
 	}
 
-	posteriorMax *= DEFAULT_PTT_MAXPOSTESTCOMPENS;
+    posteriorMax *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
 
 }

@@ -300,6 +300,7 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());
 	fprintf(out,(",\n\"probeQuality\":" 		+ std::to_string(TRACKER::probeQuality)).c_str());
 	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent))).c_str());
+    fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());
 
@@ -354,7 +355,12 @@ void Tractogram_PTT::writeMetadataOutput() {
 		fprintf(out,",\n\"useBestAtInit\":\"OFF\"");
 
 	fprintf(out,(",\n\"fod\":\"" + TRACKER::img_FOD->getFilePath() + "\"").c_str());
-	fprintf(out,"\n}");
+    
+    if (TRACKER::orderOfDirectionsTextInput=="")
+        fprintf(out,",\n\"orderOfDirections\":\"XYZ\"");	
+    else
+        fprintf(out,(",\n\"orderOfDirections\":\"" + TRACKER::orderOfDirectionsTextInput + "\"").c_str());
+    fprintf(out,"\n}");
 
 
 	fprintf(out,",\n\"OUTPUT OPTIONS\": {");

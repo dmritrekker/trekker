@@ -376,17 +376,10 @@ void TrackingThread::track(Coordinate *point) {
 StreamlineStatus TrackingThread::run(bool side) {
 
 	int countWriter 	= 0;
-	int countEstimator  = 0;
+	int stepCounter     = 0;
 
-	// Append the first segment and
-	// skip posterior max estimation during the first run
-	// since it is estimated during initialization
-	// however estimate posterior max at first run
-	// when tracking the other side
-	if (side == true) {
+	if (side == true)
 		method->append();
-		countEstimator  = 1;
-	}
 
 	ROI_Rule_Decision roiDecision 	= checkPathway();
 
@@ -398,7 +391,7 @@ StreamlineStatus TrackingThread::run(bool side) {
 			return STREAMLINE_DISCARDED;
 		}
 
-		Propagation_Decision propDecision = method->propagate(countEstimator++);
+		Propagation_Decision propDecision = method->propagate(++stepCounter);
 
 		if (propDecision==FAIL){
 			streamline->failingReason = DISCARDED_BY_THE_ALGORITHM;
