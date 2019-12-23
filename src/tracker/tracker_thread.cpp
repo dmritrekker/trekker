@@ -10,23 +10,25 @@
 
 void getStreamline(TrackingThread* tracker) {
 	tracker->track(NULL);
+    
     GENERAL::tracker_lock.lock();
-	tracker->isReady 	= true;
-	tracker->updateTractogram();
+    GENERAL::ready_thread_id=tracker->thread_id;
+    tracker->updateTractogram();
+    if (GENERAL::verboseLevel!=QUITE) TRACKER::tractogram->printSummary();
     
     std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
     GENERAL::exit_cv.notify_all();
-	//sem_post(&GENERAL::exit_sem);
 }
 
 TrackingThread::TrackingThread() {
 
+    thread_id                                   = 0;
+    
 	streamline 									= NULL;
 	appendStreamline 							= false;
 	seedNo 										= 0;
 	trialNo 									= 0;
 
-	isReady 									= false;
 	timeIsUp 									= false;
 
 	tracker_randomThings 						= new RandomDoer();
@@ -90,6 +92,9 @@ TrackingThread::~TrackingThread() {
 
 }
 
+void TrackingThread::setThreadID(size_t id) {
+    thread_id = id;
+}
 
 
 void TrackingThread::updateSeedNoAndTrialCount(size_t _seedNo,size_t _trialNo) {
@@ -184,17 +189,27 @@ void TrackingThread::track(Coordinate *point) {
 		method->setSeed();
 
 		Initialization_Decision init_decision = method->initialize();
+        
+        if (GENERAL::runTime()>GENERAL::timeLimit) {
+            
+            timeIsUp 						= true;
+            streamline->discardingReason 	= REACHED_TIME_LIMIT;
+            streamline->status 				= STREAMLINE_DISCARDED;
+            
+        } else {
+            
+            if (init_decision==INIT_STOP) {
+                streamline->failingReason 		= REACHED_INITIALIZATION_TRIAL_LIMIT;
+                streamline->status 				= STREAMLINE_FAIL;
+            }
 
-		if (init_decision==INIT_STOP) {
-			streamline->failingReason 		= REACHED_INITIALIZATION_TRIAL_LIMIT;
-			streamline->status 				= STREAMLINE_FAIL;
-		}
-
-		if (init_decision==INIT_FAIL) {
-			streamline->failingReason 		= DISCARDED_BY_THE_ALGORITHM_DURING_INITIALIZATION;
-			streamline->status 				= STREAMLINE_FAIL;
-		}
-
+            if (init_decision==INIT_FAIL) {
+                streamline->failingReason 		= DISCARDED_BY_THE_ALGORITHM_DURING_INITIALIZATION;
+                streamline->status 				= STREAMLINE_FAIL;
+            }
+            
+        }
+		
 		if (init_decision==INIT_CONTINUE) {
 
 			// Track first side

@@ -12,7 +12,6 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-// #include <semaphore.h>
 
 #include <iostream>
 #include <iomanip>
@@ -40,11 +39,11 @@ extern std::chrono::steady_clock::time_point  	startTime;
 extern int 									    timeLimit;
 extern bool 									usingAPI;
 
-
-// extern sem_t 			exit_sem;
 extern std::condition_variable 	exit_cv;
 extern std::mutex               exit_mx;
 extern std::mutex               tracker_lock;
+extern size_t                   ready_thread_id;
+extern int                      lineCountToFlush;
 
 
 int    runTime();

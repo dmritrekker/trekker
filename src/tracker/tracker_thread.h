@@ -29,7 +29,6 @@ public:
 	void 		 			updateSeedNoAndTrialCount(size_t _seedNo,size_t _trialNo);
 	void 		 			updateTractogram();
 
-	bool 		 			isReady;
 	bool 					timeIsUp;
 
 	size_t 					report_success_REACHED_MAXLENGTH_LIMIT;
@@ -53,6 +52,8 @@ public:
 	TractographyAlgorithm  *method;
 	Streamline             *streamline;
 	bool 					appendStreamline;
+    
+    size_t                  thread_id;
 	size_t 					trialNo;
 
 	size_t 	            	seedNo;
@@ -75,6 +76,8 @@ public:
 	void 		            track(Coordinate* point);
 	ROI_Rule_Decision 	    checkPathway();
 	StreamlineStatus 	    run(bool side);
+    
+    void                    setThreadID(size_t id);
 
 };
 

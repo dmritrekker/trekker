@@ -14,7 +14,7 @@ public:
 
 	void writeOutput();
 	void writeMetadataOutput();
-	void printSummary(int &lineCountToFlush);
+	void printSummary();
 	void update(TrackingThread *thread);
 
 

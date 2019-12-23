@@ -19,7 +19,7 @@ public:
 
 	virtual void writeOutput() = 0;
 	virtual void writeMetadataOutput() = 0;
-	virtual void printSummary(int &lineCountToFlush) = 0;
+	virtual void printSummary() = 0;
 	virtual void update(TrackingThread *thread) = 0;
 
 	std::vector<Streamline*> streamlines;
@@ -37,7 +37,7 @@ protected:
 	FILE* 	writeBaseOutput();
 	FILE* 	writeBaseMetadataOutput();
 	void 	writeTrackingReportInMetadataOutput(FILE* out);
-	void 	printBaseSummary(int &lineCountToFlush);
+	void 	printBaseSummary();
 	void 	baseUpdate(TrackingThread *thread);
 
 	size_t 	total_tried;

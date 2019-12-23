@@ -11,10 +11,11 @@ int 									timeLimit           = NOTSET;
 bool 									usingAPI 			= false;
 
 
-// sem_t 			 exit_sem;
 std::condition_variable     exit_cv;
 std::mutex                  exit_mx;
 std::mutex                  tracker_lock;
+size_t                      ready_thread_id;
+int                         lineCountToFlush;
 
 
 int runTime() {

@@ -82,7 +82,7 @@ void Tractogram::reset() {
 
 }
 
-void Tractogram::printBaseSummary(int &lineCountToFlush) {
+void Tractogram::printBaseSummary() {
 
 	if (GENERAL::verboseLevel <= ON) {
 		for (int i=0; i<lineCountToFlush; i++){

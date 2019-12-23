@@ -81,12 +81,12 @@ void Trekker::execute() {
 	timeUp 				 = false;
 	int  seedNo 		 = 0;
 
-	int lineCountToFlush = 1;
-
+   	lineCountToFlush = 1;
+    
 	if (GENERAL::verboseLevel!=QUITE) {
 		std::cout << "--------------------" << std::endl;
 		std::cout << "Tracking" << std::endl << std::endl;;
-		TRACKER::tractogram->printSummary(lineCountToFlush);
+		TRACKER::tractogram->printSummary();
 	}
 
 	int         numberOfThreadsToUse = ( (GENERAL::numberOfThreads<=SEED::count) ? GENERAL::numberOfThreads : SEED::count);
@@ -94,76 +94,57 @@ void Trekker::execute() {
     std::thread             *threads = new std::thread[numberOfThreadsToUse];
 	TrackingThread          *tracker = new TrackingThread[numberOfThreadsToUse];
 	int                 finalThreads = 0;
- 
-	// sem_init (&GENERAL::exit_sem, 0, 0);
- 
+    
+    std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
+    
 	for(seedNo=0; seedNo<numberOfThreadsToUse; seedNo++) {
 		int threadNo = seedNo;
+        
+        tracker[threadNo].setThreadID(threadNo);
 		tracker[threadNo].updateSeedNoAndTrialCount(seedNo,0);
         
         threads[threadNo] = std::thread(getStreamline, (tracker+threadNo));
         threads[threadNo].detach();
 	}
     
-    std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
 	while(seedNo<SEED::count) {
-
-		// sem_wait (&GENERAL::exit_sem);
+    
         GENERAL::exit_cv.wait(lk);
-
-		int threadNo;
-		for (threadNo=0; threadNo<numberOfThreadsToUse; threadNo++)
-			if (tracker[threadNo].isReady==true) {
-				if (GENERAL::verboseLevel!=QUITE) TRACKER::tractogram->printSummary(lineCountToFlush);
-				tracker[threadNo].isReady=false;
-                GENERAL::tracker_lock.unlock();
-				break;
-			}
-
+        int tread_id = ready_thread_id;
+        GENERAL::tracker_lock.unlock();
+        
 		// timeUp case
-		if ((tracker[threadNo].streamline->status==STREAMLINE_DISCARDED) && (tracker[threadNo].streamline->discardingReason==REACHED_TIME_LIMIT)) {
+		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
 			finalThreads = 1; // 1 thread is done tracking
 			timeUp 		 = true;
 			break;
-		}
-
-		if (tracker[threadNo].streamline->status==STREAMLINE_GOOD)
-			tracker[threadNo].updateSeedNoAndTrialCount(seedNo++,0);
-		else if (tracker[threadNo].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed)
-			tracker[threadNo].updateSeedNoAndTrialCount(seedNo++,0);
+		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD)
+			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+		else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed)
+			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
         
-        threads[threadNo] = std::thread(getStreamline, (tracker+threadNo));
-		threads[threadNo].detach();
-        
+        threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
+		threads[tread_id].detach();
 	}
-
+	
 	while (finalThreads<numberOfThreadsToUse) {
-
-		// sem_wait (&GENERAL::exit_sem);
+        
         GENERAL::exit_cv.wait(lk);
-
-		int threadNo;
-		for (threadNo=0; threadNo<numberOfThreadsToUse; threadNo++)
-			if (tracker[threadNo].isReady==true) {
-				if (GENERAL::verboseLevel!=QUITE) TRACKER::tractogram->printSummary(lineCountToFlush);
-				tracker[threadNo].isReady=false;
-                GENERAL::tracker_lock.unlock();
-				break;
-			}
+        int tread_id = ready_thread_id;
+        GENERAL::tracker_lock.unlock();
 
 		// timeUp case
-		if ((tracker[threadNo].streamline->status==STREAMLINE_DISCARDED) && (tracker[threadNo].streamline->discardingReason==REACHED_TIME_LIMIT)) {
+		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
 			finalThreads++;
 			timeUp = true;
-		} else if (tracker[threadNo].streamline->status==STREAMLINE_GOOD) {
+		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD) {
 			finalThreads++;
-		} else if (tracker[threadNo].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
+		} else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
 			finalThreads++;
 		} else {
-            threads[threadNo] = std::thread(getStreamline, (tracker+threadNo));
-            threads[threadNo].detach();
+            threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
+            threads[tread_id].detach();
         }
-
 	}
 
 	delete[] threads;

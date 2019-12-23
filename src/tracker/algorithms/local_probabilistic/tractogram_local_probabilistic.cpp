@@ -35,9 +35,9 @@ Tractogram_Local_Probabilistic::Tractogram_Local_Probabilistic() {
 }
 
 
-void Tractogram_Local_Probabilistic::printSummary(int &lineCountToFlush) {
+void Tractogram_Local_Probabilistic::printSummary() {
 
-	printBaseSummary(lineCountToFlush);
+	printBaseSummary();
 
 
 	if (GENERAL::verboseLevel == ON) {

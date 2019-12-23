@@ -34,9 +34,9 @@ Tractogram_PTT::Tractogram_PTT() {
 }
 
 
-void Tractogram_PTT::printSummary(int &lineCountToFlush) {
+void Tractogram_PTT::printSummary() {
 
-	printBaseSummary(lineCountToFlush);
+	printBaseSummary();
 
 	if (GENERAL::verboseLevel == ON) {
 		std::cout   << std::endl << "Sampling details" << std::endl;
