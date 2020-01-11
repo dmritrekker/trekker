@@ -51,7 +51,7 @@ private:
 	RandomDoer  	*doRandomThings;
 
 	Streamline_PTT 	*streamline;
-
+    
 };
 
 

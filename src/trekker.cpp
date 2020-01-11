@@ -111,7 +111,6 @@ void Trekker::execute() {
     
         GENERAL::exit_cv.wait(lk);
         int tread_id = ready_thread_id;
-        GENERAL::tracker_lock.unlock();
         
 		// timeUp case
 		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
@@ -125,13 +124,14 @@ void Trekker::execute() {
         
         threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
 		threads[tread_id].detach();
+        
+        GENERAL::tracker_lock.unlock();
 	}
 	
 	while (finalThreads<numberOfThreadsToUse) {
         
         GENERAL::exit_cv.wait(lk);
         int tread_id = ready_thread_id;
-        GENERAL::tracker_lock.unlock();
 
 		// timeUp case
 		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
@@ -145,6 +145,8 @@ void Trekker::execute() {
             threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
             threads[tread_id].detach();
         }
+        
+        GENERAL::tracker_lock.unlock();        
 	}
 
 	delete[] threads;

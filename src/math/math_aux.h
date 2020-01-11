@@ -32,7 +32,7 @@ inline void verifyUnitRange(float *vec) {
 }
 
 inline void normalize(float *vec) {
-	float normi = 1.0/sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
+	float normi = 1.0/std::sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
 	vec[0] *= normi;
 	vec[1] *= normi;
 	vec[2] *= normi;

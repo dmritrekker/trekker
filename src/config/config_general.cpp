@@ -17,6 +17,8 @@ std::mutex                  tracker_lock;
 size_t                      ready_thread_id;
 int                         lineCountToFlush;
 
+int                         genCnt = 0;
+
 
 int runTime() {
 	return int(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now()-startTime).count());

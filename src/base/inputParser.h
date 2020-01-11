@@ -45,6 +45,8 @@ private:
 
 	// Tracker config
 	void parse_fod();
+    void parse_dontDiscretizeFod();
+    void parse_dontCheckWeakLinks();
     void parse_orderOfDirections();
 	void parse_algorithm();
 	void parse_stepSize();

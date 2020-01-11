@@ -15,7 +15,6 @@ TrackWith_PTT::TrackWith_PTT() {
 		initial_curve				= new FPTF(doRandomThings);
 		curve 						= new FPTF(doRandomThings);
 		FOD 						= new float[SH::numberOfSphericalHarmonicCoefficients];
-		memset(FOD, 0, SH::numberOfSphericalHarmonicCoefficients*sizeof(float));
 		posteriorMax 				= 0.0;
 
 		current_init_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;
@@ -23,7 +22,7 @@ TrackWith_PTT::TrackWith_PTT() {
 
 		doRandomThings->init_uniform_int(PTF_CONSTS::validIndexCount-1);
 	}
-
+	
 }
 
 TrackWith_PTT::~TrackWith_PTT() {

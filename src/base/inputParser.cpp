@@ -58,6 +58,8 @@ void InputParser::parse() {
 
 		// Tracker config
 		else if (Option("-fod"))        			parse_fod();
+        else if (Option("-dontDiscretizeFod"))      parse_dontDiscretizeFod();
+        else if (Option("-dontCheckWeakLinks"))     parse_dontCheckWeakLinks();
         else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
 		else if (Option("-stepSize"))   			parse_stepSize();
@@ -450,6 +452,74 @@ void InputParser::parse_fod() {
 		exit(EXIT_FAILURE);
 	}
 	argv_index++;
+    
+    
+    if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
+
+		std::string directions;
+		std::ifstream sphere(argv[argv_index]);
+
+		if (!sphere.good()) {
+			std::cout << "Cannot read sphere vertices from " << argv[argv_index] << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		std::vector<Coordinate> sphereCoordinates;
+		int lineNo = 1;
+		bool readError = false;
+		while(std::getline(sphere,directions)) {
+			if (!directions.empty()) {
+				std::stringstream xyz(directions);
+				float x,y,z;
+				if (xyz.good()) xyz >> x; else { readError = true; break; }
+				if (xyz.good()) xyz >> y; else { readError = true; break; }
+				if (xyz.good()) xyz >> z; else { readError = true; break; }
+				sphereCoordinates.push_back(Coordinate(x,y,z));
+			}
+			lineNo++;
+		}
+		sphere.close();
+		if (readError) {
+			std::cout << "Cannot read sphere vertices from " << argv[argv_index] << ", line " << lineNo << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		img_FOD->isspheresliced = true;
+
+		if ((img_FOD->nim->nt - sphereCoordinates.size()) !=0 ) {
+			std::cout << "Number of sphere vertices does not match the number of volumes in the FOD image" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		img_FOD->sphereFileName = std::string{argv[argv_index]};
+		argv_index++;
+	}
+    
+}
+
+void InputParser::parse_dontDiscretizeFod() {
+
+	if (TRACKER::fodDiscretization != FODDISC_NOTSET) {
+		std::cout << "Cannot use -dontDiscretizeFod option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	TRACKER::fodDiscretization  = FODDISC_OFF;
+    img_FOD->discretizationFlag = false;
+	argv_index++;
+
+}
+
+void InputParser::parse_dontCheckWeakLinks() {
+
+	if (TRACKER::checkWeakLinks != CHECKWEAKLINKS_NOTSET) {
+		std::cout << "Cannot use -dontCheckWeakLinks option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	TRACKER::checkWeakLinks  = CHECKWEAKLINKS_OFF;
+	argv_index++;
+
 }
 
 void InputParser::parse_orderOfDirections() {

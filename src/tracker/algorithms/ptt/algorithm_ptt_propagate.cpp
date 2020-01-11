@@ -12,8 +12,9 @@ Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {
 	curve->walk();
 
     // Estimate posterior
-    if (stepCounter%maxEstInterval==0)
+    if (stepCounter%maxEstInterval==0) {
         estimatePosteriorMax();
+    }
 
 	// Rejection sample
 	rejectionSample();

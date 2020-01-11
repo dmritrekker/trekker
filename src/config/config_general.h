@@ -45,6 +45,7 @@ extern std::mutex               tracker_lock;
 extern size_t                   ready_thread_id;
 extern int                      lineCountToFlush;
 
+extern int                      genCnt;
 
 int    runTime();
 void   setDefaultParametersWhenNecessary();

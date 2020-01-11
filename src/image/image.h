@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <assert.h>
 
 #include "../config/config_general.h"
 #include "../image/voxel.h"
@@ -52,10 +53,10 @@ public:
 
 	nifti_image  *nim;
 	Voxel   	 *voxels;
+    unsigned int  zp_sx;
 	unsigned int  zp_sxy;
 	unsigned int  zp_sxyz;
 
-protected:
 	void  		  readHeader_detail();
 
 	std::string   filePath;
@@ -68,7 +69,7 @@ protected:
 	unsigned int  sx;
 	unsigned int  sxy;
 	unsigned int  sxyz;
-	unsigned int  zp_sx;
+
 
 };
 

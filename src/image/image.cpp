@@ -35,8 +35,9 @@ Image::Image(const Image& obj) {
 }
 
 Image::~Image() {
-	if (nim!=NULL)				nifti_image_free(nim);
-	if (data!=NULL)				delete[] data;
+    
+    if (data!=NULL)             free(data);
+    if (nim!=NULL)              nifti_image_free(nim);
 	if (xyz2ijk!=NULL)			delete[] xyz2ijk;
 	if (voxels!=NULL)			delete[] voxels;
 }
@@ -210,7 +211,6 @@ unsigned char Image::checkWorldBounds(float x, float y, float z) {
 	return 1;
 }
 
-
 // Notice that the data has 1/voxelVolume fraction included to speed up interpolation
 bool Image::indexVoxels() {
 
@@ -224,11 +224,8 @@ bool Image::indexVoxels() {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
 
-				voxels[index].init(nim->nt);
-
 				if ( (x > 0) && (y > 0) && (z > 0) && (x < nim->nx+1) && (y < nim->ny+1) && (z < nim->nz+1) )
-					for (int t=0; t<nim->nt; t++)
-						voxels[index].val[t] = data[(x-1)+(y-1)*sx+(z-1)*sxy+t*sxyz]/voxelVolume;
+						voxels[index].val = data + ( (x-1) + (y-1)*sx + (z-1)*sxy )*nim->nt;
 
 				index++;
 			}
@@ -246,7 +243,6 @@ bool Image::indexVoxels() {
 						for (int yi=0;yi<2;yi++)
 							for (int xi=0;xi<2;xi++)
 								voxels[index].box[xi+yi*2+zi*4] = voxels[(x+xi)+(y+yi)*zp_sx+(z+zi)*zp_sxy].val;
-
 				}
 
 				index++;
@@ -255,12 +251,12 @@ bool Image::indexVoxels() {
 		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (int)((index/(float)(zp_sxyz-1))*50) << "%" << '\r' << std::flush;
 	}
 
-
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 100%" << '\r' << std::flush;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
 
 	return true;
 }
+
 
 // Converts physical coordinates to index on the zero-padded image that is voxel indexed for interpolation
 bool Image::prepInterp(float *p, int *cor_ijk, float *volFrac) {
@@ -302,7 +298,7 @@ void Image::getVal(float *p, float* out) {
 		memset(out,0,nim->nt*sizeof(float));
 		return;
 	}
-
+	
 	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
 
 	for (int c=0; c<nim->nt; c++) {
@@ -315,7 +311,7 @@ void Image::getVal(float *p, float* out) {
 				volFrac[6]*vals[6][c] +
 				volFrac[7]*vals[7][c];
 	}
-
+    
 }
 
 

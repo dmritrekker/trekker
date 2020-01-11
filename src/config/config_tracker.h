@@ -20,13 +20,6 @@ typedef enum {
 } Directionality;
 
 typedef enum {
-	NEIGHBORHOODMODE_NOTSET = 0,
-	SPHERE,            				// use points in sphere
-	WALK_ZERO_RADIUS,       		// walk along a single 1D line
-	WALK_NONZERO_RADIUS     		// walk along 4 different 1D lines
-} neighborhoodMode;
-
-typedef enum {
 	ATMAXLENGTH_NOTSET = -1,
 	ATMAXLENGTH_STOP,
 	ATMAXLENGTH_DISCARD
@@ -48,6 +41,17 @@ typedef enum {
     ZXY,ZXy,ZxY,Zxy,zXY,zXy,zxY,zxy
 } OrderOfDirections;
 
+typedef enum {
+	FODDISC_NOTSET = -1,
+	FODDISC_OFF,
+	FODDISC_ON
+} fodDiscretizationMode;
+
+typedef enum {
+	CHECKWEAKLINKS_NOTSET = -1,
+	CHECKWEAKLINKS_OFF,
+	CHECKWEAKLINKS_ON
+} checkWeakLinksMode;
 
 namespace TRACKER {
 
@@ -93,10 +97,10 @@ extern float           maxEstStepSize;
 extern float           posteriorMaxEstimationStepSize;
 extern AtInit 		   atInit;
 
-extern neighborhoodMode  neighborhoodSamplingMode;
-extern OrderOfDirections orderOfDirections;
-extern std::string       orderOfDirectionsTextInput;
-
+extern OrderOfDirections     orderOfDirections;
+extern std::string           orderOfDirectionsTextInput;
+extern fodDiscretizationMode fodDiscretization;
+extern checkWeakLinksMode    checkWeakLinks;
 
 // Functions
 void cleanConfigTracker();

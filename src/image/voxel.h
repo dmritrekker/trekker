@@ -11,13 +11,9 @@ public:
 	Voxel();
 	~Voxel();
 
-	void init(unsigned int dimensionOfData);
-
-	float  		 *val;
-	float 		**box;
+	float  	*val;
+	float  **box;
 
 };
-
-
 
 #endif

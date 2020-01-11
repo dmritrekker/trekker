@@ -5,29 +5,46 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
 
 	curve->likelihood  	= 0;
 
+    float T[3];
+    float p[3];
+    
 	for (int q=(TRACKER::probeQuality-1); q>=0; q--) {
+            
+        size_t indQ = q*numelk  + curve->candidate_index;
+                
+        T[0] = probe_consts[indQ][0]*curve->F[0][0] + probe_consts[indQ][1]*curve->F[0][1] + probe_consts[indQ][2]*curve->F[0][2];
+        T[1] = probe_consts[indQ][0]*curve->F[1][0] + probe_consts[indQ][1]*curve->F[1][1] + probe_consts[indQ][2]*curve->F[1][2];
+        T[2] = probe_consts[indQ][0]*curve->F[2][0] + probe_consts[indQ][1]*curve->F[2][1] + probe_consts[indQ][2]*curve->F[2][2];
+        
 		for (int c=0; c<TRACKER::probeCount; c++) {
 
-			float T[3];
-			float p[3];
-
-			size_t ind = c*PTF_CONSTS::numelkq + q*PTF_CONSTS::numelk  + curve->candidate_index;
-
-			for (int i=0; i<3; i++) {
-				// TODO: Computation of T multiple times is not necessary and can be removed
-				T[i] =               PTF_CONSTS::probe_consts[ind][0]*curve->T[i] + PTF_CONSTS::probe_consts[ind][1]*curve->N1[i] + PTF_CONSTS::probe_consts[ind][2]*curve->N2[i];
-				p[i] = curve->p[i] + PTF_CONSTS::probe_consts[ind][3]*curve->T[i] + PTF_CONSTS::probe_consts[ind][4]*curve->N1[i] + PTF_CONSTS::probe_consts[ind][5]*curve->N2[i];
-			}
-
-			normalize(T);
-			thread->tracker_FOD->getVal(p,FOD);
-			curve->likelihood += SH::SH_amplitude(FOD,T);
+			size_t indC = c*numelkq + indQ;
+            
+            p[0] = curve->p[0] + probe_consts[indC][3]*curve->F[0][0] + probe_consts[indC][4]*curve->F[0][1] + probe_consts[indC][5]*curve->F[0][2];
+            p[1] = curve->p[1] + probe_consts[indC][3]*curve->F[1][0] + probe_consts[indC][4]*curve->F[1][1] + probe_consts[indC][5]*curve->F[1][2];
+            p[2] = curve->p[2] + probe_consts[indC][3]*curve->F[2][0] + probe_consts[indC][4]*curve->F[2][1] + probe_consts[indC][5]*curve->F[2][2];
+            
+            float val;
+            if (TRACKER::fodDiscretization==FODDISC_OFF) {
+                thread->tracker_FOD->getVal(p,FOD);
+                val = SH::SH_amplitude(FOD,T);
+            } else
+                val = thread->tracker_FOD->getFODval(p,T);                
+            
+            if ((TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) && (val < minFODamp)) {
+                curve->likelihood   = 0;
+                curve->posterior    = 0;
+                return;
+            } else
+                curve->likelihood += val;
 
 		}
+		
 	}
 
-	curve->likelihood *= PTF_CONSTS::probeNormalizer;
+	curve->likelihood *= probeNormalizer;
     curve->likelihood  = std::pow(curve->likelihood,TRACKER::dataSupportExponent);
 	curve->posterior   = curve->likelihood*curve->prior;
 
 }
+

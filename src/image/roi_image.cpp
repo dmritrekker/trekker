@@ -64,19 +64,26 @@ bool ROI_Image::readImage() {
 	case 1536: accessor = new NiftiDataAccessor_ForType<long double>; break;
 	}
 
-	data = new float[nim->nvox];
+
+    data = (float*) malloc(sizeof(float)*nim->nvox);
+    if (data==NULL) {
+        std::cout << "OUT OF MEMORY" << std::endl << std::flush;
+        assert(0);
+    }
+    
+    float binVal   = 1.0/voxelVolume;
 
 	if (labelFlag) {
 		for(size_t i=0; i<nim->nvox; i++) {
 			if (accessor->get(nim->data,i)==label)
-				data[i] = 1;
+				data[i] = binVal;
 			else
 				data[i] = 0;
 		}
 	} else {
 		for(size_t i=0; i<nim->nvox; i++) {
 			if (accessor->get(nim->data,i)>0)
-				data[i] = 1;
+				data[i] = binVal;
 			else
 				data[i] = 0;
 		}
@@ -90,9 +97,6 @@ bool ROI_Image::readImage() {
 	nim->nt = 1; //Force the forth dimension to be 1 so indexing will not crash if an 3D image with nim->nt=0 comes
 
 	this->Image::indexVoxels();
-
-	delete[] data;
-	data = NULL;
 
 	return true;
 

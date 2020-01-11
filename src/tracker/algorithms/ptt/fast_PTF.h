@@ -17,6 +17,7 @@ public:
 	FPTF(RandomDoer *_rndmr);
 	~FPTF();
 	void  init_Frame();
+    void  updateF();
 	void  swap(FPTF *ptf);
 
 	void  setPosition(Coordinate _p)					{p[0] = _p.x;p[1] = _p.y;p[2] = _p.z;};
@@ -37,6 +38,7 @@ public:
 	float  *T; 			// Tangent
 	float  *N1;
 	float  *N2;
+    float **F;          // TN1N2 frame
 
 	size_t  candidate_index;
 

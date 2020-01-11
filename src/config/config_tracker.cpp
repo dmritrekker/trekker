@@ -57,24 +57,39 @@ int triesPerRejectionSampling      		= NOTSET;
 float posteriorMaxEstimationStepSize 	= NOTSET;
 AtInit atInit 							= ATINIT_NOTSET;
 
-neighborhoodMode neighborhoodSamplingMode = NEIGHBORHOODMODE_NOTSET;
-OrderOfDirections orderOfDirections       = ORDEROFDIRECTIONS_NOTSET;
-std::string       orderOfDirectionsTextInput;
+OrderOfDirections       orderOfDirections           = ORDEROFDIRECTIONS_NOTSET;
+std::string             orderOfDirectionsTextInput;
+fodDiscretizationMode   fodDiscretization           = FODDISC_NOTSET;
+checkWeakLinksMode      checkWeakLinks              = CHECKWEAKLINKS_NOTSET;
 
 void cleanConfigTracker() {
 
-	delete img_FOD;
+    img_FOD->cleanFODImage();
+    delete img_FOD;
+    
 	SH::clean();
 	delete method;
 	delete tractogram;
 	if (TRACKER::algorithm == PTT)
 	 	PTF_CONSTS::cleanPTFCoefficients();
+    
 }
 
 void setDefaultParametersWhenNecessary() {
 
 	smallestPixDim     = img_FOD->getSmallestPixdim();
 
+    // FOD fodDiscretization
+    if (fodDiscretization==FODDISC_NOTSET) {
+        fodDiscretization = FODDISC_ON;
+        img_FOD->discretizationFlag = true;
+    }
+    
+    // Check weak checkWeakLinks
+    if (checkWeakLinks==CHECKWEAKLINKS_NOTSET) {
+        checkWeakLinks = CHECKWEAKLINKS_ON;
+    }
+    
     // Handle OrderOfDirections
     if (orderOfDirections==ORDEROFDIRECTIONS_NOTSET) {
         orderOfDirections=XYZ;
@@ -127,8 +142,10 @@ void print() {
     
     if (TRACKER::orderOfDirectionsTextInput=="")
         std::cout << "orderOfDirections    : XYZ"  << std::endl;
-    else
+    else {
         std::cout << "orderOfDirections    : "  << TRACKER::orderOfDirectionsTextInput  << std::endl;
+    }
+    
 	if (GENERAL::verboseLevel>ON) std::cout << "-----------------" << std::endl << std::endl;
 }
 

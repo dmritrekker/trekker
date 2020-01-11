@@ -24,6 +24,11 @@ void FPTF::init_Frame() {
 	T 			= new float[3];
 	N1			= new float[3];
 	N2			= new float[3];
+    
+    F           = new float*[3];
+    F[0]        = new float[3];
+    F[1]        = new float[3];
+    F[2]        = new float[3];
 
 	likelihood 	= 0.0;
 	prior 		= 1.0;
@@ -35,6 +40,19 @@ FPTF::~FPTF() {
 	delete[] T;
 	delete[] N1;
 	delete[] N2;
+    
+    delete[] F[0];
+    delete[] F[1];
+    delete[] F[2];
+    delete[] F;
+}
+
+void FPTF::updateF() {
+    for (int i=0; i<3; i++) {
+        F[i][0] =  T[i];
+        F[i][1] = N1[i];
+        F[i][2] = N2[i];
+    }
 }
 
 void FPTF::flushProbs() {
@@ -51,6 +69,7 @@ void FPTF::getARandomFrame() {
 	rndmr->getAUnitRandomVector(T);
 	rndmr->getAUnitRandomPerpVector(N2,T);
 	cross(N1,N2,T);
+    updateF();
 }
 
 void FPTF::getARandomFrame(Coordinate _seed_init_direction) {
@@ -59,6 +78,7 @@ void FPTF::getARandomFrame(Coordinate _seed_init_direction) {
 	T[2] = _seed_init_direction.z;
 	rndmr->getAUnitRandomPerpVector(N2,T);
 	cross(N1,N2,T);
+    updateF();
 }
 
 void FPTF::swap(FPTF *fptp) {
@@ -70,8 +90,13 @@ void FPTF::swap(FPTF *fptp) {
 		 T[i] 	=  fptp->T[i];
 		N1[i] 	= fptp->N1[i];
 		N2[i] 	= fptp->N2[i];
+        
+        for (int j=0; j<3; j++) {
+            F[i][j] = fptp->F[i][j];
+        }
+        
 	}
-
+	
 	likelihood 	= fptp->likelihood;
 	prior 		= fptp->prior;
 	posterior 	= fptp->posterior;
@@ -88,6 +113,7 @@ void FPTF::flip() {
 		T[i]  	*= -1;
 		N1[i] 	*= -1;
 	}
+	updateF();
 
 	// This flips sign of k1 by changing the corresponding precomputed index
 	size_t i 	=     index % PTF_CONSTS::k_resolution;
@@ -99,20 +125,20 @@ void FPTF::flip() {
 	posterior 	= -1.0; // This is used to check if the curve is swapped with a candidate curve
 }
 
-void FPTF::walk() {
+void FPTF::walk() {	
 
-	float tmp;
 	for (int i=0; i<3; i++) {
-		p[i]  += PTF_CONSTS::curve_consts[index][0]*T[i] +  PTF_CONSTS::curve_consts[index][1]*N1[i]  +  PTF_CONSTS::curve_consts[index][2]*N2[i];
-		tmp    = PTF_CONSTS::curve_consts[index][3]*T[i] +  PTF_CONSTS::curve_consts[index][4]*N1[i]  +  PTF_CONSTS::curve_consts[index][5]*N2[i];
-		N2[i]  = PTF_CONSTS::curve_consts[index][6]*T[i] +  PTF_CONSTS::curve_consts[index][7]*N1[i]  +  PTF_CONSTS::curve_consts[index][8]*N2[i];
-		T[i]   = tmp;
+		p[i]  += PTF_CONSTS::curve_consts[index][0]*F[i][0] +  PTF_CONSTS::curve_consts[index][1]*F[i][1]  +  PTF_CONSTS::curve_consts[index][2]*F[i][2];
+		T[i]   = PTF_CONSTS::curve_consts[index][3]*F[i][0] +  PTF_CONSTS::curve_consts[index][4]*F[i][1]  +  PTF_CONSTS::curve_consts[index][5]*F[i][2];
+		N2[i]  = PTF_CONSTS::curve_consts[index][6]*F[i][0] +  PTF_CONSTS::curve_consts[index][7]*F[i][1]  +  PTF_CONSTS::curve_consts[index][8]*F[i][2];
 	}
 
 	normalize(T);
 	cross(N1,N2,T);
 	normalize(N1);
 	cross(N2,T,N1);
+    
+    updateF();
 
 	likelihood 	=   0.0;
 	prior 		=   1.0;

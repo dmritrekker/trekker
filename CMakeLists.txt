@@ -2,25 +2,11 @@
 
 PROJECT(Trekker)
 
-
-# Verify compiler support for c++11
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-else()
-    message(STATUS "Your compiler (${CMAKE_CXX_COMPILER}) does not support C++11 support. Please use a compatible compiler.")
-endif()
-
-
-
-add_definitions(-DCMAKE_BUILD_TYPE=Release)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(BUILD_SHARED_LIBS OFF)
-
-
 # Set output names
 set(trekkerExe trekker)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(BUILD_SHARED_LIBS OFF)
 
 if(UNIX AND NOT APPLE) 
 
@@ -29,11 +15,14 @@ if(UNIX AND NOT APPLE)
 	# Set up manual page
 	add_definitions(-DSHOWMANUAL="man ${CMAKE_SOURCE_DIR}/doc/build/man/trekker")
 
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W -Wall -Wextra -pedantic -pedantic-errors -Wno-long-long -ggdb3 -fno-omit-frame-pointer")	
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W -Wall -Wextra -pedantic -pedantic-errors -Wno-long-long")
+
 	# FOR STATIC BUILD
 	# Build and link only static libraries and executables
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
 	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	
+
 	# Check for zlib support
 	find_package(ZLIB)
 	if(ZLIB_LIBRARIES)
@@ -72,6 +61,18 @@ else()
     message(FATAL_ERROR "This operating system is not supported")
 
 endif()	
+
+
+
+# Verify compiler support for c++11
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    message(STATUS "Your compiler (${CMAKE_CXX_COMPILER}) does not support C++11 support. Please use a compatible compiler.")
+endif()
+
 
 
 
@@ -116,7 +117,6 @@ add_dependencies(c combined)
 set_target_properties(c PROPERTIES IMPORTED_LOCATION ${trekkerLib})
 
 add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-
 
 # FOR REGULAR COMPILATION
 target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
