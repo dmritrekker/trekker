@@ -29,7 +29,8 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
                 thread->tracker_FOD->getVal(p,FOD);
                 val = SH::SH_amplitude(FOD,T);
             } else
-                val = thread->tracker_FOD->getFODval(p,T);                
+                val = thread->tracker_FOD->getFODval(p,T);
+
             
             if ((TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) && (val < minFODamp)) {
                 curve->likelihood   = 0;

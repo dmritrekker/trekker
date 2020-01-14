@@ -59,7 +59,7 @@ void InputParser::parse() {
 		// Tracker config
 		else if (Option("-fod"))        			parse_fod();
         else if (Option("-dontDiscretizeFod"))      parse_dontDiscretizeFod();
-        else if (Option("-dontCheckWeakLinks"))     parse_dontCheckWeakLinks();
+        else if (Option("-checkWeakLinks"))         parse_checkWeakLinks();
         else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
 		else if (Option("-stepSize"))   			parse_stepSize();
@@ -510,14 +510,14 @@ void InputParser::parse_dontDiscretizeFod() {
 
 }
 
-void InputParser::parse_dontCheckWeakLinks() {
+void InputParser::parse_checkWeakLinks() {
 
 	if (TRACKER::checkWeakLinks != CHECKWEAKLINKS_NOTSET) {
-		std::cout << "Cannot use -dontCheckWeakLinks option more than once" << std::endl;
+		std::cout << "Cannot use -checkWeakLinks option more than once" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	TRACKER::checkWeakLinks  = CHECKWEAKLINKS_OFF;
+	TRACKER::checkWeakLinks  = CHECKWEAKLINKS_ON;
 	argv_index++;
 
 }

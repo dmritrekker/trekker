@@ -302,6 +302,7 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent))).c_str());
     fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());
+    if (TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) 			fprintf(out,",\n\"checkWeakLinks\":\"ON\""); else fprintf(out,",\n\"checkWeakLinks\":\"OFF\"");
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());
 
 	if (TRACKER::maxLength==DEFAULT_PTT_MAXLENGTH)
@@ -355,6 +356,11 @@ void Tractogram_PTT::writeMetadataOutput() {
 		fprintf(out,",\n\"useBestAtInit\":\"OFF\"");
 
 	fprintf(out,(",\n\"fod\":\"" + TRACKER::img_FOD->getFilePath() + "\"").c_str());
+    
+    if (TRACKER::fodDiscretization==FODDISC_ON)
+        fprintf(out,",\n\"fodDiscretization\":\"ON\"");	
+    else
+        fprintf(out,",\n\"fodDiscretization\":\"OFF\"");
     
     if (TRACKER::orderOfDirectionsTextInput=="")
         fprintf(out,",\n\"orderOfDirections\":\"XYZ\"");	

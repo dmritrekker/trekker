@@ -87,7 +87,7 @@ void setDefaultParametersWhenNecessary() {
     
     // Check weak checkWeakLinks
     if (checkWeakLinks==CHECKWEAKLINKS_NOTSET) {
-        checkWeakLinks = CHECKWEAKLINKS_ON;
+        checkWeakLinks = CHECKWEAKLINKS_OFF;
     }
     
     // Handle OrderOfDirections
@@ -139,6 +139,12 @@ void print() {
 	if (GENERAL::verboseLevel>ON) std::cout << std::endl << "-----------------" << std::endl;
 	std::cout << "fod                  : "  << img_FOD->getFilePath()  << std::endl;
 	if (GENERAL::verboseLevel>ON) img_FOD->printInfo();
+    
+    if (TRACKER::fodDiscretization==FODDISC_ON)
+        std::cout << "fodDiscretization    : ON"  << std::endl;
+    else {
+        std::cout << "fodDiscretization    : OFF"  << std::endl;
+    }
     
     if (TRACKER::orderOfDirectionsTextInput=="")
         std::cout << "orderOfDirections    : XYZ"  << std::endl;

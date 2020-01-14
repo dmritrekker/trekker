@@ -87,6 +87,7 @@ void readSeedImage() {
 		}
 	}
 
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Adjusting for partial volumes... ";
 	// If seed image is defined together with a certain count then use a dilated version of the seed image to account for partial volumes for better sampling
 	if (countPerVoxel==NOTSET) {
 
@@ -122,6 +123,8 @@ void readSeedImage() {
 		seed_indices.insert( seed_indices.end(), dilated_seed_indices.begin(), dilated_seed_indices.end() );
 
 	}
+	
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
 
 }
 
