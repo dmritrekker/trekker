@@ -23,14 +23,6 @@ Coordinate ROI_Image::ind2phy(size_t index) {
 	return Coordinate(x,y,z);
 }
 
-float ROI_Image::getVal(size_t index) {
-
-	int i,j,k;
-	ind2sub(index,i,j,k);
-	size_t index_zp = (i+1) + zp_sx*(j+1)+zp_sxy*(k+1);
-	return voxels[index_zp].val[0]*voxelVolume; // Indexing voxels for interpolation divided by voxelVolume, so multiple here
-}
-
 void ROI_Image::ind2sub(size_t index, int& i, int& j, int& k) {
 	i = index % nim->nx;
 	j = (index - i)/nim->nx % nim->ny;
@@ -110,7 +102,9 @@ float ROI_Image::getVal(Coordinate phy) {
 	p[0] = phy.x;
 	p[1] = phy.y;
 	p[2] = phy.z;
+    
 	this->Image::getVal(p,&out);
-	return out;
+            
+    return out;
 }
 

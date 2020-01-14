@@ -55,7 +55,6 @@ public:
 
 	ROI_Image(const ROI_Image& obj);
 	bool  		  readImage(); 					// Sets all > 0 values to 1 and the rest to 0
-	float 		  getVal(size_t index);
 	float 		  getVal(Coordinate phy); 		// Does trilinear interpolation
 
 

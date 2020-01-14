@@ -16,6 +16,7 @@ Image::Image() {
 	zp_sx			= 0;
 	zp_sxy 			= 0;
 	zp_sxyz			= 0;
+    zero            = NULL;
 }
 
 Image::Image(const Image& obj) {
@@ -32,6 +33,7 @@ Image::Image(const Image& obj) {
 	zp_sx 			= obj.zp_sx;
 	zp_sxy 			= obj.zp_sxy;
 	zp_sxyz 		= obj.zp_sxyz;
+    zero            = obj.zero;
 }
 
 Image::~Image() {
@@ -40,6 +42,8 @@ Image::~Image() {
     if (nim!=NULL)              nifti_image_free(nim);
 	if (xyz2ijk!=NULL)			delete[] xyz2ijk;
 	if (voxels!=NULL)			delete[] voxels;
+    if (zero!=NULL)			    free(zero);
+    
 }
 
 void Image::destroyCopy(){
@@ -48,6 +52,7 @@ void Image::destroyCopy(){
 	nim 			= NULL;
 	xyz2ijk 		= NULL;
 	voxels 			= NULL;
+    zero            = NULL;
 }
 
 bool Image::readHeader(char* _filePath) {
@@ -216,39 +221,28 @@ bool Image::indexVoxels() {
 
 	// voxels are indexed on a zero padded image in order to avoid boundary checking
 	voxels = new Voxel[zp_sxyz];
-
-	unsigned int index = 0;
-
+    zero   = (float*)calloc(nim->nt,sizeof(float));
+    
+	size_t index = 0;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
+    
 	for (int z=0; z<(nim->nz+2); z++) {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
-
-				if ( (x > 0) && (y > 0) && (z > 0) && (x < nim->nx+1) && (y < nim->ny+1) && (z < nim->nz+1) )
-						voxels[index].val = data + ( (x-1) + (y-1)*sx + (z-1)*sxy )*nim->nt;
-
+                
+                voxels[index].box[0] = ( (x<1) || (y<1) || (z<1) || (x>(nim->nx)  ) || (y>(nim->ny)  ) || (z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[1] = ( (x<0) || (y<1) || (z<1) || (x>(nim->nx)-1) || (y>(nim->ny)  ) || (z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[2] = ( (x<1) || (y<0) || (z<1) || (x>(nim->nx)  ) || (y>(nim->ny)-1) || (z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[3] = ( (x<0) || (y<0) || (z<1) || (x>(nim->nx)-1) || (y>(nim->ny)-1) || (z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[4] = ( (x<1) || (y<1) || (z<0) || (x>(nim->nx)  ) || (y>(nim->ny)  ) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[5] = ( (x<0) || (y<1) || (z<0) || (x>(nim->nx)-1) || (y>(nim->ny)  ) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[6] = ( (x<1) || (y<0) || (z<0) || (x>(nim->nx)  ) || (y>(nim->ny)-1) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[7] = ( (x<0) || (y<0) || (z<0) || (x>(nim->nx)-1) || (y>(nim->ny)-1) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                
 				index++;
 			}
 		}
-		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (int)((index/(float)(zp_sxyz-1))*50) << "%" << '\r' << std::flush;
-	}
-
-	index = 0;
-	for (int z=0; z<(nim->nz+2); z++) {
-		for (int y=0; y<(nim->ny+2); y++) {
-			for (int x=0; x<(nim->nx+2); x++) {
-
-				if ( (x < nim->nx+1) && (y < nim->ny+1) && (z < nim->nz+1) ) {
-					for (int zi=0;zi<2;zi++)
-						for (int yi=0;yi<2;yi++)
-							for (int xi=0;xi<2;xi++)
-								voxels[index].box[xi+yi*2+zi*4] = voxels[(x+xi)+(y+yi)*zp_sx+(z+zi)*zp_sxy].val;
-				}
-
-				index++;
-			}
-		}
-		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (int)((index/(float)(zp_sxyz-1))*50) << "%" << '\r' << std::flush;
+		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (size_t)((index/(float)(zp_sxyz-1))*100) << "%" << '\r' << std::flush;
 	}
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 100%" << '\r' << std::flush;

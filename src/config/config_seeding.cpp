@@ -60,11 +60,11 @@ void readSeedImage() {
 
 	if (!img_SEED->readImage())
 		exit(EXIT_FAILURE);
-
+    
 	for(size_t i=0; i<img_SEED->getNim()->nvox; i++)
-		if (img_SEED->getVal(i))
+		if (img_SEED->data[i])
 			seed_indices.push_back(i);
-
+        
 	if (seed_indices.empty()) {
 		std::cout << "Seed image ";
 
@@ -87,7 +87,7 @@ void readSeedImage() {
 		}
 	}
 
-	if (GENERAL::verboseLevel!=QUITE) std::cout << "Adjusting for partial volumes... ";
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Adjusting for partial volumes... " << std::flush;
 	// If seed image is defined together with a certain count then use a dilated version of the seed image to account for partial volumes for better sampling
 	if (countPerVoxel==NOTSET) {
 
@@ -110,7 +110,7 @@ void readSeedImage() {
 
 							size_t index = img_SEED->sub2ind(i+x,j+y,k+z);
 
-							if ((img_SEED->getVal(index)==0) && (dilated_img_SEED[index]==false)) {
+							if ((img_SEED->data[index]==0) && (dilated_img_SEED[index]==false)) {
 								dilated_img_SEED[index] = true;
 								dilated_seed_indices.push_back(index);
 							}
@@ -124,7 +124,7 @@ void readSeedImage() {
 
 	}
 	
-	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl << std::flush;
 
 }
 

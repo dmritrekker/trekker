@@ -132,11 +132,11 @@ void TrackWith_PTT::print() {
 
 	std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
 
-	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< TRACKER::img_FOD->getUnit() << std::endl;
-	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature 	<< TRACKER::img_FOD->getUnit() << std::endl;
+	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
+	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
 
-	std::cout << "probeLength          : "  << TRACKER::probeLength 		    << TRACKER::img_FOD->getUnit() << std::endl;
-	std::cout << "probeRadius          : "  << TRACKER::probeRadius 		    << TRACKER::img_FOD->getUnit() << std::endl;
+	std::cout << "probeLength          : "  << TRACKER::probeLength 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;
+	std::cout << "probeRadius          : "  << TRACKER::probeRadius 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "probeCount           : "  << TRACKER::probeCount	        	<< std::endl;
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
@@ -146,11 +146,11 @@ void TrackWith_PTT::print() {
 
 	std::cout << "minLength            : ";
 	if (TRACKER::minLength<(DEFAULT_PTT_MINLENGTH*1.01))	std::cout 			<< "0" 							<< std::endl;
-	else 								std::cout << TRACKER::minLength 		<< TRACKER::img_FOD->getUnit() 	<< std::endl;
+	else 								std::cout << TRACKER::minLength 		<< " " << TRACKER::img_FOD->getUnit() 	<< std::endl;
 
 	std::cout << "maxLength            : ";
 	if (TRACKER::maxLength>(DEFAULT_PTT_MAXLENGTH*0.99))	std::cout 			<< "infinite " << img_FOD->getUnit() 	<< std::endl;
-	else 								std::cout << TRACKER::maxLength 		<< TRACKER::img_FOD->getUnit() 			<< std::endl;
+	else 								std::cout << TRACKER::maxLength 		<< " " << TRACKER::img_FOD->getUnit() 			<< std::endl;
 
 	switch(TRACKER::atMaxLength) {
 	case(ATMAXLENGTH_STOP):

@@ -53,9 +53,10 @@ public:
 
 	nifti_image  *nim;
 	Voxel   	 *voxels;
-    unsigned int  zp_sx;
-	unsigned int  zp_sxy;
-	unsigned int  zp_sxyz;
+    size_t        zp_sx;
+	size_t        zp_sxy;
+	size_t        zp_sxyz;
+    float        *zero;
 
 	void  		  readHeader_detail();
 
@@ -66,9 +67,9 @@ public:
 
 	// The following are useful for trilinear interpolation
 	bool  		  indexVoxels();
-	unsigned int  sx;
-	unsigned int  sxy;
-	unsigned int  sxyz;
+	size_t        sx;
+	size_t        sxy;
+	size_t        sxyz;
 
 
 };

@@ -11,7 +11,6 @@ public:
 	Voxel();
 	~Voxel();
 
-	float  	*val;
 	float  **box;
 
 };

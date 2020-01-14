@@ -8,9 +8,6 @@ FOD_Image::FOD_Image() {
     isspheresliced      = false;
     sphereFileName      = "";
     
-    discVolSphDim       = 13;
-    discVolSphRadius    = (float(discVolSphDim)-1)/2.0 - 0.5;
-    discVolSphShift     = discVolSphRadius + 0.5;
     discVolSphInds      = NULL;
     
 }
@@ -20,7 +17,6 @@ void FOD_Image::cleanFODImage() {
          delete[] discVolSphInds;
          discVolSphInds = NULL;
     }
-    discVolSphCoords.clear();
 }
 
 float FOD_Image::getSmallestPixdim() {
@@ -64,7 +60,7 @@ void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataA
 
 void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor) {
     
-    float* FOD = new float[FODImg->nim->nt];
+    float* FOD      = new float[FODImg->nim->nt];
     
     for (size_t n=begin_ind; n<end_ind; n++) {
         
@@ -72,11 +68,11 @@ void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, Nif
         size_t reInd = FODImg->nnzVoxelReInds[n];
         
         for (int t=0; t<FODImg->nim->nt; t++)
-            FOD[t] = accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz)/FODImg->voxelVolume;
-        
+            FOD[t] = accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
+    
         for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
             float dir[3]            = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
-            FODImg->data[reInd+t]   = SH::SH_amplitude(FOD,dir);
+            FODImg->data[reInd+t]   = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
         }
         
     }
@@ -113,6 +109,16 @@ bool FOD_Image::readImage() {
 	case 1536: accessor = new NiftiDataAccessor_ForType<long double>; break;
 	}
 	
+	// Prep sphere parameters
+	
+	if (iseven)
+        discVolSphDim       = 15; // Creates 542 points on half-sphere (1084 points on full-sphere)
+    else
+        discVolSphDim       = 13; // Creates 608 points on full-sphere, i.e. AFOD is less densely sampled
+    
+    discVolSphRadius    = (float(discVolSphDim)-1)/2.0 - 0.5;
+    discVolSphShift     = discVolSphRadius + 0.5;
+            
 	
     // Load data
     std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
@@ -165,8 +171,8 @@ bool FOD_Image::readImage() {
         
         if (GENERAL::verboseLevel!=QUITE) std::cout << "Loading FOD image: 100%" << '\r' << std::flush;
         if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
-        
     }
+    
     
     
     // Discretize FOD
@@ -174,7 +180,10 @@ bool FOD_Image::readImage() {
         
         fillDiscVolSph();
         
-        data = (float*) malloc(sizeof(float)*nim->nx * nim->ny * nim->nz * discVolSphCoords.size());
+        size_t nnt = discVolSphCoords.size();
+        
+        data = (float*) calloc(nim->nx * nim->ny * nim->nz * nnt, sizeof(float));
+        
         if (data==NULL) {
             std::cout << "OUT OF MEMORY" << std::endl << std::flush;
             assert(0);
@@ -190,9 +199,9 @@ bool FOD_Image::readImage() {
                     
                     for (int t=0; t<(nim->nt); t++) {
                         
-                        if (accessor->get(nim->data,ind+t*sxyz)!=0) {
+                        if (accessor->get(nim->data,ind+t*sxyz)!=0) {                            
                             nnzVoxelInds.push_back(ind);
-                            nnzVoxelReInds.push_back(ind*discVolSphCoords.size());
+                            nnzVoxelReInds.push_back(ind*nnt);
                             break;
                         }
                         
@@ -246,16 +255,20 @@ bool FOD_Image::readImage() {
         if (GENERAL::verboseLevel!=QUITE) std::cout << "Discretizing FOD: 100%" << '\r' << std::flush;
         if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
         
-        nim->nt     = discVolSphCoords.size();
+        nim->nt     = nnt;
         nim->nvox   = nim->nx * nim->ny * nim->nz * nim->nt;
         
     }
+    
+    nnzVoxelInds.clear();
+    nnzVoxelReInds.clear();
+    discVolSphCoords.clear();
     
     nifti_image_unload(nim);
     delete accessor;
     
 	this->Image::indexVoxels();
-
+    
 	return true;
 }
 
@@ -263,9 +276,23 @@ bool FOD_Image::readImage() {
 
 int FOD_Image::vertexCoord2volInd(float* vertexCoord) {
     
-    int x = std::round(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-    int y = std::round(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-    int z = std::round(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
+    int x,y,z;
+    
+    if (iseven) { 
+        if (vertexCoord[2]<0) {
+            x = std::round(-vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::round(-vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::round(-vertexCoord[2]*discVolSphRadius);
+        } else {
+            x = std::round( vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::round( vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::round( vertexCoord[2]*discVolSphRadius);
+        }
+    } else {
+        x = std::round(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+        y = std::round(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+        z = std::round(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
+    }
     
     int volInd = discVolSphInds[x+(y+z*discVolSphDim)*discVolSphDim];
     
@@ -278,13 +305,13 @@ float FOD_Image::getFODval(float *p, float* vertexCoord) {
     
     int   cor_ijk[3];
 	float volFrac[8];
-
+    
 	if ( prepInterp(p,cor_ijk,volFrac) == false )
 		return 0;
 
     int volInd   = vertexCoord2volInd(vertexCoord);
-   
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
+ 
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;    
     
     return  volFrac[0]*vals[0][volInd] +
 			volFrac[1]*vals[1][volInd] +
@@ -293,30 +320,39 @@ float FOD_Image::getFODval(float *p, float* vertexCoord) {
 			volFrac[4]*vals[4][volInd] +
 			volFrac[5]*vals[5][volInd] +
 			volFrac[6]*vals[6][volInd] +
-			volFrac[7]*vals[7][volInd];    
+			volFrac[7]*vals[7][volInd];
+    
 }
 
 
 void FOD_Image::fillDiscVolSph() {
 
-    float R             = (float(discVolSphDim)-1)/2.0;
+    float R = (float(discVolSphDim)-1)/2.0;
+    float zs;
     
-    discVolSphInds      = new int[discVolSphDim*discVolSphDim*discVolSphDim];
-    
+
+    if (iseven) {
+        discVolSphInds      = new int[discVolSphDim*discVolSphDim*((discVolSphDim/2)+1)];
+        zs                  = 0;
+    } else {
+        discVolSphInds      = new int[discVolSphDim*discVolSphDim*discVolSphDim];
+        zs                  = -R;
+    }
+        
     int ind = 0;
     for (float x=-R; x<=R; x++)
         for (float y=-R; y<=R; y++)
-            for (float z=-R; z<=R; z++) {
+            for (float z=zs; z<=R; z++) {
                 float dist = std::sqrt(x*x+y*y+z*z);
                 if (std::abs(dist-discVolSphRadius)<(std::sqrt(3)/2)) {
-                    discVolSphInds[int((x+R)+(y+R)*discVolSphDim+(z+R)*discVolSphDim*discVolSphDim)] = ind++;                    
+                    discVolSphInds[size_t((x+R)+((y+R)+(z-zs)*discVolSphDim)*discVolSphDim)] = ind++;                    
                     Coordinate vertex(x,y,z);
                     vertex.normalize();
                     discVolSphCoords.push_back(vertex);
                 }
                 else
-                    discVolSphInds[int((x+R)+(y+R)*discVolSphDim+(z+R)*discVolSphDim*discVolSphDim)] = -1;
-                    
+                    discVolSphInds[size_t((x+R)+((y+R)+(z-zs)*discVolSphDim)*discVolSphDim)] = -1;
+                
             }
 
 }
@@ -356,7 +392,7 @@ void FOD_Image::orderDirections(float* unit_dir) {
         case yXz : {unit_dir[0]=-Y;  unit_dir[1]= X;  unit_dir[2]=-Z; } break;
         case yxZ : {unit_dir[0]=-Y;  unit_dir[1]=-X;  unit_dir[2]= Z; } break;
         case yxz : {unit_dir[0]=-Y;  unit_dir[1]=-X;  unit_dir[2]=-Z; } break;
-        
+
         case YZX : {unit_dir[0]= Y;  unit_dir[1]= Z;  unit_dir[2]= X; } break;
         case YZx : {unit_dir[0]= Y;  unit_dir[1]= Z;  unit_dir[2]=-X; } break;
         case YzX : {unit_dir[0]= Y;  unit_dir[1]=-Z;  unit_dir[2]= X; } break;
