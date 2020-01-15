@@ -7,6 +7,7 @@ from Cython.Distutils import build_ext
 from pathlib import Path
 import shutil
 import os
+import platform
 import glob
 
 class TrekkerBuildExt(build_ext):
@@ -16,12 +17,16 @@ class TrekkerBuildExt(build_ext):
         os.makedirs(str(target_dir / 'Trekker'))
         for file in glob.glob(str(Path('cython/*'))):
            shutil.copy(file, str(target_dir / 'Trekker'))
-        shutil.copyfile(str(Path('build/cython') / 'Trekker.cpp'), str(target_dir / 'Trekker/Trekker.cpp'))   
+        shutil.copyfile(str(Path('build/cython') / 'Trekker.cpp'), str(target_dir / 'Trekker/Trekker.cpp'))
 
 
 LIB_DIRS          = ['cython/']
 INC_DIRS          = ['cython/']
-LIBS              = ["Trekker","z","pthread"]
+
+if (platform.system()=="Linux"):
+    LIBS              = ["Trekker","z","pthread"]
+if (platform.system()=="Windows"):
+    LIBS              = ["Trekker"]
 
 setup(
     name='Trekker',
