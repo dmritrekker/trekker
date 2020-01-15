@@ -230,14 +230,14 @@ bool Image::indexVoxels() {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
                 
-                voxels[index].box[0] = ( (x<1) || (y<1) || (z<1) || (x>(nim->nx)  ) || (y>(nim->ny)  ) || (z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[1] = ( (x<0) || (y<1) || (z<1) || (x>(nim->nx)-1) || (y>(nim->ny)  ) || (z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[2] = ( (x<1) || (y<0) || (z<1) || (x>(nim->nx)  ) || (y>(nim->ny)-1) || (z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[3] = ( (x<0) || (y<0) || (z<1) || (x>(nim->nx)-1) || (y>(nim->ny)-1) || (z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[4] = ( (x<1) || (y<1) || (z<0) || (x>(nim->nx)  ) || (y>(nim->ny)  ) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[5] = ( (x<0) || (y<1) || (z<0) || (x>(nim->nx)-1) || (y>(nim->ny)  ) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[6] = ( (x<1) || (y<0) || (z<0) || (x>(nim->nx)  ) || (y>(nim->ny)-1) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[7] = ( (x<0) || (y<0) || (z<0) || (x>(nim->nx)-1) || (y>(nim->ny)-1) || (z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
                 
 				index++;
 			}

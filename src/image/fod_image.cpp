@@ -30,16 +30,29 @@ float FOD_Image::getSmallestPixdim() {
 
 int FOD_Image::getSHorder() {
 
-	int order = sqrt(nim->nt);
-	if ((order*order)!=nim->nt) {
-		if (GENERAL::verboseLevel>ON) std::cout << "Symmetric FOD with order " << (sqrt(8*nim->nt+1)-3)/2 << std::endl << std::flush;
-		return (sqrt(8*nim->nt+1)-3)/2;
-	}
-	else {
-		if (GENERAL::verboseLevel>ON) std::cout << "Asymmetric FOD with order " << sqrt(nim->nt)-1 << std::endl << std::flush;
-		iseven = false;
-		return order-1;
-	}
+    if (isspheresliced==false) {
+        int order = sqrt(nim->nt);
+        if ((order*order)!=nim->nt) {
+            if (GENERAL::verboseLevel>QUITE) std::cout << "(symmetric FOD with order " << (sqrt(8*nim->nt+1)-3)/2 << ") " << std::flush;
+            return (sqrt(8*nim->nt+1)-3)/2;
+        } else {
+            if (GENERAL::verboseLevel>QUITE) std::cout << "(asymmetric FOD with order " << sqrt(nim->nt)-1 << ") " << std::flush;
+            iseven = false;
+            return order-1;
+        }
+    } else {
+        if (iseven) {
+            int order = 16;
+            if (GENERAL::verboseLevel>QUITE) std::cout << "(using symmetric FOD with order " << order << ") " << std::flush;
+            return order;
+        }
+        else {
+            int order = 13;
+            if (GENERAL::verboseLevel>QUITE) std::cout << "(using asymmetric FOD with order " << order << ") " << std::flush;
+            return order;
+        }
+            
+    }
 
 }
 
@@ -60,15 +73,28 @@ void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataA
 
 void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor) {
     
-    float* FOD      = new float[FODImg->nim->nt];
+    float* FOD;
+    if (FODImg->isspheresliced==false) {
+        FOD = new float[FODImg->nim->nt];
+    } else {
+        FOD = new float[SH::numberOfSphericalHarmonicCoefficients];
+    }
     
     for (size_t n=begin_ind; n<end_ind; n++) {
         
         size_t   ind = FODImg->nnzVoxelInds[n];
         size_t reInd = FODImg->nnzVoxelReInds[n];
         
-        for (int t=0; t<FODImg->nim->nt; t++)
-            FOD[t] = accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
+        if (FODImg->isspheresliced==false) {
+            for (int t=0; t<FODImg->nim->nt; t++)
+                FOD[t] = accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
+        } else {
+            for (int i=0; i<SH::numberOfSphericalHarmonicCoefficients; i++) {
+                FOD[i] = 0;
+                for (int t=0; t<FODImg->nim->nt; t++)
+                    FOD[i] += SH::Ylm[t][i]*accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
+            }
+        }
     
         for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
             float dir[3]            = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};

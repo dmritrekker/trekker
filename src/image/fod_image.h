@@ -33,6 +33,8 @@ public:
     float                   discVolSphRadius;
     float                   discVolSphShift;
     
+    std::vector<Coordinate> inpSphCoords;
+    
     void                    fillDiscVolSph();
     
 };

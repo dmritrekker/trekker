@@ -464,17 +464,17 @@ void InputParser::parse_fod() {
 			exit(EXIT_FAILURE);
 		}
 
-		std::vector<Coordinate> sphereCoordinates;
 		int lineNo = 1;
 		bool readError = false;
+        float p[3];
 		while(std::getline(sphere,directions)) {
 			if (!directions.empty()) {
 				std::stringstream xyz(directions);
-				float x,y,z;
-				if (xyz.good()) xyz >> x; else { readError = true; break; }
-				if (xyz.good()) xyz >> y; else { readError = true; break; }
-				if (xyz.good()) xyz >> z; else { readError = true; break; }
-				sphereCoordinates.push_back(Coordinate(x,y,z));
+				if (xyz.good()) xyz >> p[0]; else { readError = true; break; }
+				if (xyz.good()) xyz >> p[1]; else { readError = true; break; }
+				if (xyz.good()) xyz >> p[2]; else { readError = true; break; }
+				normalize(p);
+				img_FOD->inpSphCoords.push_back(Coordinate(p[0],p[1],p[2]));
 			}
 			lineNo++;
 		}
@@ -484,15 +484,25 @@ void InputParser::parse_fod() {
 			exit(EXIT_FAILURE);
 		}
 
-		img_FOD->isspheresliced = true;
-
-		if ((img_FOD->nim->nt - sphereCoordinates.size()) !=0 ) {
+		if ((img_FOD->nim->nt - img_FOD->inpSphCoords.size()) !=0 ) {
 			std::cout << "Number of sphere vertices does not match the number of volumes in the FOD image" << std::endl;
 			exit(EXIT_FAILURE);
 		}
-
+		
+		img_FOD->isspheresliced = true;
 		img_FOD->sphereFileName = std::string{argv[argv_index]};
 		argv_index++;
+        
+        if      (Option("sym"))  img_FOD->iseven = true;
+        else if (Option("asym")) img_FOD->iseven = false;
+        else {
+            std::cout << "Please indicate if FOD is symmetric or asymmetric using options \"sym\" or \"asym\" " << std::endl;
+            std::cout << "  Example: -fod FODimg.nii.gz sphere.txt asym" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    
+        argv_index++;
+		
 	}
     
 }

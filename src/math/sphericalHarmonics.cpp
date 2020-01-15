@@ -13,6 +13,7 @@ float   scalingFactor_theta 					= 0;
 
 float  *precomputedPhiComponent 				= NULL;
 float  *precomputedThetaComponent            	= NULL;
+float  **Ylm                                    = NULL;
 
 int sphPlmInd(int l,int m) {
 
@@ -23,6 +24,7 @@ int sphPlmInd(int l,int m) {
 
 }
 
+// x is cos(theta)
 void computeLegendrePolynomials(double *plm, double x, int order) {
 
 	plm[0] = 1.0/std::sqrt(4.0*PI);
@@ -45,6 +47,11 @@ void computeLegendrePolynomials(double *plm, double x, int order) {
 void clean() {
 	delete[] precomputedPhiComponent;
 	delete[] precomputedThetaComponent;
+    if (Ylm!=NULL) {
+        for (size_t i=0; i<TRACKER::img_FOD->inpSphCoords.size(); i++)
+            delete[] Ylm[i];
+        delete[] Ylm;
+    }
 }
 
 
@@ -57,7 +64,12 @@ void precompute(size_t num) {
 	numberOfSamples_theta 					= 8*num;
 
 	sphericalHarmonicOrder   				= TRACKER::img_FOD->getSHorder();
-	numberOfSphericalHarmonicCoefficients 	= TRACKER::img_FOD->getNim()->nt;
+    
+    if (TRACKER::img_FOD->iseven) {
+        numberOfSphericalHarmonicCoefficients 	= (sphericalHarmonicOrder+3)*sphericalHarmonicOrder/2+1;
+    } else {
+        numberOfSphericalHarmonicCoefficients 	= (sphericalHarmonicOrder+1)*(sphericalHarmonicOrder+1);
+    }
 
 	double delta_phi 	 					= 2/(double)(numberOfSamples_phi   - 1);
 	double delta_theta 						= 2/(double)(numberOfSamples_theta - 1);
@@ -67,7 +79,7 @@ void precompute(size_t num) {
 
 	precomputedPhiComponent 				= new float[numberOfSphericalHarmonicCoefficients*numberOfSamples_phi*numberOfSamples_phi];
 	precomputedThetaComponent         		= new float[numberOfSphericalHarmonicCoefficients*numberOfSamples_theta];
-
+    
 	size_t c = 0;
 	for (size_t i=0; i<numberOfSamples_phi; i++) {
 
@@ -103,9 +115,9 @@ void precompute(size_t num) {
 
 		}
 	}
-
 	double *plm = new double[numberOfSphericalHarmonicCoefficients];
 
+    
 	c = 0;
 	for (size_t k=0; k<numberOfSamples_theta; k++) {
 
@@ -128,14 +140,12 @@ void precompute(size_t num) {
 					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
 					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
 					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
-
 				}
 			}
 		}
-
-
+        
 	}
-
+	
 	delete[] plm;
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
@@ -173,5 +183,57 @@ float SH_amplitude(float *values, float *dir) {
 	else 		return 0;
 
 }
+
+void precomputeExpansionCoefficients() {
+    
+    if (GENERAL::verboseLevel!=QUITE) std::cout << "Precomputing spherical harmonic expansion coefficients... " << std::flush;
+    
+    Ylm = new float*[TRACKER::img_FOD->inpSphCoords.size()];
+    for (size_t i=0; i<TRACKER::img_FOD->inpSphCoords.size(); i++) {
+        Ylm[i] = new float[numberOfSphericalHarmonicCoefficients];
+    }
+    
+    double saop = (4*PI)/TRACKER::img_FOD->inpSphCoords.size(); // surface area of a point
+    double *plm = new double[numberOfSphericalHarmonicCoefficients];
+       
+    for (size_t i=0; i<TRACKER::img_FOD->inpSphCoords.size(); i++) {
+        
+        double phi   = std::atan2(TRACKER::img_FOD->inpSphCoords[i].y,TRACKER::img_FOD->inpSphCoords[i].x);
+        double theta = TRACKER::img_FOD->inpSphCoords[i].z; //for plm we need acos theta
+        
+        computeLegendrePolynomials(plm, theta, sphericalHarmonicOrder);        
+        
+        size_t j = 0;
+        
+        Ylm[i][j++] = plm[sphPlmInd(0,0)]*saop;
+        
+        if (TRACKER::img_FOD->iseven) {
+			for(float l = 2; l <= sphericalHarmonicOrder; l+=2) {
+                for (int m=-l; m<=l; m++) {
+                    double ang = (fabs((double)m))*phi;
+                    if (m<0)  		Ylm[i][j++] = SQRT2*std::sin(ang)*plm[sphPlmInd(l,-m)]*saop;
+                    else if (m==0) 	Ylm[i][j++] =                     plm[sphPlmInd(l, 0)]*saop;
+                    else  			Ylm[i][j++] = SQRT2*std::cos(ang)*plm[sphPlmInd(l, m)]*saop;
+                }
+			}
+			
+		} else {
+			for(float l = 1; l <= sphericalHarmonicOrder; l+=1) {
+                for (int m=-l; m<=l; m++) {
+                    double ang = (fabs((double)m))*phi;
+                    if (m<0)  		Ylm[i][j++] = SQRT2*std::sin(ang)*plm[sphPlmInd(l,-m)]*saop;
+                    else if (m==0) 	Ylm[i][j++] =                     plm[sphPlmInd(l, 0)]*saop;
+                    else  			Ylm[i][j++] = SQRT2*std::cos(ang)*plm[sphPlmInd(l, m)]*saop;
+                }
+			}
+		}
+        
+    }
+    
+    delete[] plm;
+    
+    if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
+}
+
 
 }

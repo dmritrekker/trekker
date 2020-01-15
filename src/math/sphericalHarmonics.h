@@ -24,6 +24,9 @@ void  precompute(size_t num);
 void  clean();
 float SH_amplitude(float *values, float *unit_dir);
 
+extern float   **Ylm; // Coefficients for SH expansion
+void  precomputeExpansionCoefficients();
+
 }
 
 #endif

@@ -8,6 +8,7 @@
 #include "../config/config_seeding.h"
 #include "../config/config_pathway.h"
 #include "../config/config_output.h"
+#include "../math/math_aux.h"
 
 using namespace GENERAL;
 using namespace TRACKER;

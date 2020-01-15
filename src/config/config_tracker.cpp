@@ -120,6 +120,10 @@ void setDefaultParametersWhenNecessary() {
 		PTF_CONSTS::precomputePTFCoefficients(501);
 
 	SH::precompute(1024);
+    if (img_FOD->isspheresliced) {
+        SH::precomputeExpansionCoefficients();
+    }
+    
 	defaultsSet = true;
 }
 

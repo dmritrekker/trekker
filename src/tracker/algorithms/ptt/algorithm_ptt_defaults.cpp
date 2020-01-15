@@ -186,8 +186,8 @@ void TrackWith_PTT::print() {
 		std::cout << "propMaxEstTrials     : "  << TRACKER::propMaxEstTrials 				<< std::endl;
 
 	if (TRACKER::atInit==ATINIT_USEBEST)
-		std::cout << "useBestATinit        : ON "  << std::endl;
+		std::cout << "useBestAtInit        : ON "  << std::endl;
 	else
-		std::cout << "useBestATinit        : OFF " << std::endl;
+		std::cout << "useBestAtInit        : OFF " << std::endl;
 
 }
