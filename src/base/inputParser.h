@@ -47,9 +47,9 @@ private:
 	// Tracker config
 	void parse_fod();
     void parse_dontDiscretizeFod();
-    void parse_checkWeakLinks();
     void parse_orderOfDirections();
 	void parse_algorithm();
+    void parse_checkWeakLinks();
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
 	void parse_minFODamp();

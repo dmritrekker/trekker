@@ -106,6 +106,7 @@ extern checkWeakLinksMode    checkWeakLinks;
 void cleanConfigTracker();
 void readFODImage();
 void setDefaultParametersWhenNecessary();
+void setMethodsDefaultParametersWhenNecessary();
 void print();
 
 }

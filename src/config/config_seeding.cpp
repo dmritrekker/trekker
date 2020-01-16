@@ -44,6 +44,8 @@ void setDefaultParametersWhenNecessary() {
 		}
 		if ((count==NOTSET) && (countPerVoxel==NOTSET)) {
 			count = MAXNUMBEROFSEEDS;
+            if (GENERAL::usingAPI)
+                std::cout << "TREKKER::count or countPerVoxel is not set. 1 million streamlines will be tracked." << std::endl;
 		}
 	}
 
@@ -129,8 +131,11 @@ void readSeedImage() {
 }
 
 void print() {
-	std::cout << std::endl;
-	std::cout << "SEEDING OPTIONS"<< std::endl;
+    
+    if (GENERAL::usingAPI==false) {
+        std::cout << std::endl;
+        std::cout << "SEEDING OPTIONS"<< std::endl;
+    }
 
 	if ((count!=NOTSET) && (count!=MAXNUMBEROFSEEDS)) 			std::cout << "count                : " << count << std::endl;
 	if ((seedingMode==SEED_IMAGE) && (countPerVoxel!=NOTSET)) 	std::cout << "countPerVoxel        : " << countPerVoxel << std::endl;

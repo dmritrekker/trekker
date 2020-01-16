@@ -25,6 +25,7 @@ std::vector<size_t> valid_indices;
 size_t  validIndexCount;
 
 bool    isCleaned;
+bool    isReady;
 
 void precomputePTFCoefficients(size_t _k_resolution) {
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cmakeExe=/home/baran/apps/cmake-3.15.0-Linux-x86_64/bin/cmake
-buildPythonPackage=OFF #ON or OFF
+buildPythonPackage=ON #ON or OFF
 pythonExe=/home/baran/apps/anaconda3/envs/trekkerWrapper/bin/python
 buildType=Release #Release or Debug
 

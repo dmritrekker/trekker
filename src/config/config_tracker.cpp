@@ -114,12 +114,10 @@ void setDefaultParametersWhenNecessary() {
 	default :
 		break;
 	}
-
-	method->setDefaultParametersWhenNecessary();
-	if (TRACKER::algorithm == PTT)
-		PTF_CONSTS::precomputePTFCoefficients(501);
-
-	SH::precompute(1024);
+    
+    setMethodsDefaultParametersWhenNecessary();
+    
+    SH::precompute(1024);
     if (img_FOD->isspheresliced) {
         SH::precomputeExpansionCoefficients();
     }
@@ -127,6 +125,15 @@ void setDefaultParametersWhenNecessary() {
 	defaultsSet = true;
 }
 
+void setMethodsDefaultParametersWhenNecessary() {
+    
+    method->setDefaultParametersWhenNecessary();
+	if (TRACKER::algorithm == PTT) {
+		PTF_CONSTS::precomputePTFCoefficients(501);
+        PTF_CONSTS::isReady = true;
+    }
+    
+}
 
 void readFODImage() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading FOD image                  : " << img_FOD->getFilePath() << std::endl;
@@ -136,7 +143,9 @@ void readFODImage() {
 
 void print() {
 	std::cout << std::endl;
-	std::cout << "TRACKER OPTIONS"<< std::endl;
+    if (GENERAL::usingAPI==false) {
+        std::cout << "TRACKER OPTIONS"<< std::endl;
+    }
 
 	method->print();
 

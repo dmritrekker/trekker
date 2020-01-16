@@ -49,7 +49,6 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	}
 
 
-
 	// Handle probeLength
 	if (TRACKER::probeLength<=0.0) {
 		TRACKER::probeLength = TRACKER::smallestPixDim*DEFAULT_PTT_PROBELENGTH_IN_PIXELDIM;
@@ -123,14 +122,16 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle atInit
 	if (TRACKER::atInit==ATINIT_NOTSET) {
 		TRACKER::atInit = ATINIT_REJECTIONSAMPLE;
-		if (GENERAL::verboseLevel>ON) std::cout << "useBestATinit             : OFF" << std::endl;
+		if (GENERAL::verboseLevel>ON) std::cout << "useBestAtInit             : OFF" << std::endl;
 	}
 
 }
 
 void TrackWith_PTT::print() {
-
-	std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
+    
+    if (GENERAL::usingAPI==false) {
+        std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
+    }
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;

@@ -59,9 +59,9 @@ void InputParser::parse() {
 		// Tracker config
 		else if (Option("-fod"))        			parse_fod();
         else if (Option("-dontDiscretizeFod"))      parse_dontDiscretizeFod();
-        else if (Option("-checkWeakLinks"))         parse_checkWeakLinks();
         else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
+        else if (Option("-checkWeakLinks"))         parse_checkWeakLinks();
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
 		else if (Option("-minFODamp"))        		parse_minFODamp();

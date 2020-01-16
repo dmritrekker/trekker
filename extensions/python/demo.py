@@ -2,18 +2,24 @@ import Trekker
 import numpy as np
 
 FOD_path=b"/home/baran/Work/code/dev/baranaydogan/test_fod.nii";
-tracker=Trekker.tracker(FOD_path);
+SEED_path=b"/home/baran/Work/code/dev/baranaydogan/test_seed.nii";
 
-numberOfStreamlinesToGenerate = 1000;
+tracker=Trekker.tracker(FOD_path);
+tracker.numberOfThreads(8);
+tracker.seed_maxTrials(1);
+tracker.stepSize(0.01);
+tracker.minRadiusOfCurvature(0.25);
+tracker.minFODamp(0.04);
+tracker.probeQuality(3);
+
+numberOfStreamlinesToGenerate = 100;
 seed_coordinates = np.array([[-8.49,-8.39,2.5]]);
 seed_coordinates = np.repeat(seed_coordinates,numberOfStreamlinesToGenerate,axis=0);
+tracker.seed_coordinates(seed_coordinates);
 
-tracker.set_numberOfThreads(20);
-tracker.set_seed_maxTrials(1);
-tracker.set_stepSize(0.1);
-tracker.set_minFODamp(0.04);
-tracker.set_probeQuality(3);
+tracker.seed_image_using_label(SEED_path,1);
+tracker.seed_count(10);
 
-tracker.set_seeds(seed_coordinates);
 streamlines = tracker.run();
 
+tracker.printParameters()

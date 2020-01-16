@@ -9,8 +9,6 @@ public:
 	Trekker(std::string pathToFODimage);
 	~Trekker();
 
-	void set_seeds(std::vector< std::vector<double> > seed_coordinates);
-
 	void execute();
     void threadedExecute();
     
@@ -19,30 +17,43 @@ public:
 	std::vector< std::vector< std::vector<double> > > run();
 
 	bool timeUp;
+    
+    // Global config 
+	void numberOfThreads(int n);
+    void timeLimit(int t);
+    
+    void printParameters();
+    
+    // Tracker config
+    void checkWeakLinks(bool q);
+    void stepSize(double _stepSize);
+    void minRadiusOfCurvature(double x);
+    void minFODamp(double _minFODamp);
+    void maxEstInterval(int n);
+    void dataSupportExponent(double x);
+    void minLength(double x);
+	void maxLength(double x);
+    void atMaxLength(std::string aml);
+    void writeInterval(int n);
+    void directionality(std::string d);
+    void maxSamplingPerStep(int n);
+    void initMaxEstTrials(int n);
+    void propMaxEstTrials(int n);
+    void useBestAtInit(bool q);
 
+	void probeLength(double x);
+	void probeRadius(double x);
+	void probeCount(int n);
+	void probeQuality(int n);
 
-	void set_seed_maxTrials(int n);
-	void set_numberOfThreads(int n);
-	void set_algorithm();
-    void set_timeLimit(int t);
-
-	void set_minFODamp(double _minFODamp);
-	void set_stepSize(double _stepSize);
-
-	void set_minRadiusOfCurvature(double x);
-	void set_minLength(double x);
-	void set_maxLength(double x);
-//	void set_atMaxLength();
-	void set_writeInterval(int n);
-//	void set_directionality();
-//	void set_maxSamplingPerStep(int n);
-//	void set_initMaxEstTrials(int n);
-//	void set_propMaxEstTrials(int n);
-//	void set_useBestAtInit();
-//
-	void set_probeLength(double x);
-	void set_probeRadius(double x);
-	void set_probeCount(int n);
-	void set_probeQuality(int n);
-
+    
+    // Seed config
+    void seed_image(std::string pathToSeedImage);
+    void seed_image_using_label(std::string pathToSeedImage, int label);
+    void seed_coordinates(std::vector< std::vector<double> > seed_coordinates);
+    void seed_coordinates_with_directions(std::vector< std::vector<double> > seed_coordinates,std::vector< std::vector<double> > seed_init_directions);
+    void seed_count(int n);
+    void seed_countPerVoxel(int n);
+    void seed_maxTrials(int n);
+    
 };

@@ -26,6 +26,7 @@ extern std::vector<size_t> valid_indices;
 extern size_t  validIndexCount;
 
 extern bool    isCleaned;
+extern bool    isReady;
 
 void precomputePTFCoefficients(size_t _k_resolution);
 void cleanPTFCoefficients();

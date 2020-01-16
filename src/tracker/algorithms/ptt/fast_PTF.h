@@ -46,7 +46,6 @@ public:
 	float 	prior;		// Prior probability
 	float 	posterior;	// Posterior probability
 
-
 	RandomDoer *rndmr;
 
 };

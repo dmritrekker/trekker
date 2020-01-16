@@ -7,7 +7,7 @@
 #include "../image/roi_image.h"
 #include "config_general.h"
 
-#define MAXNUMBEROFSEEDS				1e9
+#define MAXNUMBEROFSEEDS				1e6
 #define MAXTRIALSPERSEEDS				1e6
 
 typedef enum {
