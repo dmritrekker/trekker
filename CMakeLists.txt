@@ -84,15 +84,12 @@ target_include_directories(OBJS PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/n
 # In order to build shared libraries PIC must be on
 set_property(TARGET OBJS PROPERTY POSITION_INDEPENDENT_CODE 1)
 
-# Build the shared library
-add_library(Trekker SHARED $<TARGET_OBJECTS:OBJS>)
-
-
 # Build the static executable
 
 # The Linux version statically links zlib as well. We skip compiling and linking zlib for Windows yet.
 if(UNIX AND NOT APPLE)
-        
+
+	  add_library(Trekker SHARED $<TARGET_OBJECTS:OBJS>)
 		add_library(tmp STATIC $<TARGET_OBJECTS:OBJS>)
 		target_include_directories(tmp PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/znzlib)
 		target_include_directories(tmp PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/niftilib)
@@ -105,7 +102,6 @@ if(UNIX AND NOT APPLE)
 		set_target_properties(c PROPERTIES IMPORTED_LOCATION ${trekkerLib})
 
 		add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-
 		target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
 
 		INSTALL(TARGETS ${trekkerExe} DESTINATION ${CMAKE_BINARY_DIR}/install/bin)
@@ -125,7 +121,8 @@ endif()
 
 if(MSVC)
 
-        add_library(libTrekker STATIC $<TARGET_OBJECTS:OBJS>)
+    add_library(libTrekker_shared SHARED $<TARGET_OBJECTS:OBJS>)
+    add_library(libTrekker STATIC $<TARGET_OBJECTS:OBJS>)
 		target_include_directories(libTrekker PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/znzlib)
 		target_include_directories(libTrekker PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/niftilib)
 

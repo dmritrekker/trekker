@@ -1,8 +1,8 @@
 import Trekker
 import numpy as np
 
-FOD_path=b"/home/baran/Work/code/dev/baranaydogan/test_fod.nii";
-SEED_path=b"/home/baran/Work/code/dev/baranaydogan/test_seed.nii";
+FOD_path=b"test_fod.nii";
+SEED_path=b"test_seed.nii";
 
 tracker=Trekker.tracker(FOD_path);
 tracker.numberOfThreads(8);
