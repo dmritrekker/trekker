@@ -83,7 +83,7 @@ void Trekker::execute() {
             return;
         }
         
-        if ((PTF_CONSTS::isReady == false) && (TRACKER::algorithm==PTT)) {
+        if ((PTF_CONSTS::isReady == false) && ((TRACKER::algorithm==PTT_C1) || (TRACKER::algorithm==PTT_C2) || (TRACKER::algorithm==PTT_C3) ) ) {
             std::cout << "TREKKER::Setting up Trekker for parameter modifications..." << std::endl << std::flush;
             PTF_CONSTS::cleanPTFCoefficients();
             PTF_CONSTS::precomputePTFCoefficients(501);

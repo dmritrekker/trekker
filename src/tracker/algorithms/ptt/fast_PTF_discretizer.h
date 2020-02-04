@@ -8,17 +8,14 @@
 namespace PTF_CONSTS {
 
 extern size_t  k_resolution;
-
-extern float*  k1;
-extern float*  k2;
-extern float*  k;
-extern  bool*  isvalid;
+extern float   k_step;
 
 extern float** curve_consts;
-extern float** probe_consts;
+extern float** probe_step_consts;
 
 extern float   probe_cum_length;
 extern float   probeNormalizer;
+extern float   angularSeparation;
 extern size_t  numelk;
 extern size_t  numelkq;
 

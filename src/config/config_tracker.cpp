@@ -23,6 +23,7 @@ Tractogram            *tractogram 		= NULL;
 // Common tracking parameters
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
+float minRadiusOfTorsion   			    = NOTSET;
 float minFODamp      					= NOTSET;
 int   maxEstInterval                    = NOTSET;
 float dataSupportExponent      			= NOTSET;
@@ -39,10 +40,14 @@ float probeLength    					= NOTSET;
 float probeRadius    					= NOTSET;
 int   probeQuality   					= NOTSET;
 int   probeCount 						= NOTSET;
+float probeStepSize                     = NOTSET;
+float probeNormalizer                   = NOTSET;
+float angularSeparation                 = NOTSET;
 
 
 // Derived parameters
 float maxCurvature   					= NOTSET;
+float maxTorsion   					    = NOTSET;
 float writeStepSize                  	= NOTSET;
 float maxEstStepSize                    = NOTSET;
 float smallestPixDim 					= 0.0;
@@ -70,8 +75,11 @@ void cleanConfigTracker() {
 	SH::clean();
 	delete method;
 	delete tractogram;
-	if (TRACKER::algorithm == PTT)
+    
+    /*
+	if ((TRACKER::algorithm == PTT_C1) || (TRACKER::algorithm == PTT_C2) || (TRACKER::algorithm == PTT_C3))
 	 	PTF_CONSTS::cleanPTFCoefficients();
+    */
     
 }
 
@@ -98,12 +106,14 @@ void setDefaultParametersWhenNecessary() {
 
 	// Handle algorithm
 	if (algorithm==ALGORITHM_NOTSET) {
-		algorithm = PTT;
+		algorithm = PTT_C2;
 		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default algorithm      : PTT " << std::endl;
 	}
 
 	switch (TRACKER::algorithm) {
-	case PTT:
+	case PTT_C1:
+    case PTT_C2:
+    case PTT_C3:
 		tractogram 								= new Tractogram_PTT();
 		method 									= new  TrackWith_PTT();
 		break;
@@ -117,7 +127,7 @@ void setDefaultParametersWhenNecessary() {
     
     setMethodsDefaultParametersWhenNecessary();
     
-    SH::precompute(1024);
+    SH::precompute(SHPRECOMPUTEDIM);
     if (img_FOD->isspheresliced) {
         SH::precomputeExpansionCoefficients();
     }
@@ -128,10 +138,13 @@ void setDefaultParametersWhenNecessary() {
 void setMethodsDefaultParametersWhenNecessary() {
     
     method->setDefaultParametersWhenNecessary();
-	if (TRACKER::algorithm == PTT) {
-		PTF_CONSTS::precomputePTFCoefficients(501);
+    
+    /*
+	if ( (TRACKER::algorithm == PTT_C1) || (TRACKER::algorithm == PTT_C2) || (TRACKER::algorithm == PTT_C3) ) {
+		PTF_CONSTS::precomputePTFCoefficients(PTFCOEFFMATRIXSIZE);
         PTF_CONSTS::isReady = true;
     }
+    */
     
 }
 

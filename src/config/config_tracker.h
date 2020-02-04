@@ -4,12 +4,17 @@
 #include "../image/fod_image.h"
 #include "config_general.h"
 
+#define SHPRECOMPUTEDIM 1024
+#define PTFCOEFFMATRIXSIZE 501
+
 class TractographyAlgorithm;
 class Tractogram;
 
 typedef enum {
 	ALGORITHM_NOTSET = -1,
-	PTT,
+	PTT_C1,
+    PTT_C2,
+    PTT_C3,
 	LOCAL_PROBABILISTIC
 } Algorithm;
 
@@ -65,6 +70,7 @@ extern Tractogram   		   *tractogram;
 extern FOD_Image 	  *img_FOD;
 extern float 		   stepSize;
 extern float 		   minRadiusOfCurvature;
+extern float 		   minRadiusOfTorsion;
 extern float		   minFODamp;
 extern int             maxEstInterval;
 extern float		   dataSupportExponent;
@@ -80,9 +86,13 @@ extern float 		   probeLength;
 extern float 		   probeRadius;
 extern int 			   probeCount;
 extern int 		       probeQuality;
+extern float           probeStepSize;
+extern float           probeNormalizer;
+extern float           angularSeparation;
 
 // Derived parameters
 extern float		   maxCurvature;
+extern float		   maxTorsion;
 extern float		   smallestPixDim;
 extern float		   varCurvature;
 extern bool 		   priorComputationFlag;

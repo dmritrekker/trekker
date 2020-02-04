@@ -12,15 +12,15 @@ TrackWith_PTT::TrackWith_PTT() {
 
 	if (TRACKER::defaultsSet == true) {
 		doRandomThings 				= new RandomDoer();
-		initial_curve				= new FPTF(doRandomThings);
-		curve 						= new FPTF(doRandomThings);
+		initial_curve				= new PTF(doRandomThings);
+		curve 						= new PTF(doRandomThings);
 		FOD 						= new float[SH::numberOfSphericalHarmonicCoefficients];
 		posteriorMax 				= 0.0;
 
 		current_init_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;
 		current_prop_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->prop_postEstItCount;
 
-		doRandomThings->init_uniform_int(PTF_CONSTS::validIndexCount-1);
+		// doRandomThings->init_uniform_int(PTF_CONSTS::validIndexCount-1);
 	}
 	
 }
@@ -36,7 +36,12 @@ TrackWith_PTT::~TrackWith_PTT() {
 void TrackWith_PTT::setSeed() {
 
 	curve->setPosition(thread->seed_coordinates);
-	curve->flushProbs();
+    
+    // Flush probs
+    curve->likelihood 	= 0.0;
+	curve->prior 		= 1.0;
+	curve->posterior 	=-1.0; // This is used to check if the curve is swapped with a candidate curve
+	
 	initial_curve->swap(curve);
 
 	current_init_postEstItCount 	= static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;

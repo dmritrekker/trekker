@@ -36,7 +36,9 @@ TrackingThread::TrackingThread() {
 	tracker_SEED 								= new ROI_Image(*SEED::img_SEED);
 
 	switch (TRACKER::algorithm) {
-	case PTT:
+	case PTT_C1:
+    case PTT_C2:
+    case PTT_C3:
 		method 									= new TrackWith_PTT();
 		break;
 	case LOCAL_PROBABILISTIC:
@@ -117,7 +119,8 @@ void TrackingThread::track(Coordinate *point) {
 
 	if (streamline==NULL) {
 		switch (TRACKER::algorithm) {
-		case PTT:
+		case PTT_C1:
+        case PTT_C2:
 			streamline 		= new Streamline_PTT();
 			break;
 		case LOCAL_PROBABILISTIC:

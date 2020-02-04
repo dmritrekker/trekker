@@ -56,16 +56,16 @@ void Streamline_PTT::flush() {
 
 void Streamline_PTT::push(void *segment) {
 
-	FPTF *curve = ((FPTF *)segment);
+	PTF *curve = ((PTF *)segment);
 
 	coordinates.push_back(Coordinate(curve->p[0],curve->p[1],curve->p[2]));
 
 	if (OUTPUT::tangentWriteMode==WRITE_ON) 	   tangent.push_back(Coordinate(curve->T[0], curve->T[1], curve->T[2] ));
 	if (OUTPUT::k1axisWriteMode==WRITE_ON) 		    k1axis.push_back(Coordinate(curve->N1[0],curve->N1[1],curve->N1[2]));
 	if (OUTPUT::k2axisWriteMode==WRITE_ON) 		    k2axis.push_back(Coordinate(curve->N2[0],curve->N2[1],curve->N2[2]));
-	if (OUTPUT::k1WriteMode==WRITE_ON) 			        k1.push_back(PTF_CONSTS::k1[curve->index]);
-	if (OUTPUT::k2WriteMode==WRITE_ON) 			        k2.push_back(PTF_CONSTS::k2[curve->index]);
-	if (OUTPUT::curvatureWriteMode==WRITE_ON) 	 curvature.push_back(PTF_CONSTS:: k[curve->index]);
+	if (OUTPUT::k1WriteMode==WRITE_ON) 			        k1.push_back(curve->getk1());
+	if (OUTPUT::k2WriteMode==WRITE_ON) 			        k2.push_back(curve->getk2());
+	if (OUTPUT::curvatureWriteMode==WRITE_ON) 	 curvature.push_back(curve->getk());
 	if (OUTPUT::priorWriteMode==WRITE_ON) 		     prior.push_back(curve->prior);
 	if (OUTPUT::likelihoodWriteMode==WRITE_ON) 	likelihood.push_back(curve->likelihood);
 	if (OUTPUT::posteriorWriteMode==WRITE_ON) 	 posterior.push_back(curve->posterior);

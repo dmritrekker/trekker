@@ -3,6 +3,7 @@
 
 #define DEFAULT_PTT_STEPSIZE_IN_PIXELDIM                       0.025
 #define DEFAULT_PTT_MINRADIUSOFCURVATURE_IN_PIXELDIM            0.25
+#define DEFAULT_PTT_MINRADIUSOFTORSION_IN_RADIANMULTIPLIER      0.785398163 // PI/4
 #define DEFAULT_PTT_PROBELENGTH_IN_PIXELDIM                     0.25
 #define DEFAULT_PTT_PROBERADIUS_IN_PIXELDIM                      0.1
 #define DEFAULT_PTT_PROBECOUNT                                     1

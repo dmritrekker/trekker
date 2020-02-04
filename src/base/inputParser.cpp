@@ -64,6 +64,7 @@ void InputParser::parse() {
         else if (Option("-checkWeakLinks"))         parse_checkWeakLinks();
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
+        else if (Option("-minRadiusOfTorsion"))     parse_minRadiusOfTorsion();
 		else if (Option("-minFODamp"))        		parse_minFODamp();
         else if (Option("-maxEstInterval"))        	parse_maxEstInterval();
         else if (Option("-dataSupportExponent"))    parse_dataSupportExponent();
@@ -635,6 +636,23 @@ void InputParser::parse_minRadiusOfCurvature() {
 
 }
 
+void InputParser::parse_minRadiusOfTorsion() {
+
+	if (minRadiusOfTorsion != NOTSET) {
+		std::cout << "Cannot use -minRadiusOfTorsion option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	argv_index++;
+	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
+		std::cout << "Input maximum torsion after -minRadiusOfTorsion" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	minRadiusOfTorsion = atof(argv[argv_index]);
+	argv_index++;
+
+}
+
 void InputParser::parse_probeLength() {
 
 	if (probeLength != NOTSET) {
@@ -955,20 +973,40 @@ void InputParser::parse_algorithm() {
 		std::cout << "Cannot use -algorithm option more than once" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
 	argv_index++;
+    
 	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
 		std::cout << "Input tracking algorithm after -algorithm" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	if      (Option("ptt"))    					TRACKER::algorithm = PTT;
+	if      (Option("ptt"))    					TRACKER::algorithm = PTT_C2;
 	else if (Option("local_probabilistic"))  	TRACKER::algorithm = LOCAL_PROBABILISTIC;
 	else {
 		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\" and \"local_probabilistic\" "<< std::endl;
 		exit(EXIT_FAILURE);
 	}
 	argv_index++;
+    
+    if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
+        
+        if (TRACKER::algorithm == PTT_C2) {
+            if      (Option("C1"))    					TRACKER::algorithm = PTT_C1;
+            else if (Option("C2"))    					TRACKER::algorithm = PTT_C2;
+            else if (Option("C3"))    					TRACKER::algorithm = PTT_C3;
+            else {
+                std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\", \"C2\" and \"C3\""<< std::endl;
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            std::cout << "Invalid option for local_probabilistic tracking type: " << argv[argv_index] << ", this algorithm does not support any options "<< std::endl;
+            exit(EXIT_FAILURE);
+        }
+        
+		argv_index++;
+	}
+    
+    
 
 }
 

@@ -19,7 +19,7 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 		TRACKER::maxCurvature = 1e-4;
 		if (GENERAL::verboseLevel!=QUITE) std::cout << "minRadiusOfCurvature is very large" << std::endl;
 	}
-
+	
 	// Set probeCount and probeRadius
 	if (TRACKER::probeCount<1)   TRACKER::probeCount =NOTSET;
 	if (TRACKER::probeRadius<0)  TRACKER::probeRadius=NOTSET;
@@ -59,6 +59,23 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	if ((TRACKER::probeQuality<=0.0) || (TRACKER::probeQuality>100)) {
 		TRACKER::probeQuality = DEFAULT_PTT_PROBEQUALITY;
 		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeQuality      : " << TRACKER::probeQuality << std::endl;
+	}
+	
+	// Handle derived probe parameters
+	TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
+    TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
+    TRACKER::angularSeparation = M_2_PI/float(TRACKER::probeCount);
+	
+    // Handle minRadiusOfTorsion
+	if (TRACKER::minRadiusOfTorsion<=0.0) {
+		TRACKER::minRadiusOfTorsion = TRACKER::probeLength/DEFAULT_PTT_MINRADIUSOFTORSION_IN_RADIANMULTIPLIER;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default minRadiusOfTorsion      : " << TRACKER::minRadiusOfTorsion << img_FOD->getUnit() << std::endl;
+	}
+
+	TRACKER::maxTorsion = 1/TRACKER::minRadiusOfTorsion;
+	if (TRACKER::maxTorsion<1e-4) {
+		TRACKER::maxTorsion = 1e-4;
+		if (GENERAL::verboseLevel!=QUITE) std::cout << "minRadiusOfTorsion is very large" << std::endl;
 	}
 
 	// Handle dataSupportExponent
@@ -130,11 +147,17 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 void TrackWith_PTT::print() {
     
     if (GENERAL::usingAPI==false) {
-        std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
+        
+        if (TRACKER::algorithm == PTT_C2) {
+            std::cout << "algorithm            : parallel transport tracker (PTT) - C2 version"   	<< std::endl;
+        } else {
+            std::cout << "algorithm            : parallel transport tracker (PTT) - C1 version"   	<< std::endl;
+        }
     }
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
+    std::cout << "minRadiusOfTorsion   : "  << TRACKER::minRadiusOfTorsion 	    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 
 	std::cout << "probeLength          : "  << TRACKER::probeLength 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "probeRadius          : "  << TRACKER::probeRadius 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;

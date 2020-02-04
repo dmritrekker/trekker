@@ -52,6 +52,7 @@ private:
     void parse_checkWeakLinks();
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
+    void parse_minRadiusOfTorsion();
 	void parse_minFODamp();
     void parse_maxEstInterval();
     void parse_dataSupportExponent();

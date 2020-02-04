@@ -2,7 +2,7 @@
 #define SRC_TRACKER_ALGORITHMS_PTT_STREAMLINE_PTT_H_
 
 #include "../../base/streamline.h"
-#include "fast_PTF.h"
+#include "PTF.h"
 
 class Streamline_PTT : public Streamline {
 

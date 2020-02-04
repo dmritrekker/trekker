@@ -8,7 +8,9 @@ void TrackWith_PTT::get_initial_curve() {
 	else
 		curve->getARandomFrame();
 
-	curve->setCandidateIndex(PTF_CONSTS::valid_indices.at(doRandomThings->uniform_int()));
+	// curve->setInitCandidateIndex(PTF_CONSTS::valid_indices.at(doRandomThings->uniform_int()));
+    
+    curve->getACandidatek1k2();
 	calcLikelihoodAndPosterior();
 }
 

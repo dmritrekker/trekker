@@ -3,8 +3,7 @@
 
 #include "../../../base/algorithm.h"
 #include "../../../math/sphericalHarmonics.h"
-#include "fast_PTF_discretizer.h"
-#include "fast_PTF.h"
+#include "PTF.h"
 #include "streamline_ptt.h"
 #include "tractogram_ptt.h"
 #include "algorithm_ptt_defaults.h"
@@ -26,7 +25,7 @@ public:
 	virtual void setDefaultParametersWhenNecessary();
 	virtual void print();
 
-	FPTF 			*curve;
+	PTF 			*curve;
 	void 			 calcLikelihoodAndPosterior();
 
 
@@ -38,7 +37,7 @@ private:
 	void 			 estimatePosteriorMax();
 	void 		 	 rejectionSample();
 
-	FPTF 			*initial_curve;
+	PTF 			*initial_curve;
     float 		 	 initialPosteriorMax;
     
 	float 		 	 posteriorMax;
@@ -47,6 +46,13 @@ private:
 	size_t 		 	 current_prop_postEstItCount;
 
 	float 			*FOD;
+    
+    float            p[3];
+    float            F[3][3];
+    
+    float            T[3];
+    float            N1[3];
+    float            N2[3];
 
 	RandomDoer  	*doRandomThings;
 

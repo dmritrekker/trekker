@@ -26,6 +26,7 @@ public:
 	Coordinate 	 getAUnitRandomVector();
 	void 		 getAUnitRandomVector(float* out);
 	void 		 getAUnitRandomPerpVector(float* out, float* inp);
+    void         getARandomPointWithDisk(float* x, float *y, float r);
 
 private:
 	std::mt19937 gen;
@@ -61,6 +62,16 @@ inline void RandomDoer::getAUnitRandomVector(float* out) {
 	} while ((out[0]==0) && (out[1]==0) && (out[2]==0));
 	normalize(out);
 
+}
+
+inline void RandomDoer::getARandomPointWithDisk(float* x, float *y, float r) {
+
+	do {
+		*x = uniform_m1_p1();
+		*y = uniform_m1_p1();
+	} while ((*x**x+*y**y)>1);
+	*x *= r;  
+    *y *= r;
 }
 
 inline void RandomDoer::getAUnitRandomPerpVector(float* out, float* inp) {

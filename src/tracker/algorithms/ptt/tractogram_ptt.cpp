@@ -292,9 +292,14 @@ void Tractogram_PTT::writeMetadataOutput() {
 	FILE *out = writeBaseMetadataOutput();
 
 	fprintf(out,",\n\"TRACKER OPTIONS\": {");
-	fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt)\" ");
+    if (TRACKER::algorithm == PTT_C2) {
+        fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) - C2 version\" ");
+    } else {
+        fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) - C1 version\" ");
+    }
 	fprintf(out,(",\n\"stepSize\":" 			+ std::to_string(TRACKER::stepSize)).c_str());
 	fprintf(out,(",\n\"minRadiusOfCurvature\":" + std::to_string(TRACKER::minRadiusOfCurvature)).c_str());
+    fprintf(out,(",\n\"minRadiusOfTorsion\":"   + std::to_string(TRACKER::minRadiusOfTorsion)).c_str());
 	fprintf(out,(",\n\"probeLength\":" 			+ std::to_string(TRACKER::probeLength)).c_str());
 	fprintf(out,(",\n\"probeRadius\":" 			+ std::to_string(TRACKER::probeRadius)).c_str());
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());

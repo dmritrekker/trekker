@@ -35,7 +35,7 @@ public:
 
 	void 		 setThread(TrackingThread* _thread);
 	virtual void setStreamline(Streamline *_streamline) 	= 0;
-
+    
 	virtual void setDefaultParametersWhenNecessary() = 0;
 	virtual void print() = 0;
 
