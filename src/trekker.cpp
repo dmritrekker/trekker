@@ -1,13 +1,11 @@
 #include "trekker.h"
 #include "tracker/tracker_thread.h"
-#include "tracker/algorithms/ptt/fast_PTF_discretizer.h"
 
 using namespace GENERAL;
 using namespace TRACKER;
 using namespace SEED;
 using namespace PATHWAY;
 using namespace OUTPUT;
-using namespace PTF_CONSTS;
 
 Trekker::Trekker(int argc, char **argv) {
 	InputParser input(argc, argv);
@@ -83,12 +81,6 @@ void Trekker::execute() {
             return;
         }
         
-        if ((PTF_CONSTS::isReady == false) && ((TRACKER::algorithm==PTT_C1) || (TRACKER::algorithm==PTT_C2) || (TRACKER::algorithm==PTT_C3) ) ) {
-            std::cout << "TREKKER::Setting up Trekker for parameter modifications..." << std::endl << std::flush;
-            PTF_CONSTS::cleanPTFCoefficients();
-            PTF_CONSTS::precomputePTFCoefficients(501);
-            PTF_CONSTS::isReady = true;
-        }
         TRACKER::setMethodsDefaultParametersWhenNecessary();
         
         TRACKER::tractogram->reset();
@@ -216,9 +208,9 @@ void Trekker::timeLimit(int t) { GENERAL::timeLimit = t;}
 
 // Tracker config
 void Trekker::checkWeakLinks(bool q) { TRACKER::checkWeakLinks = q ? CHECKWEAKLINKS_ON : CHECKWEAKLINKS_OFF; }
-void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize; PTF_CONSTS::isReady = false; }
+void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}
 
-void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;PTF_CONSTS::isReady = false; }
+void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;}
 void Trekker::minFODamp(double x) { TRACKER::minFODamp = x; }
 void Trekker::maxEstInterval(int n) { TRACKER::maxEstInterval = n; }
 void Trekker::dataSupportExponent(double x) { TRACKER::dataSupportExponent = x; }
@@ -266,10 +258,10 @@ void Trekker::initMaxEstTrials(int n) {TRACKER::initMaxEstTrials=n;}
 void Trekker::propMaxEstTrials(int n) {TRACKER::propMaxEstTrials=n;}
 void Trekker::useBestAtInit(bool q) {TRACKER::atInit = q ? ATINIT_USEBEST : ATINIT_REJECTIONSAMPLE;}
 
-void Trekker::probeLength(double x) { TRACKER::probeLength = x; PTF_CONSTS::isReady  = false;}
-void Trekker::probeRadius(double x) { TRACKER::probeRadius = x; PTF_CONSTS::isReady  = false;}
-void Trekker::probeCount(int n) { TRACKER::probeCount  = n; PTF_CONSTS::isReady  = false; }
-void Trekker::probeQuality(int n) { TRACKER::probeQuality = n; PTF_CONSTS::isReady   = false; }
+void Trekker::probeLength(double x) { TRACKER::probeLength = x;}
+void Trekker::probeRadius(double x) { TRACKER::probeRadius = x;}
+void Trekker::probeCount(int n) { TRACKER::probeCount  = n;}
+void Trekker::probeQuality(int n) { TRACKER::probeQuality = n;}
 
 
 // Seed config

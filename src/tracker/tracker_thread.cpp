@@ -121,6 +121,7 @@ void TrackingThread::track(Coordinate *point) {
 		switch (TRACKER::algorithm) {
 		case PTT_C1:
         case PTT_C2:
+        case PTT_C3:
 			streamline 		= new Streamline_PTT();
 			break;
 		case LOCAL_PROBABILISTIC:

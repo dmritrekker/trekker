@@ -76,11 +76,6 @@ void cleanConfigTracker() {
 	delete method;
 	delete tractogram;
     
-    /*
-	if ((TRACKER::algorithm == PTT_C1) || (TRACKER::algorithm == PTT_C2) || (TRACKER::algorithm == PTT_C3))
-	 	PTF_CONSTS::cleanPTFCoefficients();
-    */
-    
 }
 
 void setDefaultParametersWhenNecessary() {
@@ -136,16 +131,7 @@ void setDefaultParametersWhenNecessary() {
 }
 
 void setMethodsDefaultParametersWhenNecessary() {
-    
     method->setDefaultParametersWhenNecessary();
-    
-    /*
-	if ( (TRACKER::algorithm == PTT_C1) || (TRACKER::algorithm == PTT_C2) || (TRACKER::algorithm == PTT_C3) ) {
-		PTF_CONSTS::precomputePTFCoefficients(PTFCOEFFMATRIXSIZE);
-        PTF_CONSTS::isReady = true;
-    }
-    */
-    
 }
 
 void readFODImage() {

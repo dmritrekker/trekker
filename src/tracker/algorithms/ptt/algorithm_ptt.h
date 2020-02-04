@@ -27,6 +27,7 @@ public:
 
 	PTF 			*curve;
 	void 			 calcLikelihoodAndPosterior();
+    float            getDataSupport(float *p, float *T);
 
 
 
@@ -47,8 +48,8 @@ private:
 
 	float 			*FOD;
     
-    float            p[3];
-    float            F[3][3];
+    float*           p;
+    float**          F;
     
     float            T[3];
     float            N1[3];

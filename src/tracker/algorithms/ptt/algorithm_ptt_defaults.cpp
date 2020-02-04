@@ -62,8 +62,8 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	}
 	
 	// Handle derived probe parameters
-	TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
-    TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
+	TRACKER::probeStepSize     = (TRACKER::probeLength-TRACKER::stepSize)/TRACKER::probeQuality; // -stepSize for the candidate step
+    TRACKER::probeNormalizer   = 1/(float(TRACKER::probeQuality*TRACKER::probeCount)+1);         // +1 for the candidate step
     TRACKER::angularSeparation = M_2_PI/float(TRACKER::probeCount);
 	
     // Handle minRadiusOfTorsion
@@ -148,10 +148,12 @@ void TrackWith_PTT::print() {
     
     if (GENERAL::usingAPI==false) {
         
-        if (TRACKER::algorithm == PTT_C2) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C2 version"   	<< std::endl;
-        } else {
+        if (TRACKER::algorithm == PTT_C1) {
             std::cout << "algorithm            : parallel transport tracker (PTT) - C1 version"   	<< std::endl;
+        } else if (TRACKER::algorithm == PTT_C2) {
+            std::cout << "algorithm            : parallel transport tracker (PTT) - C2 version"   	<< std::endl;
+        } else if (TRACKER::algorithm) {
+            std::cout << "algorithm            : parallel transport tracker (PTT) - C3 version"   	<< std::endl;
         }
     }
 

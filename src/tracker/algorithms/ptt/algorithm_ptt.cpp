@@ -9,6 +9,8 @@ TrackWith_PTT::TrackWith_PTT() {
 	initial_curve		= NULL;
 	curve 				= NULL;
 	FOD 				= NULL;
+    p                   = NULL;
+    F                   = NULL;
 
 	if (TRACKER::defaultsSet == true) {
 		doRandomThings 				= new RandomDoer();
@@ -19,8 +21,14 @@ TrackWith_PTT::TrackWith_PTT() {
 
 		current_init_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;
 		current_prop_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->prop_postEstItCount;
+        
+        
+        p           = new float[3];
+        F           = new float*[3];
+        F[0]        = new float[3];
+        F[1]        = new float[3];
+        F[2]        = new float[3];
 
-		// doRandomThings->init_uniform_int(PTF_CONSTS::validIndexCount-1);
 	}
 	
 }
@@ -30,6 +38,16 @@ TrackWith_PTT::~TrackWith_PTT() {
 	if (initial_curve!=NULL) 	delete 	 initial_curve;
 	if (curve!=NULL) 			delete   curve;
 	if (FOD!=NULL) 				delete[] FOD;
+    
+    if (F!=NULL) {
+        delete[] F[0];
+        delete[] F[1];
+        delete[] F[2];
+        delete[] F;
+    }
+    
+    if (p!=NULL) 				delete[] p;
+    
 }
 
 

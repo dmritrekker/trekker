@@ -1,5 +1,27 @@
 #include "algorithm_ptt.h"
 
+void TrackWith_PTT::get_a_candidate_curve() {
+    
+    curve->getACandidatek1k2();
+    
+    /*
+    float tau = INFINITY;
+    
+    while (tau > TRACKER::maxTorsion) {        
+        
+        curve->getACandidatek1k2();        
+        
+        float ang = std::acos((float(curve->k1*curve->k1_cand + curve->k2*curve->k2_cand))/(std::sqrt(float(curve->k1*curve->k1 + curve->k2*curve->k2))*std::sqrt(float(curve->k1_cand*curve->k1_cand + curve->k2_cand *curve->k2_cand))));        
+        
+        if (ang>PI/2) ang -= PI/2;
+        
+        tau = ang/probeLength;        
+    }
+    */
+    
+	calcLikelihoodAndPosterior();
+}
+
 void TrackWith_PTT::rejectionSample() {
 
 	int tries;

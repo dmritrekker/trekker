@@ -269,40 +269,44 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
 
 }*/
 
-
+float TrackWith_PTT::getDataSupport(float *p, float *T) {
+    
+    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+        thread->tracker_FOD->getVal(p,FOD);
+        return SH::SH_amplitude(FOD,T);
+    } else
+        return thread->tracker_FOD->getFODval(p,T);
+    
+}
 
 void TrackWith_PTT::calcLikelihoodAndPosterior() {
-
-    curve->likelihood  	= 0;
     
-    for (int i=0; i<3; i++) {
-        p[i] = curve->p[i];
-        for (int j=0; j<3; j++) {
-            F[i][j] = curve->F[i][j];
-        }
-    }
+    // Simulate step for candidate
+    curve->prepCandStepPropagator();
+    curve->walkCandStep(p,F);
+    curve->likelihood = getDataSupport(p,F[0]);
     
     curve->prepProbePropagator();
     
     for (int q=0; q<TRACKER::probeQuality; q++) {
         
         for (int i=0; i<3; i++) {
-            p[i]  += curve->PP[0]*F[i][0] +  curve->PP[1]*F[i][1]  +  curve->PP[2]*F[i][2];
-            T[i]   = curve->PP[3]*F[i][0] +  curve->PP[4]*F[i][1]  +  curve->PP[5]*F[i][2];
+            p[i]  += curve->PP[0]*F[0][i] +  curve->PP[1]*F[1][i]  +  curve->PP[2]*F[2][i];
+            T[i]   = curve->PP[3]*F[0][i] +  curve->PP[4]*F[1][i]  +  curve->PP[5]*F[2][i];
         }
         
         
         if (q<(TRACKER::probeQuality-1)) {
             
             for (int i=0; i<3; i++) {
-                N2[i]  = curve->PP[6]*F[i][0] +  curve->PP[7]*F[i][1]  +  curve->PP[8]*F[i][2];
+                N2[i]  = curve->PP[6]*F[0][i] +  curve->PP[7]*F[1][i]  +  curve->PP[8]*F[2][i];
             }
             
             cross(N1,N2,T);
             for (int i=0; i<3; i++) {
-                F[i][0] =  T[i];
-                F[i][1] = N1[i];
-                F[i][2] = N2[i];
+                F[0][i] =  T[i];
+                F[1][i] = N1[i];
+                F[2][i] = N2[i];
             }
             
         }
@@ -310,13 +314,7 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
         
         if (TRACKER::probeCount==1) {
             
-            float val;
-            if (TRACKER::fodDiscretization==FODDISC_OFF) {
-                thread->tracker_FOD->getVal(p,FOD);
-                val = SH::SH_amplitude(FOD,T);
-            } else
-                val = thread->tracker_FOD->getFODval(p,T);
-
+            float val = getDataSupport(p,T);
             
             if ((TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) && (val < minFODamp)) {
                 curve->likelihood   = 0;
@@ -331,7 +329,7 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
             
             if (q==(TRACKER::probeQuality-1)) {
                 for (int i=0; i<3; i++) {
-                    N2[i]  = curve->PP[6]*F[i][0] +  curve->PP[7]*F[i][1]  +  curve->PP[8]*F[i][2];
+                    N2[i]  = curve->PP[6]*F[0][i] +  curve->PP[7]*F[1][i]  +  curve->PP[8]*F[2][i];
                 }
                 cross(N1,N2,T);
             }
@@ -345,13 +343,7 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
                     pp[i] = p[i] + N1[i]*TRACKER::probeRadius*std::cos(c*TRACKER::angularSeparation) + N2[i]*TRACKER::probeRadius*std::sin(c*TRACKER::angularSeparation);
                 }
                 
-                float val;
-                if (TRACKER::fodDiscretization==FODDISC_OFF) {
-                    thread->tracker_FOD->getVal(pp,FOD);
-                    val = SH::SH_amplitude(FOD,T);
-                } else
-                    val = thread->tracker_FOD->getFODval(pp,T);
-
+                float val = getDataSupport(p,T);
                 
                 if ((TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) && (val < minFODamp)) {
                     curve->likelihood   = 0;

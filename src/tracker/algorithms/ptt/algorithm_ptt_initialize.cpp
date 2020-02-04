@@ -7,8 +7,6 @@ void TrackWith_PTT::get_initial_curve() {
 		curve->getARandomFrame(thread->seed_init_direction);
 	else
 		curve->getARandomFrame();
-
-	// curve->setInitCandidateIndex(PTF_CONSTS::valid_indices.at(doRandomThings->uniform_int()));
     
     curve->getACandidatek1k2();
 	calcLikelihoodAndPosterior();

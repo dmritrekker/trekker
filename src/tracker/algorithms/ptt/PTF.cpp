@@ -1,8 +1,11 @@
 #include "PTF.h"
 
+#define SMALL 0.0001
+
 PTF::PTF(RandomDoer *_rndmr) {
 	init_Frame();
-	rndmr = _rndmr;
+	rndmr          = _rndmr;
+    initialized    = false;
 }
 
 void PTF::init_Frame() {
@@ -22,7 +25,6 @@ void PTF::init_Frame() {
     F[2]        = new float[3];
 
     PP          = new float[8];
-    memset(PP,0,8*sizeof(float));
     
 	likelihood 	= 0.0;
 	prior 		= 1.0;
@@ -41,22 +43,35 @@ PTF::~PTF() {
     delete[] F;
     
     delete[] PP;
+    
 }
 
 void PTF::updateF() {
     for (int i=0; i<3; i++) {
-        F[i][0] =  T[i];
-        F[i][1] = N1[i];
-        F[i][2] = N2[i];
+        F[0][i] =  T[i];
+        F[1][i] = N1[i];
+        F[2][i] = N2[i];
     }
+}
+
+void PTF::initkT(PTF *ptf) {
+    kT1 = ptf->k1 - k1;
+    kT2 = ptf->k2 - k2;
+    
+    float norm = std::sqrt(kT1*kT1 + kT2*kT2);
+    
+    kT1 /= norm;
+    kT2 /= norm;
+    
+    initialized = true;
 }
 
 void PTF::swap(PTF *ptf) {
 
     k1  =  ptf->k1;
     k2  =  ptf->k2;
-    kT1 = -ptf->kT1;
-    kT2 = -ptf->kT2;
+    kT1 =  ptf->kT1;
+    kT2 =  ptf->kT2;
     
 	for (int i=0; i<3; i++) {
 		 p[i] 	= ptf->p[i];
@@ -104,7 +119,9 @@ void PTF::flip() {
 	}
 	updateF();
 
-	k1 *= -1;
+	k1  *= -1;
+    kT1 *= -1;
+    kT2 *= -1;
 
 	likelihood 	=  0.0;
 	prior 		=  1.0;
@@ -117,9 +134,9 @@ void PTF::walk() {
     this->prepStepPropagator();
     
 	for (int i=0; i<3; i++) {
-		p[i]  += PP[0]*F[i][0] +  PP[1]*F[i][1]  +  PP[2]*F[i][2];
-		T[i]   = PP[3]*F[i][0] +  PP[4]*F[i][1]  +  PP[5]*F[i][2];
-		N2[i]  = PP[6]*F[i][0] +  PP[7]*F[i][1]  +  PP[8]*F[i][2];
+		p[i]  += PP[0]*F[0][i] +  PP[1]*F[1][i]  +  PP[2]*F[2][i];
+		T[i]   = PP[3]*F[0][i] +  PP[4]*F[1][i]  +  PP[5]*F[2][i];
+		N2[i]  = PP[6]*F[0][i] +  PP[7]*F[1][i]  +  PP[8]*F[2][i];
 	}
 
 	normalize(T);
@@ -135,6 +152,89 @@ void PTF::walk() {
 
 }
 
+void PTF::prepCandStepPropagator() {
+    
+    switch (TRACKER::algorithm) {
+        
+        case PTT_C1: {
+            prepCandStepPropagator_C1();
+            break;
+        }
+            
+        case PTT_C2: {
+            
+            if ((std::fabs(k1-k1_cand)<SMALL) && (std::fabs(k2-k2_cand)<SMALL)) {
+                prepCandStepPropagator_C1();
+            } else {
+                prepCandStepPropagator_C2();
+            }
+            
+            break;
+        }
+            
+        case PTT_C3: {
+            
+            if (initialized==false) {
+                prepCandStepPropagator_C1();
+                kT1_cand = kT1;
+                kT2_cand = kT2;
+                return;
+            }
+            
+            float q1 = k1_cand - k1;
+            float q2 = k2_cand - k2;
+            
+            float nq = std::sqrt(q1*q1+q2*q2);
+            
+            if (nq<SMALL) {
+                prepCandStepPropagator_C1();
+                kT1_cand = kT1;
+                kT2_cand = kT2;
+                return;
+            }
+            
+            float cosTheta= (q1*kT1+q2*kT2)/nq;
+            
+            if (abs(abs(cosTheta)-1)<SMALL) {                
+                prepCandStepPropagator_C2();
+                kT1_cand = kT1;
+                kT2_cand = kT2;
+                return;
+            }
+            
+            float theta   = std::acos(cosTheta);
+            float sinTheta= std::sin(theta);
+            float r       = nq/(2*sinTheta);
+            float cqt     = kT2*q1-kT1*q2;
+            
+            float dirC1, dirC2;
+            if (cqt>0) {
+                theta   = -theta;
+                dirC1   =  kT2;
+                dirC2   = -kT1;
+            } else {
+                dirC1   = -kT2;
+                dirC2   =  kT1;
+            }
+            
+            float xc = dirC1*r+k1;
+            float yc = dirC2*r+k2;
+
+            float alpha = std::atan2(k2-yc,k1-xc);
+            float sign  = (theta > 0) ? 1 : -1;
+            kT1_cand    = std::cos(alpha + 2*theta/TRACKER::stepSize + sign*M_PI_2);
+            kT2_cand    = std::sin(alpha + 2*theta/TRACKER::stepSize + sign*M_PI_2);
+            
+            prepCandStepPropagator_C3(r,xc,yc,alpha,theta);
+            
+            
+            break;
+        }
+            
+        default: { break; }
+    }
+    
+}
 
 
 void PTF::print() {
