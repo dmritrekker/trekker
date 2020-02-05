@@ -31,7 +31,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 		get_initial_curve();
 		if (curve->posterior > posteriorMax) {
 			posteriorMax = curve->posterior;
-			curve->setToCandidate();
+			// curve->setToCandidate();
 			initial_curve->swap(curve);
 		}
 	}
@@ -59,7 +59,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 				curve->posterior = -2;
 				break;
 			} else if (doRandomThings->uniform_01()*posteriorMax < curve->posterior ) {
-				curve->setToCandidate();
+				// curve->setToCandidate();
 				initial_curve->swap(curve);
 				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, posterior was: " << curve->posterior << std::endl;
 				break;

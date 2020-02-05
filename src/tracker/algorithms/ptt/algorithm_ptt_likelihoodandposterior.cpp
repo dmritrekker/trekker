@@ -269,26 +269,38 @@ void TrackWith_PTT::calcLikelihoodAndPosterior() {
 
 }*/
 
-float TrackWith_PTT::getDataSupport(float *p, float *T) {
+float TrackWith_PTT::getDataSupport(float *pv, float *Tv) {
     
     if (TRACKER::fodDiscretization==FODDISC_OFF) {
-        thread->tracker_FOD->getVal(p,FOD);
-        return SH::SH_amplitude(FOD,T);
+        thread->tracker_FOD->getVal(pv,FOD);
+        return SH::SH_amplitude(FOD,Tv);
     } else
-        return thread->tracker_FOD->getFODval(p,T);
+        return thread->tracker_FOD->getFODval(pv,Tv);
     
 }
 
 void TrackWith_PTT::calcLikelihoodAndPosterior() {
     
-    // Simulate step for candidate
-    curve->prepCandStepPropagator();
-    curve->walkCandStep(p,F);
-    curve->likelihood = getDataSupport(p,F[0]);
     
-    curve->prepProbePropagator();
+    // Simulate step for candidate
+    // curve->prepCandStepPropagator();
+    // curve->walkCandStep(p,F);
+    // curve->likelihood = getDataSupport(p,F[0]);
+    
+    for (int i=0; i<3; i++) {
+        p[i] 	= curve->p[i];
+        for (int j=0; j<3; j++) {
+            F[i][j] = curve->F[i][j];
+        }
+        
+	}
+    curve->probeStepCount   = 0;
+    curve->likelihood       = 0;
+    
     
     for (int q=0; q<TRACKER::probeQuality; q++) {
+        
+        curve->prepProbePropagator(); // Gets the next propagator for q, that is why it needs to be inside this for loop
         
         for (int i=0; i<3; i++) {
             p[i]  += curve->PP[0]*F[0][i] +  curve->PP[1]*F[1][i]  +  curve->PP[2]*F[2][i];

@@ -33,6 +33,7 @@ TrackWith_PTT::TrackWith_PTT() {
 	
 }
 
+
 TrackWith_PTT::~TrackWith_PTT() {
 	if (doRandomThings!=NULL) 	delete 	 doRandomThings;
 	if (initial_curve!=NULL) 	delete 	 initial_curve;
@@ -83,6 +84,7 @@ void TrackWith_PTT::flip() {
 void TrackWith_PTT::append() {
 	this->streamline->push((void*)curve);
 }
+
 
 void TrackWith_PTT::removeLast() {
 	this->streamline->pop_back();

@@ -60,9 +60,9 @@ void Streamline_PTT::push(void *segment) {
 
 	coordinates.push_back(Coordinate(curve->p[0],curve->p[1],curve->p[2]));
 
-	if (OUTPUT::tangentWriteMode==WRITE_ON) 	   tangent.push_back(Coordinate(curve->T[0], curve->T[1], curve->T[2] ));
-	if (OUTPUT::k1axisWriteMode==WRITE_ON) 		    k1axis.push_back(Coordinate(curve->N1[0],curve->N1[1],curve->N1[2]));
-	if (OUTPUT::k2axisWriteMode==WRITE_ON) 		    k2axis.push_back(Coordinate(curve->N2[0],curve->N2[1],curve->N2[2]));
+	if (OUTPUT::tangentWriteMode==WRITE_ON) 	   tangent.push_back(Coordinate(curve->F[0][0], curve->F[0][1], curve->F[0][2] ));
+	if (OUTPUT::k1axisWriteMode==WRITE_ON) 		    k1axis.push_back(Coordinate(curve->F[1][0], curve->F[1][1], curve->F[1][2] ));
+	if (OUTPUT::k2axisWriteMode==WRITE_ON) 		    k2axis.push_back(Coordinate(curve->F[2][0], curve->F[2][1], curve->F[2][2] ));
 	if (OUTPUT::k1WriteMode==WRITE_ON) 			        k1.push_back(curve->getk1());
 	if (OUTPUT::k2WriteMode==WRITE_ON) 			        k2.push_back(curve->getk2());
 	if (OUTPUT::curvatureWriteMode==WRITE_ON) 	 curvature.push_back(curve->getk());

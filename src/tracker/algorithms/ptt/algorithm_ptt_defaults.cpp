@@ -62,8 +62,11 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	}
 	
 	// Handle derived probe parameters
-	TRACKER::probeStepSize     = (TRACKER::probeLength-TRACKER::stepSize)/TRACKER::probeQuality; // -stepSize for the candidate step
-    TRACKER::probeNormalizer   = 1/(float(TRACKER::probeQuality*TRACKER::probeCount)+1);         // +1 for the candidate step
+	// TRACKER::probeStepSize     = (TRACKER::probeLength-TRACKER::stepSize)/TRACKER::probeQuality; // -stepSize for the candidate step
+    // TRACKER::probeNormalizer   = 1/(float(TRACKER::probeQuality*TRACKER::probeCount)+1);         // +1 for the candidate step
+    
+    TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
+    TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
     TRACKER::angularSeparation = M_2_PI/float(TRACKER::probeCount);
 	
     // Handle minRadiusOfTorsion

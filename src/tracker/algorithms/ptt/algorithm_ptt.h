@@ -27,7 +27,7 @@ public:
 
 	PTF 			*curve;
 	void 			 calcLikelihoodAndPosterior();
-    float            getDataSupport(float *p, float *T);
+    float            getDataSupport(float *pv, float *Tv);
 
 
 

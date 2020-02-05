@@ -37,7 +37,7 @@ void TrackWith_PTT::rejectionSample() {
 			curve->posterior = -2;
 			break;
 		} else if (doRandomThings->uniform_01()*posteriorMax < curve->posterior ) {
-			curve->setToCandidate();
+			// curve->setToCandidate();
 			break;
 		}
 
