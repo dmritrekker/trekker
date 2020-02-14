@@ -1,13 +1,15 @@
 #include "../../tracker_thread.h"
 #include "algorithm_ptt.h"
 
-Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {        
+Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {
     
     // Take a step forward
 	curve->walk();
     
     // Save tangent in k1-k2 space for C3 Propagation_Decision
-    if (curve->initialized==false) {
+    // At stepCounter=1 only one k1-k2 is drawn
+    // To initialize kT, stepCounter=2 is needed
+    if (stepCounter==2) {
         curve->initkT(initial_curve);
     }
     
@@ -19,9 +21,9 @@ Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {
 	// Rejection sample
 	rejectionSample();
 
-	if (curve->posterior == -2) {
+	if (curve->likelihood == -2) {
 		return FAIL;
-	} else if (curve->posterior == -1) {
+	} else if (curve->likelihood == -1) {
 		return STOP;
 	} else
 		return CONTINUE;

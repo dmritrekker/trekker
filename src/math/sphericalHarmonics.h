@@ -28,5 +28,4 @@ extern float   **Ylm; // Coefficients for SH expansion
 void  precomputeExpansionCoefficients();
 
 }
-
 #endif

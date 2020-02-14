@@ -26,8 +26,8 @@ public:
 	virtual void print();
 
 	PTF 			*curve;
-	void 			 calcLikelihoodAndPosterior();
-    float            getDataSupport(float *pv, float *Tv);
+	void 			 calcDataSupport();
+    float            getFODamp(float *pv, float *Tv);
 
 
 
@@ -60,6 +60,5 @@ private:
 	Streamline_PTT 	*streamline;
     
 };
-
 
 #endif

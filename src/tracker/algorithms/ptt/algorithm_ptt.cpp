@@ -58,8 +58,6 @@ void TrackWith_PTT::setSeed() {
     
     // Flush probs
     curve->likelihood 	= 0.0;
-	curve->prior 		= 1.0;
-	curve->posterior 	=-1.0; // This is used to check if the curve is swapped with a candidate curve
 	
 	initial_curve->swap(curve);
 

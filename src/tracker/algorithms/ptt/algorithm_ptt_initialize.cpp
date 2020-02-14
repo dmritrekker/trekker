@@ -9,7 +9,7 @@ void TrackWith_PTT::get_initial_curve() {
 		curve->getARandomFrame();
     
     curve->getACandidatek1k2();
-	calcLikelihoodAndPosterior();
+	calcDataSupport();
 }
 
 
@@ -17,33 +17,35 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 
 	// Sample initial curve by rejection sampling
-	curve->prior 	= 1;
-
 	int   tries;
 	int   fail   	= 0;
 	int   reject 	= 0;
 
-	// Initial estimation of posterior max
+    
+	// Initial max estimate
 	posteriorMax 	= 0;
 
 	for (tries=0; tries < (int)current_init_postEstItCount; tries++) {
 
 		get_initial_curve();
-		if (curve->posterior > posteriorMax) {
-			posteriorMax = curve->posterior;
-			// curve->setToCandidate();
+        
+		if (curve->likelihood > posteriorMax) {
+            // This candidate is now selected and it will be propagated
+			posteriorMax = curve->likelihood;
 			initial_curve->swap(curve);
 		}
+		
 	}
+    
 	posteriorMax       *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent); // initial compensation for underestimation
     initialPosteriorMax = posteriorMax;
-
+    
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
 		curve->swap(initial_curve);
-		if (curve->posterior < minFODamp)
-			curve->posterior = -2;
+		if (curve->likelihood < modMinFodAmp )
+			curve->likelihood = -2;
 
 	} else {
 
@@ -52,16 +54,16 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 			get_initial_curve();
 
-			if (curve->posterior < minFODamp) {
+			if (curve->likelihood < modMinFodAmp) {
 				reject++;
-			} else if (curve->posterior > posteriorMax) {
+			} else if (curve->likelihood > posteriorMax) {
 				fail++;
-				curve->posterior = -2;
+				curve->likelihood = -2;
 				break;
-			} else if (doRandomThings->uniform_01()*posteriorMax < curve->posterior ) {
-				// curve->setToCandidate();
+			} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
+                // This candidate is now selected and it will be propagated
 				initial_curve->swap(curve);
-				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, posterior was: " << curve->posterior << std::endl;
+				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
 				break;
 			}
 
@@ -80,7 +82,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 		streamline->sampling_init_generated  		+= 1;
 		streamline->sampling_init_tries  			+= tries;
 		streamline->sampling_init_reject 			+= reject;
-		if (curve->posterior==-2) {
+		if (curve->likelihood==-2) {
 			streamline->sampling_init_fail 			 = 1;
 			return INIT_FAIL;
 		}

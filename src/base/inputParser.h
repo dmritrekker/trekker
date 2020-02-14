@@ -49,11 +49,10 @@ private:
     void parse_dontDiscretizeFod();
     void parse_orderOfDirections();
 	void parse_algorithm();
-    void parse_checkWeakLinks();
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
-    void parse_minRadiusOfTorsion();
 	void parse_minFODamp();
+    void parse_ignoreWeakLinks();
     void parse_maxEstInterval();
     void parse_dataSupportExponent();
 	void parse_minLength();

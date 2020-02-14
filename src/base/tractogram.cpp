@@ -365,7 +365,7 @@ FILE* Tractogram::writeBaseMetadataOutput() {
 	std::string tmp;
 
 	fprintf(out,"{");
-	fprintf(out,"\n\"tracker\": \"trekker v0.5b\" ");
+	fprintf(out,"\n\"tracker\": \"trekker v0.5\" ");
 
 
 

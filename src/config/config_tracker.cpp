@@ -23,7 +23,6 @@ Tractogram            *tractogram 		= NULL;
 // Common tracking parameters
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
-float minRadiusOfTorsion   			    = NOTSET;
 float minFODamp      					= NOTSET;
 int   maxEstInterval                    = NOTSET;
 float dataSupportExponent      			= NOTSET;
@@ -47,25 +46,20 @@ float angularSeparation                 = NOTSET;
 
 // Derived parameters
 float maxCurvature   					= NOTSET;
-float maxTorsion   					    = NOTSET;
 float writeStepSize                  	= NOTSET;
 float maxEstStepSize                    = NOTSET;
 float smallestPixDim 					= 0.0;
-float varCurvature   					= NOTSET;
-float varStraighten   					= NOTSET;
-bool priorComputationFlag 				= true;
-bool straighteningComputationFlag 		= true;
-float gaussianScalingFactor             = NOTSET;
-float gaussianPeakLocationFactor        = NOTSET;
 int posteriorMaxEstimationInterval 		= NOTSET;
 int triesPerRejectionSampling      		= NOTSET;
 float posteriorMaxEstimationStepSize 	= NOTSET;
+float modMinFodAmp                      = 0.0;
 AtInit atInit 							= ATINIT_NOTSET;
 
 OrderOfDirections       orderOfDirections           = ORDEROFDIRECTIONS_NOTSET;
 std::string             orderOfDirectionsTextInput;
 fodDiscretizationMode   fodDiscretization           = FODDISC_NOTSET;
 checkWeakLinksMode      checkWeakLinks              = CHECKWEAKLINKS_NOTSET;
+float                   weakLinkThresh              = NOTSET;
 
 void cleanConfigTracker() {
 
@@ -88,21 +82,16 @@ void setDefaultParametersWhenNecessary() {
         img_FOD->discretizationFlag = true;
     }
     
-    // Check weak checkWeakLinks
-    if (checkWeakLinks==CHECKWEAKLINKS_NOTSET) {
-        checkWeakLinks = CHECKWEAKLINKS_OFF;
-    }
-    
     // Handle OrderOfDirections
     if (orderOfDirections==ORDEROFDIRECTIONS_NOTSET) {
         orderOfDirections=XYZ;
-        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using order of directions    : XYZ " << std::endl;
+        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using order of directions: XYZ " << std::endl;
     }
 
 	// Handle algorithm
 	if (algorithm==ALGORITHM_NOTSET) {
-		algorithm = PTT_C2;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default algorithm      : PTT " << std::endl;
+		algorithm = PTT_C1;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default algorithm: PTT - C1 version" << std::endl;
 	}
 
 	switch (TRACKER::algorithm) {

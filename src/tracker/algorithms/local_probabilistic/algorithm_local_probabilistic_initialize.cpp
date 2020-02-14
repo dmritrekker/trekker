@@ -1,7 +1,7 @@
 #include "../../tracker_thread.h"
 #include "algorithm_local_probabilistic.h"
 
-void TrackWith_Local_Probabilistic::get_initial_curve() {
+float TrackWith_Local_Probabilistic::get_initial_curve() {
 
 	if (SEED::seedingMode==SEED_COORDINATES_WITH_DIRECTIONS) {
 		candidate_direction[0] = thread->seed_init_direction.x;
@@ -10,12 +10,21 @@ void TrackWith_Local_Probabilistic::get_initial_curve() {
 	} else
 		doRandomThings->getAUnitRandomVector(candidate_direction);
 
+
+    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+        return SH::SH_amplitude(FOD,candidate_direction);
+    } else
+        return thread->tracker_FOD->getFODval(current_point,candidate_direction);
+
 }
 
 Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 
 	posteriorMax 	= 0;
-	thread->tracker_FOD->getVal(current_point,FOD);
+
+  if (TRACKER::fodDiscretization==FODDISC_OFF) {
+      thread->tracker_FOD->getVal(current_point,FOD);
+  }
 
 	int   tries;
 	int   fail   	= 0;
@@ -25,8 +34,7 @@ Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 
 	// Estimate posterior maximum
 	for (tries=0; tries < (int)current_init_postEstItCount; tries++) {
-		get_initial_curve();
-		curAmp = SH::SH_amplitude(FOD, candidate_direction);
+		curAmp = get_initial_curve();
 		if (curAmp > posteriorMax) {
 			posteriorMax = curAmp;
 			initial_direction[0] = previous_direction[0] = candidate_direction[0];
@@ -49,8 +57,7 @@ Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 		// Do rejection sampling for initialization
 		for (tries=0; tries<TRACKER::triesPerRejectionSampling; tries++) {
 
-			get_initial_curve();
-			curAmp = SH::SH_amplitude(FOD, candidate_direction);
+			curAmp = get_initial_curve();
 
 			if (curAmp < minFODamp) {
 				reject++;

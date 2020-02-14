@@ -61,10 +61,9 @@ void InputParser::parse() {
         else if (Option("-dontDiscretizeFod"))      parse_dontDiscretizeFod();
         else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
-        else if (Option("-checkWeakLinks"))         parse_checkWeakLinks();
+        else if (Option("-ignoreWeakLinks"))        parse_ignoreWeakLinks();
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
-        else if (Option("-minRadiusOfTorsion"))     parse_minRadiusOfTorsion();
 		else if (Option("-minFODamp"))        		parse_minFODamp();
         else if (Option("-maxEstInterval"))        	parse_maxEstInterval();
         else if (Option("-dataSupportExponent"))    parse_dataSupportExponent();
@@ -521,15 +520,22 @@ void InputParser::parse_dontDiscretizeFod() {
 
 }
 
-void InputParser::parse_checkWeakLinks() {
+void InputParser::parse_ignoreWeakLinks() {
 
 	if (TRACKER::checkWeakLinks != CHECKWEAKLINKS_NOTSET) {
-		std::cout << "Cannot use -checkWeakLinks option more than once" << std::endl;
+		std::cout << "Cannot use -ignoreWeakLinks option more than once" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
 	TRACKER::checkWeakLinks  = CHECKWEAKLINKS_ON;
 	argv_index++;
+    
+    if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
+        TRACKER::weakLinkThresh = (atof(argv[argv_index]));
+		argv_index++;
+	}
+    
+    
 
 }
 
@@ -632,23 +638,6 @@ void InputParser::parse_minRadiusOfCurvature() {
 		exit(EXIT_FAILURE);
 	}
 	minRadiusOfCurvature = atof(argv[argv_index]);
-	argv_index++;
-
-}
-
-void InputParser::parse_minRadiusOfTorsion() {
-
-	if (minRadiusOfTorsion != NOTSET) {
-		std::cout << "Cannot use -minRadiusOfTorsion option more than once" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	argv_index++;
-	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
-		std::cout << "Input maximum torsion after -minRadiusOfTorsion" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	minRadiusOfTorsion = atof(argv[argv_index]);
 	argv_index++;
 
 }
@@ -993,9 +982,10 @@ void InputParser::parse_algorithm() {
         if (TRACKER::algorithm == PTT_C2) {
             if      (Option("C1"))    					TRACKER::algorithm = PTT_C1;
             else if (Option("C2"))    					TRACKER::algorithm = PTT_C2;
-            else if (Option("C3"))    					TRACKER::algorithm = PTT_C3;
+            // else if (Option("C3"))    					TRACKER::algorithm = PTT_C3;
             else {
-                std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\", \"C2\" and \"C3\""<< std::endl;
+                // std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\", \"C2\" and \"C3\""<< std::endl;
+                std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\" and \"C2\" "<< std::endl;
                 exit(EXIT_FAILURE);
             }
         } else {

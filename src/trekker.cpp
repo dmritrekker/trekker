@@ -207,11 +207,10 @@ void Trekker::timeLimit(int t) { GENERAL::timeLimit = t;}
 
 
 // Tracker config
-void Trekker::checkWeakLinks(bool q) { TRACKER::checkWeakLinks = q ? CHECKWEAKLINKS_ON : CHECKWEAKLINKS_OFF; }
 void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}
-
 void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;}
 void Trekker::minFODamp(double x) { TRACKER::minFODamp = x; }
+void Trekker::ignoreWeakLinks(double x) { TRACKER::weakLinkThresh = x; }
 void Trekker::maxEstInterval(int n) { TRACKER::maxEstInterval = n; }
 void Trekker::dataSupportExponent(double x) { TRACKER::dataSupportExponent = x; }
 void Trekker::minLength(double x) { TRACKER::minLength = x; }

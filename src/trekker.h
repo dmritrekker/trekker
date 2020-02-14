@@ -25,10 +25,10 @@ public:
     void printParameters();
     
     // Tracker config
-    void checkWeakLinks(bool q);
     void stepSize(double _stepSize);
     void minRadiusOfCurvature(double x);
     void minFODamp(double _minFODamp);
+    void ignoreWeakLinks(double x);
     void maxEstInterval(int n);
     void dataSupportExponent(double x);
     void minLength(double x);

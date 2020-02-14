@@ -138,9 +138,9 @@ bool FOD_Image::readImage() {
 	// Prep sphere parameters
 	
 	if (iseven)
-        discVolSphDim       = 15; // Creates 542 points on half-sphere (1084 points on full-sphere)
+        discVolSphDim       = 21; // Creates 1038 points on half-sphere (2076 points on full-sphere)
     else
-        discVolSphDim       = 13; // Creates 608 points on full-sphere, i.e. AFOD is less densely sampled
+        discVolSphDim       = 15; // Creates 1004 points on full-sphere, i.e. AFOD is less densely sampled
     
     discVolSphRadius    = (float(discVolSphDim)-1)/2.0 - 0.5;
     discVolSphShift     = discVolSphRadius + 0.5;
@@ -299,58 +299,6 @@ bool FOD_Image::readImage() {
 }
 
 
-
-int FOD_Image::vertexCoord2volInd(float* vertexCoord) {
-    
-    int x,y,z;
-    
-    if (iseven) { 
-        if (vertexCoord[2]<0) {
-            x = std::round(-vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-            y = std::round(-vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-            z = std::round(-vertexCoord[2]*discVolSphRadius);
-        } else {
-            x = std::round( vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-            y = std::round( vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-            z = std::round( vertexCoord[2]*discVolSphRadius);
-        }
-    } else {
-        x = std::round(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-        y = std::round(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-        z = std::round(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
-    }
-    
-    int volInd = discVolSphInds[x+(y+z*discVolSphDim)*discVolSphDim];
-    
-    return volInd;
-}
-
-
-
-float FOD_Image::getFODval(float *p, float* vertexCoord) {
-    
-    int   cor_ijk[3];
-	float volFrac[8];
-    
-	if ( prepInterp(p,cor_ijk,volFrac) == false )
-		return 0;
-
-    int volInd   = vertexCoord2volInd(vertexCoord);
- 
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;    
-    
-    return  volFrac[0]*vals[0][volInd] +
-			volFrac[1]*vals[1][volInd] +
-			volFrac[2]*vals[2][volInd] +
-			volFrac[3]*vals[3][volInd] +
-			volFrac[4]*vals[4][volInd] +
-			volFrac[5]*vals[5][volInd] +
-			volFrac[6]*vals[6][volInd] +
-			volFrac[7]*vals[7][volInd];
-    
-}
-
-
 void FOD_Image::fillDiscVolSph() {
 
     float R = (float(discVolSphDim)-1)/2.0;
@@ -390,7 +338,7 @@ void FOD_Image::orderDirections(float* unit_dir) {
     float Y = unit_dir[1];
     float Z = unit_dir[2];
     
-    switch (orderOfDirections)
+    switch (TRACKER::orderOfDirections)
     {  
         case XYZ : {unit_dir[0]= X;  unit_dir[1]= Y;  unit_dir[2]= Z; } break;
         case XYz : {unit_dir[0]= X;  unit_dir[1]= Y;  unit_dir[2]=-Z; } break;
@@ -449,4 +397,53 @@ void FOD_Image::orderDirections(float* unit_dir) {
         default: { } break;
     }
         
+}
+
+
+int FOD_Image::vertexCoord2volInd(float* vertexCoord) {
+    
+    int x,y,z;
+    
+    if (iseven) { 
+        if (vertexCoord[2]<0) {
+            x = std::round(-vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::round(-vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::round(-vertexCoord[2]*discVolSphRadius);
+        } else {
+            x = std::round( vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::round( vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::round( vertexCoord[2]*discVolSphRadius);
+        }
+    } else {
+        x = std::round(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+        y = std::round(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+        z = std::round(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
+    }
+    
+    int volInd = discVolSphInds[x+(y+z*discVolSphDim)*discVolSphDim];
+    
+    return volInd;
+}
+
+float FOD_Image::getFODval(float *p, float* vertexCoord) {
+    
+    int   cor_ijk[3];
+	float volFrac[8];
+    
+	if ( prepInterp(p,cor_ijk,volFrac) == false )
+		return 0;
+
+    int volInd   = vertexCoord2volInd(vertexCoord);
+ 
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;    
+    
+    return  volFrac[0]*vals[0][volInd] +
+			volFrac[1]*vals[1][volInd] +
+			volFrac[2]*vals[2][volInd] +
+			volFrac[3]*vals[3][volInd] +
+			volFrac[4]*vals[4][volInd] +
+			volFrac[5]*vals[5][volInd] +
+			volFrac[6]*vals[6][volInd] +
+			volFrac[7]*vals[7][volInd];
+    
 }

@@ -5,13 +5,13 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle stepSize
 	if (TRACKER::stepSize<=0.0) {
 		TRACKER::stepSize = TRACKER::smallestPixDim*DEFAULT_PTT_STEPSIZE_IN_PIXELDIM;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default stepSize      : " << TRACKER::stepSize << img_FOD->getUnit() << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default stepSize: " << TRACKER::stepSize << img_FOD->getUnit() << std::endl;
 	}
 
 	// Handle minRadiusOfCurvature
 	if (TRACKER::minRadiusOfCurvature<=0.0) {
 		TRACKER::minRadiusOfCurvature = TRACKER::smallestPixDim*DEFAULT_PTT_MINRADIUSOFCURVATURE_IN_PIXELDIM;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default minRadiusOfCurvature      : " << TRACKER::minRadiusOfCurvature << img_FOD->getUnit() << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default minRadiusOfCurvature: " << TRACKER::minRadiusOfCurvature << img_FOD->getUnit() << std::endl;
 	}
 
 	TRACKER::maxCurvature = 1/TRACKER::minRadiusOfCurvature;
@@ -42,7 +42,7 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 		} else {
 			if (TRACKER::probeRadius>TRACKER::minRadiusOfCurvature) {
 				TRACKER::probeRadius = TRACKER::minRadiusOfCurvature;
-				if (GENERAL::verboseLevel!=QUITE) std::cout << "Setting probeRadius to      : " << TRACKER::probeRadius << img_FOD->getUnit() << std::endl;
+				if (GENERAL::verboseLevel!=QUITE) std::cout << "Setting probeRadius to: " << TRACKER::probeRadius << img_FOD->getUnit() << std::endl;
 				if (GENERAL::verboseLevel!=QUITE) std::cout << "        probeRadius can't be larger than minRadiusOfCurvature" << std::endl;
 			}
 		}
@@ -52,34 +52,19 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle probeLength
 	if (TRACKER::probeLength<=0.0) {
 		TRACKER::probeLength = TRACKER::smallestPixDim*DEFAULT_PTT_PROBELENGTH_IN_PIXELDIM;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeLength      : " << TRACKER::probeLength << img_FOD->getUnit() << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeLength: " << TRACKER::probeLength << img_FOD->getUnit() << std::endl;
 	}
 
 	// Handle probeQuality
 	if ((TRACKER::probeQuality<=0.0) || (TRACKER::probeQuality>100)) {
 		TRACKER::probeQuality = DEFAULT_PTT_PROBEQUALITY;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeQuality      : " << TRACKER::probeQuality << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeQuality: " << TRACKER::probeQuality << std::endl;
 	}
 	
 	// Handle derived probe parameters
-	// TRACKER::probeStepSize     = (TRACKER::probeLength-TRACKER::stepSize)/TRACKER::probeQuality; // -stepSize for the candidate step
-    // TRACKER::probeNormalizer   = 1/(float(TRACKER::probeQuality*TRACKER::probeCount)+1);         // +1 for the candidate step
-    
     TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
     TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
     TRACKER::angularSeparation = M_2_PI/float(TRACKER::probeCount);
-	
-    // Handle minRadiusOfTorsion
-	if (TRACKER::minRadiusOfTorsion<=0.0) {
-		TRACKER::minRadiusOfTorsion = TRACKER::probeLength/DEFAULT_PTT_MINRADIUSOFTORSION_IN_RADIANMULTIPLIER;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default minRadiusOfTorsion      : " << TRACKER::minRadiusOfTorsion << img_FOD->getUnit() << std::endl;
-	}
-
-	TRACKER::maxTorsion = 1/TRACKER::minRadiusOfTorsion;
-	if (TRACKER::maxTorsion<1e-4) {
-		TRACKER::maxTorsion = 1e-4;
-		if (GENERAL::verboseLevel!=QUITE) std::cout << "minRadiusOfTorsion is very large" << std::endl;
-	}
 
 	// Handle dataSupportExponent
 	if (TRACKER::dataSupportExponent<0.0) TRACKER::dataSupportExponent = DEFAULT_PTT_DATASUPPORTEXPONENT;
@@ -87,44 +72,39 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
     
-    // Update minFODamp
-    TRACKER::minFODamp           = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
+    // Update modMinFodAmp
+    TRACKER::modMinFodAmp = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
     
-    	// Handle maxEstInterval
+    // Handle maxEstInterval
 	if (TRACKER::maxEstInterval<=0.0) {
-		TRACKER::maxEstStepSize = TRACKER::smallestPixDim*DEFAULT_PTT_MAXESTINTERVAL_IN_PIXELDIM;
-		TRACKER::maxEstInterval = ceil(TRACKER::maxEstStepSize/TRACKER::stepSize);
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default maxEstInterval : " << TRACKER::maxEstInterval << std::endl;
-	}
-
-	TRACKER::maxEstStepSize = TRACKER::maxEstInterval*TRACKER::stepSize;
-	if (GENERAL::verboseLevel>ON) std::cout << "   posterior maximum is updated at every : " << TRACKER::maxEstStepSize << img_FOD->getUnit() << std::endl;
-    
+		TRACKER::maxEstInterval = DEFAULT_PTT_MAXESTINTERVAL;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default maxEstInterval: " << TRACKER::maxEstInterval << std::endl;
+	}    
     
 	// Handle writeStepSize
 	if (TRACKER::writeInterval<=0.0) {
 		TRACKER::writeStepSize = TRACKER::smallestPixDim*DEFAULT_PTT_WRITEINTERVAL_IN_PIXELDIM;
 		TRACKER::writeInterval = ceil(TRACKER::writeStepSize/TRACKER::stepSize);
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default writeInterval : " << TRACKER::writeInterval << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default writeInterval: " << TRACKER::writeInterval << std::endl;
 	}
 
 	TRACKER::writeStepSize = TRACKER::writeInterval*TRACKER::stepSize;
 	if (GENERAL::verboseLevel>ON) std::cout << "   effective written step size is : " << TRACKER::writeStepSize << img_FOD->getUnit() << std::endl;
 
 	// Handle minLength
-	if ((minLength<0.0) && (GENERAL::verboseLevel>MINIMAL)) std::cout << "Using default minLength     : 0 " << img_FOD->getUnit() << std::endl;
+	if ((minLength<0.0) && (GENERAL::verboseLevel>MINIMAL)) std::cout << "Using default minLength: 0 " << img_FOD->getUnit() << std::endl;
 	if (minLength<=0.0) minLength = DEFAULT_PTT_MINLENGTH; // so comparisons are faster
 
 	// Handle maxLength
 	if ((TRACKER::maxLength<=minLength) || (TRACKER::maxLength>DEFAULT_PTT_MAXLENGTH)){
 		TRACKER::maxLength = DEFAULT_PTT_MAXLENGTH;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default maxLength     : infinite " << img_FOD->getUnit() << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default maxLength: infinite " << img_FOD->getUnit() << std::endl;
 	}
 
 	// Handle atMaxLength
 	if (atMaxLength==ATMAXLENGTH_NOTSET) {
 		atMaxLength = ATMAXLENGTH_DISCARD;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default atMaxLength   : discard " << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default atMaxLength: discard " << std::endl;
 	}
 
 	// Handle directionality
@@ -136,14 +116,28 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle triesPerRejectionSampling
 	if (TRACKER::triesPerRejectionSampling==NOTSET) {
 		TRACKER::triesPerRejectionSampling = DEFAULT_PTT_TRIESPERREJECTIONSAMPLING;
-		if (GENERAL::verboseLevel>ON) std::cout << "triesPerRejectionSampling : " << TRACKER::triesPerRejectionSampling << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default triesPerRejectionSampling: " << TRACKER::triesPerRejectionSampling << std::endl;
 	}
 
 	// Handle atInit
 	if (TRACKER::atInit==ATINIT_NOTSET) {
 		TRACKER::atInit = ATINIT_REJECTIONSAMPLE;
-		if (GENERAL::verboseLevel>ON) std::cout << "useBestAtInit             : OFF" << std::endl;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default useBestAtInit: OFF" << std::endl;
 	}
+	
+	// Handle weak link checking
+	if (TRACKER::checkWeakLinks == CHECKWEAKLINKS_NOTSET) {
+        TRACKER::checkWeakLinks = CHECKWEAKLINKS_ON;
+        TRACKER::weakLinkThresh = TRACKER::minFODamp*DEFAULT_PTT_WEAKLINKRATIO;
+        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default ignoreWeakLinks: " << TRACKER::weakLinkThresh << " (" << TRACKER::minFODamp << " x " << DEFAULT_PTT_WEAKLINKRATIO << ")"<< std::endl;
+    } else if (TRACKER::checkWeakLinks == CHECKWEAKLINKS_ON) {
+        if (TRACKER::weakLinkThresh<=0) {
+            TRACKER::checkWeakLinks = CHECKWEAKLINKS_OFF;
+        }
+        
+    } else {
+        TRACKER::weakLinkThresh = 0;
+    }
 
 }
 
@@ -162,14 +156,14 @@ void TrackWith_PTT::print() {
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
-    std::cout << "minRadiusOfTorsion   : "  << TRACKER::minRadiusOfTorsion 	    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 
 	std::cout << "probeLength          : "  << TRACKER::probeLength 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "probeRadius          : "  << TRACKER::probeRadius 		    << " " << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "probeCount           : "  << TRACKER::probeCount	        	<< std::endl;
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
-	std::cout << "minFODamp            : "  << std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent)    << std::endl;
+	std::cout << "minFODamp            : "  << TRACKER::minFODamp               << std::endl;
+    std::cout << "ignoreWeakLinks      : "  << TRACKER::weakLinkThresh 	        << std::endl;
     std::cout << "maxEstInterval       : "  << TRACKER::maxEstInterval 			<< std::endl;
     std::cout << "dataSupportExponent  : "  << TRACKER::dataSupportExponent 	<< std::endl;
 

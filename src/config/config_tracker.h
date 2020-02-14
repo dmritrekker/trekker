@@ -70,7 +70,6 @@ extern Tractogram   		   *tractogram;
 extern FOD_Image 	  *img_FOD;
 extern float 		   stepSize;
 extern float 		   minRadiusOfCurvature;
-extern float 		   minRadiusOfTorsion;
 extern float		   minFODamp;
 extern int             maxEstInterval;
 extern float		   dataSupportExponent;
@@ -92,25 +91,20 @@ extern float           angularSeparation;
 
 // Derived parameters
 extern float		   maxCurvature;
-extern float		   maxTorsion;
 extern float		   smallestPixDim;
-extern float		   varCurvature;
-extern bool 		   priorComputationFlag;
-extern float		   varStraighten;
-extern bool 		   straighteningComputationFlag;
-extern float 		   gaussianScalingFactor;
-extern float 		   gaussianPeakLocationFactor;
 extern int 		       posteriorMaxEstimationInterval;
 extern int 		       triesPerRejectionSampling;
 extern float           writeStepSize;
 extern float           maxEstStepSize;
 extern float           posteriorMaxEstimationStepSize;
+extern float           modMinFodAmp;
 extern AtInit 		   atInit;
 
 extern OrderOfDirections     orderOfDirections;
 extern std::string           orderOfDirectionsTextInput;
 extern fodDiscretizationMode fodDiscretization;
 extern checkWeakLinksMode    checkWeakLinks;
+extern float                 weakLinkThresh;
 
 // Functions
 void cleanConfigTracker();

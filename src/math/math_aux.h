@@ -13,6 +13,7 @@ namespace MATH_AUX {
 }
 
 void  normalize(float *vec);
+float norm(float *vec);
 float dot(float* A, float *B);
 void  cross(float *out, float* A, float *B);
 void  quaternion2Rotation(float *R, float *q);
@@ -36,6 +37,10 @@ inline void normalize(float *vec) {
 	vec[0] *= normi;
 	vec[1] *= normi;
 	vec[2] *= normi;
+}
+
+inline float norm(float *vec) {
+	return std::sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
 }
 
 inline float dot(float* A, float *B) {

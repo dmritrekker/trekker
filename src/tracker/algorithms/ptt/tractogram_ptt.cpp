@@ -244,19 +244,6 @@ void Tractogram_PTT::writeOutput() {
 			}
 	}
 
-	if (priorWriteMode==WRITE_ON) {
-		sprintf(buffer,"SCALARS priors float 1\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
-		sprintf(buffer,"LOOKUP_TABLE default\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
-		for (size_t i=0; i<streamlineCount; i++)
-			if (streamlines[i]->status == STREAMLINE_GOOD) {
-				Streamline_PTT *streamline = ((Streamline_PTT *)streamlines[i]);
-				for (std::vector<float>::iterator it = streamline->prior.begin(); it != streamline->prior.end(); ++it) {
-					float tmp;
-					tmp = *it; 		swapByteOrder_float(tmp); fwrite(&tmp, sizeof(float), 1, out);
-				}
-			}
-	}
-
 	if (likelihoodWriteMode==WRITE_ON) {
 		sprintf(buffer,"SCALARS likelihoods float 1\n"); 		fwrite(buffer, sizeof(char), strlen(buffer), out);
 		sprintf(buffer,"LOOKUP_TABLE default\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
@@ -264,19 +251,6 @@ void Tractogram_PTT::writeOutput() {
 			if (streamlines[i]->status == STREAMLINE_GOOD) {
 				Streamline_PTT *streamline = ((Streamline_PTT *)streamlines[i]);
 				for (std::vector<float>::iterator it = streamline->likelihood.begin(); it != streamline->likelihood.end(); ++it) {
-					float tmp;
-					tmp = *it; 		swapByteOrder_float(tmp); fwrite(&tmp, sizeof(float), 1, out);
-				}
-			}
-	}
-
-	if (posteriorWriteMode==WRITE_ON) {
-		sprintf(buffer,"SCALARS posteriors float 1\n"); fwrite(buffer, sizeof(char), strlen(buffer), out);
-		sprintf(buffer,"LOOKUP_TABLE default\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
-		for (size_t i=0; i<streamlineCount; i++)
-			if (streamlines[i]->status == STREAMLINE_GOOD) {
-				Streamline_PTT *streamline = ((Streamline_PTT *)streamlines[i]);
-				for (std::vector<float>::iterator it = streamline->posterior.begin(); it != streamline->posterior.end(); ++it) {
 					float tmp;
 					tmp = *it; 		swapByteOrder_float(tmp); fwrite(&tmp, sizeof(float), 1, out);
 				}
@@ -302,13 +276,13 @@ void Tractogram_PTT::writeMetadataOutput() {
 
 	fprintf(out,(",\n\"stepSize\":" 			+ std::to_string(TRACKER::stepSize)).c_str());
 	fprintf(out,(",\n\"minRadiusOfCurvature\":" + std::to_string(TRACKER::minRadiusOfCurvature)).c_str());
-    fprintf(out,(",\n\"minRadiusOfTorsion\":"   + std::to_string(TRACKER::minRadiusOfTorsion)).c_str());
 	fprintf(out,(",\n\"probeLength\":" 			+ std::to_string(TRACKER::probeLength)).c_str());
 	fprintf(out,(",\n\"probeRadius\":" 			+ std::to_string(TRACKER::probeRadius)).c_str());
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());
 	fprintf(out,(",\n\"probeQuality\":" 		+ std::to_string(TRACKER::probeQuality)).c_str());
-	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(std::pow(TRACKER::minFODamp,1.0/TRACKER::dataSupportExponent))).c_str());
+	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(TRACKER::minFODamp)).c_str());
     fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
+    fprintf(out,(",\n\"ignoreWeakLinks\":" 	    + std::to_string(TRACKER::weakLinkThresh)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());
     if (TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) 			fprintf(out,",\n\"checkWeakLinks\":\"ON\""); else fprintf(out,",\n\"checkWeakLinks\":\"OFF\"");
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());

@@ -6,8 +6,7 @@ void TrackWith_Local_Probabilistic::estimatePosteriorMax() {
 	posteriorMax 		= 0;
 
 	for (size_t it=0; it < current_prop_postEstItCount; it++) {
-		get_a_candidate_curve();
-		float curAmp = SH::SH_amplitude(FOD, candidate_direction);
+		float curAmp = get_a_candidate_curve();
 		if (curAmp > posteriorMax)
 			posteriorMax = curAmp;
 	}

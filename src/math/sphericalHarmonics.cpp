@@ -41,7 +41,7 @@ void computeLegendrePolynomials(double *plm, double x, int order) {
 		for(double l = m+2; l <= order; l++) {
 			plm[sphPlmInd(l,m)] = std::sqrt(((2.0*l+1)*(2.0*l-1)) / ((l+m)*(l-m)))*x*plm[sphPlmInd(l-1,m)]-std::sqrt( (2.0*l+1)*(l-m-1.0)*(l+m-1.0) / ((2.0*l-3)*(l-m)*(l+m)))*plm[sphPlmInd(l-2,m)];
 		}
-
+            
 }
 
 void clean() {
@@ -73,7 +73,7 @@ void precompute(size_t num) {
 
 	double delta_phi 	 					= 2/(double)(numberOfSamples_phi   - 1);
 	double delta_theta 						= 2/(double)(numberOfSamples_theta - 1);
-
+    
 	scalingFactor_phi 						= 1/delta_phi;
 	scalingFactor_theta 					= 1/delta_theta;
 
@@ -115,6 +115,7 @@ void precompute(size_t num) {
 
 		}
 	}
+	
 	double *plm = new double[numberOfSphericalHarmonicCoefficients];
 
     
@@ -149,38 +150,6 @@ void precompute(size_t num) {
 	delete[] plm;
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
-
-}
-
-size_t getPhiIndex(float* unit_dir) {
-	return  numberOfSphericalHarmonicCoefficients*((size_t)((unit_dir[0]+1)*scalingFactor_phi)*numberOfSamples_phi + (size_t)((unit_dir[1]+1)*scalingFactor_phi));
-}
-
-
-size_t getThetaIndex(float* unit_dir) {
-	return  (int)((unit_dir[2]+1)*scalingFactor_theta)*numberOfSphericalHarmonicCoefficients;
-}
-
-float SH_amplitude(float *values, float *dir) {
-
-    float* unit_dir = new float[3];
-    unit_dir[0]     = dir[0];
-    unit_dir[1]     = dir[1];
-    unit_dir[2]     = dir[2];
-    
-    
-    FOD_Image::orderDirections(unit_dir);
-	verifyUnitRange(unit_dir);
-	float *phiComp 		= precomputedPhiComponent   +   getPhiIndex(unit_dir);
-	float *thetaComp  	= precomputedThetaComponent + getThetaIndex(unit_dir);
-    delete[] unit_dir;
-    
-	float amp = 0;
-	for (int i=0; i<numberOfSphericalHarmonicCoefficients; i++)
-		amp += values[i]*phiComp[i]*thetaComp[i];
-
-	if (amp>0) 	return amp;
-	else 		return 0;
 
 }
 
@@ -235,5 +204,36 @@ void precomputeExpansionCoefficients() {
     if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
 }
 
+
+size_t getPhiIndex(float* unit_dir) {
+	return  numberOfSphericalHarmonicCoefficients*((size_t)((unit_dir[0]+1)*scalingFactor_phi)*numberOfSamples_phi + (size_t)((unit_dir[1]+1)*scalingFactor_phi));
+}
+
+size_t getThetaIndex(float* unit_dir) {
+	return  (int)((unit_dir[2]+1)*scalingFactor_theta)*numberOfSphericalHarmonicCoefficients;
+}
+
+float SH_amplitude(float *values, float *dir) {
+
+    float* unit_dir = new float[3];
+    unit_dir[0]     = dir[0];
+    unit_dir[1]     = dir[1];
+    unit_dir[2]     = dir[2];
+    
+    
+    FOD_Image::orderDirections(unit_dir);
+	verifyUnitRange(unit_dir);
+	float *phiComp 		= precomputedPhiComponent   +   getPhiIndex(unit_dir);
+	float *thetaComp  	= precomputedThetaComponent + getThetaIndex(unit_dir);
+    delete[] unit_dir;
+    
+	float amp = 0;
+	for (int i=0; i<numberOfSphericalHarmonicCoefficients; i++)
+		amp += values[i]*phiComp[i]*thetaComp[i];
+
+	if (amp>0) 	return amp;
+	else 		return 0;
+
+}
 
 }

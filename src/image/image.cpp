@@ -177,6 +177,67 @@ void Image::printInfo() {
 
 }
 
+// Notice that the data has 1/voxelVolume fraction included to speed up interpolation
+bool Image::indexVoxels() {
+
+	// voxels are indexed on a zero padded image in order to avoid boundary checking
+	voxels = new Voxel[zp_sxyz];
+    zero   = (float*)calloc(nim->nt,sizeof(float));
+    
+	size_t index = 0;
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
+    
+	for (int z=0; z<(nim->nz+2); z++) {
+		for (int y=0; y<(nim->ny+2); y++) {
+			for (int x=0; x<(nim->nx+2); x++) {
+                
+                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
+                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                
+				index++;
+			}
+		}
+		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (size_t)((index/(float)(zp_sxyz-1))*100) << "%" << '\r' << std::flush;
+	}
+
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 100%" << '\r' << std::flush;
+	if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
+
+	return true;
+}
+
+
+void Image::getVal(float *p, float* out) {
+
+	int   cor_ijk[3];
+	float volFrac[8];
+
+	if ( prepInterp(p,cor_ijk,volFrac) == false ) {
+		memset(out,0,nim->nt*sizeof(float));
+		return;
+	}
+	
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
+    
+	for (int c=0; c<nim->nt; c++) {
+		out[c] =volFrac[0]*vals[0][c] +
+				volFrac[1]*vals[1][c] +
+				volFrac[2]*vals[2][c] +
+				volFrac[3]*vals[3][c] +
+				volFrac[4]*vals[4][c] +
+				volFrac[5]*vals[5][c] +
+				volFrac[6]*vals[6][c] +
+				volFrac[7]*vals[7][c];
+	}
+    
+}
+
 // Checked on the non-zero padded image
 unsigned char Image::checkImageBounds(float i, float j, float k) {
 
@@ -216,40 +277,6 @@ unsigned char Image::checkWorldBounds(float x, float y, float z) {
 	return 1;
 }
 
-// Notice that the data has 1/voxelVolume fraction included to speed up interpolation
-bool Image::indexVoxels() {
-
-	// voxels are indexed on a zero padded image in order to avoid boundary checking
-	voxels = new Voxel[zp_sxyz];
-    zero   = (float*)calloc(nim->nt,sizeof(float));
-    
-	size_t index = 0;
-	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
-    
-	for (int z=0; z<(nim->nz+2); z++) {
-		for (int y=0; y<(nim->ny+2); y++) {
-			for (int x=0; x<(nim->nx+2); x++) {
-                
-                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
-                
-				index++;
-			}
-		}
-		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (size_t)((index/(float)(zp_sxyz-1))*100) << "%" << '\r' << std::flush;
-	}
-
-	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 100%" << '\r' << std::flush;
-	if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
-
-	return true;
-}
 
 
 // Converts physical coordinates to index on the zero-padded image that is voxel indexed for interpolation
@@ -282,30 +309,3 @@ bool Image::prepInterp(float *p, int *cor_ijk, float *volFrac) {
 	return true;
 
 }
-
-void Image::getVal(float *p, float* out) {
-
-	int   cor_ijk[3];
-	float volFrac[8];
-
-	if ( prepInterp(p,cor_ijk,volFrac) == false ) {
-		memset(out,0,nim->nt*sizeof(float));
-		return;
-	}
-	
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
-
-	for (int c=0; c<nim->nt; c++) {
-		out[c] =volFrac[0]*vals[0][c] +
-				volFrac[1]*vals[1][c] +
-				volFrac[2]*vals[2][c] +
-				volFrac[3]*vals[3][c] +
-				volFrac[4]*vals[4][c] +
-				volFrac[5]*vals[5][c] +
-				volFrac[6]*vals[6][c] +
-				volFrac[7]*vals[7][c];
-	}
-    
-}
-
-

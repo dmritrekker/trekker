@@ -22,9 +22,7 @@ public:
 	std::vector<float>      k1;
 	std::vector<float>      k2;
 	std::vector<float>      curvature;
-	std::vector<float>      prior;
 	std::vector<float>      likelihood;
-	std::vector<float>      posterior;
 
 	size_t sampling_prop_postEstItCount;
 	size_t sampling_prop_generated;

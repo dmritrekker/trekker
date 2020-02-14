@@ -26,7 +26,7 @@ public:
 	Coordinate 	 getAUnitRandomVector();
 	void 		 getAUnitRandomVector(float* out);
 	void 		 getAUnitRandomPerpVector(float* out, float* inp);
-    void         getARandomPointWithDisk(float* x, float *y, float r);
+    void         getARandomPointWithinDisk(float* x, float *y, float r);
 
 private:
 	std::mt19937 gen;
@@ -64,7 +64,7 @@ inline void RandomDoer::getAUnitRandomVector(float* out) {
 
 }
 
-inline void RandomDoer::getARandomPointWithDisk(float* x, float *y, float r) {
+inline void RandomDoer::getARandomPointWithinDisk(float* x, float *y, float r) {
 
 	do {
 		*x = uniform_m1_p1();

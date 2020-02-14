@@ -10,8 +10,7 @@ float TrackWith_Local_Probabilistic::rejectionSample() {
 
 	for (tries=0; tries<TRACKER::triesPerRejectionSampling; tries++) {
 
-		get_a_candidate_curve();
-		curAmp = SH::SH_amplitude(FOD, candidate_direction);
+		curAmp = get_a_candidate_curve();
 
 		if (curAmp < minFODamp) {
 			reject++;

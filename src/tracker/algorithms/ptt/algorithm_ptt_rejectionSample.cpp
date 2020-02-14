@@ -3,23 +3,7 @@
 void TrackWith_PTT::get_a_candidate_curve() {
     
     curve->getACandidatek1k2();
-    
-    /*
-    float tau = INFINITY;
-    
-    while (tau > TRACKER::maxTorsion) {        
-        
-        curve->getACandidatek1k2();        
-        
-        float ang = std::acos((float(curve->k1*curve->k1_cand + curve->k2*curve->k2_cand))/(std::sqrt(float(curve->k1*curve->k1 + curve->k2*curve->k2))*std::sqrt(float(curve->k1_cand*curve->k1_cand + curve->k2_cand *curve->k2_cand))));        
-        
-        if (ang>PI/2) ang -= PI/2;
-        
-        tau = ang/probeLength;        
-    }
-    */
-    
-	calcLikelihoodAndPosterior();
+	calcDataSupport();
 }
 
 void TrackWith_PTT::rejectionSample() {
@@ -31,20 +15,20 @@ void TrackWith_PTT::rejectionSample() {
 
 		get_a_candidate_curve();
 
-		if (curve->posterior < minFODamp) {
+		if (curve->likelihood < modMinFodAmp ) {
 			reject++;
-		} else if (curve->posterior > posteriorMax) {
-			curve->posterior = -2;
+		} else if (curve->likelihood > posteriorMax) {
+			curve->likelihood = -2;
 			break;
-		} else if (doRandomThings->uniform_01()*posteriorMax < curve->posterior ) {
-			// curve->setToCandidate();
+		} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
+            // This candidate is now selected and it will be propagated
 			break;
 		}
 
 	}
-
+	
 	if (tries==TRACKER::triesPerRejectionSampling) {
-		curve->posterior = -1;
+		curve->likelihood = -1;
 	} else {
 		// Update information for streamline ONLY when it is a legitimate propagation
 		// This just makes sure that the displayed report is not dominated by tons of
@@ -53,7 +37,7 @@ void TrackWith_PTT::rejectionSample() {
 		streamline->sampling_prop_generated       	+= 1;
 		streamline->sampling_prop_tries  			+= tries;
 		streamline->sampling_prop_reject 			+= reject;
-		if (curve->posterior==-2)
+		if (curve->likelihood==-2)
 			streamline->sampling_prop_fail 			 = 1;
 	}
 

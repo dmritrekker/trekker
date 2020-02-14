@@ -2,9 +2,7 @@
 #include "../../../math/math_aux.h"
 #include "algorithm_local_probabilistic.h"
 
-
-
-void TrackWith_Local_Probabilistic::get_a_candidate_curve() {
+float TrackWith_Local_Probabilistic::get_a_candidate_curve() {
 
 	float v[3];
 
@@ -44,13 +42,21 @@ void TrackWith_Local_Probabilistic::get_a_candidate_curve() {
 
 	}
 
+    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+        return SH::SH_amplitude(FOD,candidate_direction);
+    } else
+        return thread->tracker_FOD->getFODval(current_point,candidate_direction);
+
 }
 
 Propagation_Decision TrackWith_Local_Probabilistic::propagate(int ) {
 
 	for (int i=0; i<3; i++)
 		current_point[i] += TRACKER::stepSize*previous_direction[i];
-	thread->tracker_FOD->getVal(current_point,FOD);
+	
+    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+        thread->tracker_FOD->getVal(current_point,FOD);
+    }
 
 	// Estimate posterior maximum
 	estimatePosteriorMax();

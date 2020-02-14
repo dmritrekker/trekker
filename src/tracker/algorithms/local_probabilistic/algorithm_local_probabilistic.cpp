@@ -27,7 +27,7 @@ TrackWith_Local_Probabilistic::TrackWith_Local_Probabilistic() {
 		previous_direction 					= new float[3];
 		candidate_direction 				= new float[3];
 
-		constant_asinterm 					= 4*std::asin (TRACKER::stepSize / (2.0 * TRACKER::minRadiusOfCurvature));
+		constant_asinterm 					= 2*std::asin (TRACKER::stepSize / (2.0 * TRACKER::minRadiusOfCurvature));
 
 		current_init_postEstItCount 		= static_cast<Tractogram_Local_Probabilistic*>(TRACKER::tractogram)->init_postEstItCount;
 		current_prop_postEstItCount 		= static_cast<Tractogram_Local_Probabilistic*>(TRACKER::tractogram)->prop_postEstItCount;

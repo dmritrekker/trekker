@@ -7,8 +7,8 @@ void TrackWith_PTT::estimatePosteriorMax() {
 
 	for (size_t it=0; it<current_prop_postEstItCount; it++) {
 		get_a_candidate_curve();
-		if (curve->posterior > posteriorMax)
-			posteriorMax = curve->posterior;
+		if (curve->likelihood > posteriorMax)
+			posteriorMax = curve->likelihood;
 	}
 
     posteriorMax *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);

@@ -30,8 +30,8 @@ public:
 
 private:
 
-	void 		 get_initial_curve();
-	void 		 get_a_candidate_curve();
+	float 		 get_initial_curve();
+	float 		 get_a_candidate_curve();
 	float 		 rejectionSample();
 	void 		 estimatePosteriorMax();
 
