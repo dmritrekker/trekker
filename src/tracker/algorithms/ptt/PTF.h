@@ -114,17 +114,38 @@ inline void PTF::getCurrentCurve(float* _p, float **_F) {
 inline void PTF::prepProbePropagator_C1() {
     
     float t     = TRACKER::probeStepSize;
-    float tto2  = t*t/float(2);
     
-    PP[0] = t;
-    PP[4] = k1_cand*t;
-    PP[5] = k2_cand*t;
-    PP[1] = k1_cand*tto2;
-    PP[2] = k2_cand*tto2;
-    PP[8] = 1-k2_cand*k2_cand*tto2;
-    PP[3] = 1-k2_cand*k2_cand*tto2-k1_cand*k1_cand*tto2;
-    PP[6] = -k2_cand*t;
-    PP[7] = -k1_cand*k2_cand*tto2;
+    if ( (std::fabs(k1_cand)<SMALL) && (std::fabs(k2_cand)<SMALL) ) {
+        
+        PP[0] = t;
+        PP[1] = 0;
+        PP[2] = 0;
+        PP[3] = 1;
+        PP[4] = 0;
+        PP[5] = 0;
+        PP[6] = 0;
+        PP[7] = 0;
+        PP[8] = 1;
+        
+    } else {
+        
+        if (std::fabs(k1_cand)<SMALL) k1_cand = SMALL;
+        if (std::fabs(k2_cand)<SMALL) k2_cand = SMALL;
+        
+        float tto2  = t*t/float(2);
+        
+        PP[0] = t;
+        PP[1] = k1_cand*tto2;
+        PP[2] = k2_cand*tto2;
+        PP[3] = 1-k2_cand*k2_cand*tto2-k1_cand*k1_cand*tto2;
+        PP[4] = k1_cand*t;
+        PP[5] = k2_cand*t;
+        PP[6] = -k2_cand*t;
+        PP[7] = -k1_cand*k2_cand*tto2;
+        PP[8] = 1-k2_cand*k2_cand*tto2;
+    
+    }
+    
 }
 
 
@@ -187,17 +208,37 @@ inline void PTF::prepProbePropagator_C3() {
 inline void PTF::prepCandStepPropagator_C1() {
     
     float t     = TRACKER::stepSize;
-    float tto2  = t*t/float(2);
     
-    sPP[0] = t;
-    sPP[4] = k1_cand*t;
-    sPP[5] = k2_cand*t;
-    sPP[1] = k1_cand*tto2;
-    sPP[2] = k2_cand*tto2;
-    sPP[8] = 1-k2_cand*k2_cand*tto2;
-    sPP[3] = 1-k2_cand*k2_cand*tto2-k1_cand*k1_cand*tto2;
-    sPP[6] = -k2_cand*t;
-    sPP[7] = -k1_cand*k2_cand*tto2;
+    if ( (std::fabs(k1_cand)<SMALL) && (std::fabs(k2_cand)<SMALL) ) {
+        
+        sPP[0] = t;
+        sPP[1] = 0;
+        sPP[2] = 0;
+        sPP[3] = 1;
+        sPP[4] = 0;
+        sPP[5] = 0;
+        sPP[6] = 0;
+        sPP[7] = 0;
+        sPP[8] = 1;
+        
+    } else {
+        
+        if (std::fabs(k1_cand)<SMALL) k1_cand = SMALL;
+        if (std::fabs(k2_cand)<SMALL) k2_cand = SMALL;
+        
+        float tto2  = t*t/float(2);
+        
+        sPP[0] = t;
+        sPP[1] = k1_cand*tto2;
+        sPP[2] = k2_cand*tto2;
+        sPP[3] = 1-k2_cand*k2_cand*tto2-k1_cand*k1_cand*tto2;
+        sPP[4] = k1_cand*t;
+        sPP[5] = k2_cand*t;
+        sPP[6] = -k2_cand*t;
+        sPP[7] = -k1_cand*k2_cand*tto2;
+        sPP[8] = 1-k2_cand*k2_cand*tto2;
+    
+    }
     
     k1 = k1_cand;
     k2 = k2_cand;
