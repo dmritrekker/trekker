@@ -52,23 +52,23 @@ private:
 	void parse_stepSize();
 	void parse_minRadiusOfCurvature();
 	void parse_minFODamp();
-    void parse_ignoreWeakLinks();
-    void parse_maxEstInterval();
     void parse_dataSupportExponent();
 	void parse_minLength();
 	void parse_maxLength();
 	void parse_atMaxLength();
 	void parse_writeInterval();
 	void parse_directionality();
-	void parse_maxSamplingPerStep();
+    void parse_maxEstInterval();
 	void parse_initMaxEstTrials();
 	void parse_propMaxEstTrials();
+    void parse_maxSamplingPerStep();
 	void parse_useBestAtInit();
     
 	void parse_probeLength();
 	void parse_probeRadius();
 	void parse_probeCount();
 	void parse_probeQuality();
+    void parse_ignoreWeakLinks();
 
 
 	// Seed config

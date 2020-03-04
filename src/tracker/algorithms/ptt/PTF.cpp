@@ -55,10 +55,12 @@ void PTF::initkT(PTF *ptf) {
 
 void PTF::swap(PTF *ptf) {
 
-    k1  =  ptf->k1;
-    k2  =  ptf->k2;
-    kT1 =  ptf->kT1;
-    kT2 =  ptf->kT2;
+    k1       =  ptf->k1;
+    k2       =  ptf->k2;
+    k1_cand  =  ptf->k1_cand;
+    k2_cand  =  ptf->k2_cand;
+    kT1      =  ptf->kT1;
+    kT2      =  ptf->kT2;
     
 	for (int i=0; i<3; i++) {
         p[i] 	= ptf->p[i];

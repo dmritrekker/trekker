@@ -70,6 +70,10 @@ void cleanConfigTracker() {
 	delete method;
 	delete tractogram;
     
+    img_FOD     = NULL;
+    method      = NULL;
+    tractogram  = NULL;
+    
 }
 
 void setDefaultParametersWhenNecessary() {
@@ -98,12 +102,12 @@ void setDefaultParametersWhenNecessary() {
 	case PTT_C1:
     case PTT_C2:
     case PTT_C3:
-		tractogram 								= new Tractogram_PTT();
-		method 									= new  TrackWith_PTT();
+		if (tractogram==NULL) { tractogram = new Tractogram_PTT(); }
+		if (method    ==NULL) { method     = new  TrackWith_PTT(); }
 		break;
 	case LOCAL_PROBABILISTIC:
-		tractogram 								= new Tractogram_Local_Probabilistic();
-		method 									= new  TrackWith_Local_Probabilistic();
+		if (tractogram==NULL) { tractogram = new Tractogram_Local_Probabilistic(); }
+		if (method    ==NULL) { method     = new  TrackWith_Local_Probabilistic(); }
 		break;
 	default :
 		break;

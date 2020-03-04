@@ -19,6 +19,7 @@ public:
 
 	void  setPosition(Coordinate _p) {p[0] = _p.x;p[1] = _p.y;p[2] = _p.z;};
     void  getACandidatek1k2();
+    void  getInitCandidatek1k2();
     void  initkT(PTF *ptf);    
     
     void  prepInitProbePropagator();
@@ -95,6 +96,12 @@ private:
 
 inline void PTF::getACandidatek1k2() {
     rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
+}
+
+inline void PTF::getInitCandidatek1k2() {
+    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
+    k1 = k1_cand;
+    k2 = k2_cand;
 }
 
 

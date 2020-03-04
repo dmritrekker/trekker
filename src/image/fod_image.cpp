@@ -58,21 +58,6 @@ int FOD_Image::getSHorder() {
 
 void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor) {
     
-    size_t t,j;
-    for (size_t i=begin_ind; i<end_ind; i++) {
-        t = i/FODImg->sxyz;
-        j = i*FODImg->nim->nt-t*FODImg->nim->nvox+t;
-		*(FODImg->data+j) = accessor->get(FODImg->nim->data,i)/FODImg->voxelVolume;
-    }
-    
-    GENERAL::tracker_lock.lock();
-    if (GENERAL::verboseLevel!=QUITE) std::cout << "Loading FOD image: " << (int)((end_ind/(float)(FODImg->nim->nvox-1))*100) << "%" << '\r' << std::flush;
-    std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
-    GENERAL::exit_cv.notify_all();
-}
-
-void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor) {
-    
     float* FOD;
     if (FODImg->isspheresliced==false) {
         FOD = new float[FODImg->nim->nt];
@@ -92,13 +77,19 @@ void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, Nif
             for (int i=0; i<SH::numberOfSphericalHarmonicCoefficients; i++) {
                 FOD[i] = 0;
                 for (int t=0; t<FODImg->nim->nt; t++)
-                    FOD[i] += SH::Ylm[t][i]*accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
+                    FOD[i] += SH::Ylm[t][i]*accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz); // Ylm is already scaled by the surface area of a point
             }
         }
     
-        for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
-            float dir[3]            = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
-            FODImg->data[reInd+t]   = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
+        if (FODImg->discretizationFlag==true) {
+            for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
+                float dir[3]            = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
+                FODImg->data[reInd+t]   = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
+            }
+        } else {
+            for (int t=0; t<SH::numberOfSphericalHarmonicCoefficients; t++) {
+                FODImg->data[reInd+t]   = FOD[t]/FODImg->voxelVolume;
+            }
         }
         
     }
@@ -106,10 +97,14 @@ void discretizationTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, Nif
     delete[] FOD;
     
     GENERAL::tracker_lock.lock();
-    if (GENERAL::verboseLevel!=QUITE) std::cout << "Discretizing FOD: " << (int)((end_ind/(float)(FODImg->nnzVoxelInds.size()-1))*100) << "%" << '\r' << std::flush;
+    
+    if ((GENERAL::verboseLevel!=QUITE) && (FODImg->discretizationFlag == true)) std::cout << "Discretizing FOD: " << (int)((end_ind/(float)(FODImg->nnzVoxelInds.size()-1))*100) << "%" << '\r' << std::flush;
+    if ((GENERAL::verboseLevel!=QUITE) && (FODImg->discretizationFlag == false)) std::cout << "Loading FOD: " << (int)((end_ind/(float)(FODImg->nnzVoxelInds.size()-1))*100) << "%" << '\r' << std::flush;
     std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
     GENERAL::exit_cv.notify_all();
 }
+
+
 
 
 bool FOD_Image::readImage() {
@@ -136,7 +131,6 @@ bool FOD_Image::readImage() {
 	}
 	
 	// Prep sphere parameters
-	
 	if (iseven)
         discVolSphDim       = 21; // Creates 1038 points on half-sphere (2076 points on full-sphere)
     else
@@ -149,142 +143,89 @@ bool FOD_Image::readImage() {
     // Load data
     std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
     
-    if (discretizationFlag==false) {
-            
-        data = (float*) malloc(sizeof(float)*nim->nvox);
-        if (data==NULL) {
-            std::cout << "OUT OF MEMORY" << std::endl << std::flush;
-            assert(0);
-        }
-        
-        if (GENERAL::verboseLevel!=QUITE) std::cout << "Loading FOD image: 0%" << '\r' << std::flush;
-        
-        size_t chunkSize = 8192;
-        size_t bind      = 0;
-        size_t eind      = 0;
-        size_t taskCount = 0;
-        
-        for (int i=0; i<GENERAL::numberOfThreads; i++) {
-            if (eind < nim->nvox) {
-                bind = eind;
-                eind = bind + chunkSize;
-                if (eind>nim->nvox) eind=nim->nvox;
-            } else {
-                break;
-            }
-            std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
-            task.detach();
-            taskCount++;
-        }
-        
-        while(eind < nim->nvox) {
-            GENERAL::exit_cv.wait(lk);
-            
-            bind = eind;
-            eind = bind + chunkSize;
-            if (eind>nim->nvox) eind=nim->nvox;
-            
-            std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
-            task.detach();
-            GENERAL::tracker_lock.unlock();
-        }
-        
-        while (taskCount) {
-            GENERAL::exit_cv.wait(lk);
-            taskCount--;
-            GENERAL::tracker_lock.unlock();
-        }
-        
-        if (GENERAL::verboseLevel!=QUITE) std::cout << "Loading FOD image: 100%" << '\r' << std::flush;
-        if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
+    size_t nnt = SH::numberOfSphericalHarmonicCoefficients;
+    if (discretizationFlag==true) {
+        fillDiscVolSph();
+        nnt = discVolSphCoords.size();
     }
     
+    data = (float*) calloc(nim->nx * nim->ny * nim->nz * nnt, sizeof(float));
     
+    if (data==NULL) {
+        std::cout << "OUT OF MEMORY" << std::endl << std::flush;
+        assert(0);
+    }
     
-    // Discretize FOD
-    else {
-        
-        fillDiscVolSph();
-        
-        size_t nnt = discVolSphCoords.size();
-        
-        data = (float*) calloc(nim->nx * nim->ny * nim->nz * nnt, sizeof(float));
-        
-        if (data==NULL) {
-            std::cout << "OUT OF MEMORY" << std::endl << std::flush;
-            assert(0);
-        }
-        
-        // Mark non-zero voxels
-        size_t ind   = 0;
-        for (int z=0; z<(nim->nz); z++) {
-            for (int y=0; y<(nim->ny); y++) {
-                for (int x=0; x<(nim->nx); x++) {
-                    
-                    ind = (x+y*sx+z*sxy);
-                    
-                    for (int t=0; t<(nim->nt); t++) {
-                        
-                        if (accessor->get(nim->data,ind+t*sxyz)!=0) {                            
-                            nnzVoxelInds.push_back(ind);
-                            nnzVoxelReInds.push_back(ind*nnt);
-                            break;
-                        }
-                        
-                    }
-                        
-                }
+    // Mark non-zero voxels
+    size_t ind   = 0;
+    for (int z=0; z<(nim->nz); z++) {
+        for (int y=0; y<(nim->ny); y++) {
+            for (int x=0; x<(nim->nx); x++) {
                 
+                ind = (x+y*sx+z*sxy);
+                
+                for (int t=0; t<(nim->nt); t++) {
+                    
+                    if (accessor->get(nim->data,ind+t*sxyz)!=0) {                            
+                        nnzVoxelInds.push_back(ind);
+                        nnzVoxelReInds.push_back(ind*nnt);
+                        break;
+                    }
+                    
+                }
+                    
             }
-        }
-        
-        // Discretize
-        if (GENERAL::verboseLevel!=QUITE) std::cout << "Discretizing FOD: 0%" << '\r' << std::flush;
-        
-        size_t chunkSize = 128;
-        size_t bind      = 0;
-        size_t eind      = 0;
-        size_t taskCount = 0;
-        
-        for (int i=0; i<GENERAL::numberOfThreads; i++) {
-            if (eind < nnzVoxelInds.size()) {
-                bind = eind;
-                eind = bind + chunkSize;
-                if (eind>nnzVoxelInds.size()) eind=nnzVoxelInds.size();
-            } else {
-                break;
-            }
-            std::thread task = std::thread(discretizationTask, this, bind, eind, accessor);
-            task.detach();
-            taskCount++;
-        }
-        
-        while(eind < nnzVoxelInds.size()) {
             
-            GENERAL::exit_cv.wait(lk);
-            
+        }
+    }
+    
+    // Prepare data
+    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == true) ) std::cout << "Discretizing FOD: 0%" << '\r' << std::flush;
+    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == false)) std::cout << "Loading FOD: 0%" << '\r' << std::flush;
+    
+    size_t chunkSize = 128;
+    size_t bind      = 0;
+    size_t eind      = 0;
+    size_t taskCount = 0;
+    
+    for (int i=0; i<GENERAL::numberOfThreads; i++) {
+        if (eind < nnzVoxelInds.size()) {
             bind = eind;
             eind = bind + chunkSize;
             if (eind>nnzVoxelInds.size()) eind=nnzVoxelInds.size();
-            
-            std::thread task = std::thread(discretizationTask, this, bind, eind, accessor);
-            task.detach();
-            GENERAL::tracker_lock.unlock();
+        } else {
+            break;
         }
-        
-        while (taskCount) {
-            GENERAL::exit_cv.wait(lk);
-            taskCount--;
-            GENERAL::tracker_lock.unlock();
-        }
-        
-        if (GENERAL::verboseLevel!=QUITE) std::cout << "Discretizing FOD: 100%" << '\r' << std::flush;
-        if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
-        
-        nim->nt     = nnt;
-        nim->nvox   = nim->nx * nim->ny * nim->nz * nim->nt;
-        
+        std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
+        task.detach();
+        taskCount++;
     }
+    
+    while(eind < nnzVoxelInds.size()) {
+        
+        GENERAL::exit_cv.wait(lk);
+        
+        bind = eind;
+        eind = bind + chunkSize;
+        if (eind>nnzVoxelInds.size()) eind=nnzVoxelInds.size();
+        
+        std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
+        task.detach();
+        GENERAL::tracker_lock.unlock();
+    }
+    
+    while (taskCount) {
+        GENERAL::exit_cv.wait(lk);
+        taskCount--;
+        GENERAL::tracker_lock.unlock();
+    }
+    
+    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == true) ) std::cout << "Discretizing FOD: 100%" << '\r' << std::flush;
+    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == false)) std::cout << "Loading FOD: 100%" << '\r' << std::flush;
+    if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
+    
+    nim->nt     = nnt;
+    nim->nvox   = nim->nx * nim->ny * nim->nz * nim->nt;
     
     nnzVoxelInds.clear();
     nnzVoxelReInds.clear();

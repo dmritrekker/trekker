@@ -5,16 +5,20 @@ using namespace GENERAL;
 namespace PATHWAY {
 
 std::vector<ROI_Image*> img_ROI;
-
-Requirement_Order satisfy_requirements_in_order 	= REQUIREMENT_ORDER_NOTSET;
 std::vector<ROI_Image*> order_of_ROIs;
 std::vector<ROI_Image*> order_of_side_A_ROIs;
 std::vector<ROI_Image*> order_of_side_B_ROIs;
+Requirement_Order satisfy_requirements_in_order 	= REQUIREMENT_ORDER_NOTSET;
 
 void cleanConfigROI() {
 
 	for (std::vector<ROI_Image*>::iterator it = img_ROI.begin(); it != img_ROI.end(); ++it)
 		delete *it;
+    
+    img_ROI.clear();
+    order_of_ROIs.clear();
+    order_of_side_A_ROIs.clear();
+    order_of_side_B_ROIs.clear();
 
 }
 

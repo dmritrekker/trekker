@@ -7,6 +7,8 @@ using namespace SEED;
 using namespace PATHWAY;
 using namespace OUTPUT;
 
+bool isInitialized() { return GENERAL::initialized; }
+
 Trekker::Trekker(int argc, char **argv) {
 	InputParser input(argc, argv);
 
@@ -32,47 +34,176 @@ Trekker::Trekker(int argc, char **argv) {
 
 }
 
-Trekker::Trekker(std::string pathToFODimage) {
+// Reset parameters
+void resetAllParameters() {
+    
+    // Clean existing SEED and PATHWAY options
+    SEED::cleanConfigSeeding();
+    PATHWAY::cleanConfigROI();
+    
+    // General config
+    GENERAL::usingAPI 		            = true;
+    GENERAL::verboseLevel               = QUITE;
+    GENERAL::timeLimit                  = NOTSET;
+    GENERAL::numberOfThreads            = NOTSET;
+    
+    // Tracker config
+    TRACKER::orderOfDirections          = ORDEROFDIRECTIONS_NOTSET;
+    TRACKER::algorithm                  = ALGORITHM_NOTSET;
+    TRACKER::stepSize                   = NOTSET;
+    TRACKER::minRadiusOfCurvature   	= NOTSET;
+    TRACKER::minFODamp      			= NOTSET;
+    TRACKER::dataSupportExponent      	= NOTSET;
+    TRACKER::maxEstInterval             = NOTSET;
+    TRACKER::minLength      			= NOTSET;
+    TRACKER::maxLength      			= NOTSET;
+    TRACKER::atMaxLength 				= ATMAXLENGTH_NOTSET;
+    TRACKER::writeInterval  			= NOTSET;
+    TRACKER::directionality 			= DIRECTIONALITY_NOTSET;
+    TRACKER::triesPerRejectionSampling  = NOTSET;
+    TRACKER::initMaxEstTrials 			= 50; // Sampling is different when wrappers are used. With this defined, tractogram update will not change how sampling is done
+    TRACKER::propMaxEstTrials    		= 20; // Sampling is different when wrappers are used. With this defined, tractogram update will not change how sampling is done
+    TRACKER::atInit 					= ATINIT_NOTSET;
+    TRACKER::probeLength    			= NOTSET;
+    TRACKER::probeRadius    			= NOTSET;
+    TRACKER::probeQuality   			= NOTSET;
+    TRACKER::probeCount 			    = NOTSET;
+    TRACKER::checkWeakLinks             = CHECKWEAKLINKS_NOTSET;
+    TRACKER::weakLinkThresh             = NOTSET;    
+    
+    // Seed config
+    SEED::seedingMode                   = SEED_NOTSET;
+    SEED::count 					    = NOTSET;
+    SEED::countPerVoxel 			    = NOTSET;
+    SEED::maxTrialsPerSeed 		        = NOTSET;
+    
+    // Set default parameters
+    GENERAL::setDefaultParametersWhenNecessary();
+    SEED::setDefaultParametersWhenNecessary();
+    TRACKER::defaultsSet = false;
+    TRACKER::setDefaultParametersWhenNecessary();
+    TRACKER::defaultsSet = true;
+    
+}
 
-	int n = pathToFODimage.length();
+void Trekker::resetParameters() { resetAllParameters(); }
+
+void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool sphericalFunctionFlag, std::string pathToSphericalDomain, std::string symasym ) {
+    int n = pathToFODimage.length();
 	char* char_array = new char[n+1];
 	strcpy(char_array, pathToFODimage.c_str());
 
-	GENERAL::usingAPI 		= true;
-	GENERAL::verboseLevel 	= QUITE;
-
+    if (img_FOD  == NULL) { img_FOD  = new FOD_Image; }
+    if (img_SEED == NULL) { img_SEED = new ROI_Image; }
+    
 	if(!img_FOD->readHeader(char_array)) {
-        std::cout << "TREKKER::Cannot read FOD image: " << pathToFODimage << std::endl;
-    } else {
         
-        GENERAL::setDefaultParametersWhenNecessary();
-        SEED::setDefaultParametersWhenNecessary();
-        TRACKER::setDefaultParametersWhenNecessary();
+        std::cout << "TREKKER::Cannot read FOD image: " << pathToFODimage << std::endl;
+        
+    } else {
 
-        std::cout << "TREKKER::Reading FOD image: " << pathToFODimage << std::endl;TRACKER::defaultsSet = true;
+        std::cout << "TREKKER::Reading FOD image: " << pathToFODimage << std::endl << std::flush;
+        
+        if (discretizationFlag==false) {
+            std::cout << "TREKKER::Discretization is off" << std::endl << std::flush;
+            TRACKER::fodDiscretization  = FODDISC_OFF;
+            img_FOD->discretizationFlag = false;
+            img_FOD->isspheresliced     = false;
+        } else {
+            std::cout << "TREKKER::Discretization is on" << std::endl << std::flush;
+        }
+        
+        if (sphericalFunctionFlag) {
+            
+            // Check symmetry options
+            if ((symasym!="sym") && (symasym!="asym")) {
+                std::cout << "TREKKER::Please indicate if FOD is symmetric or asymmetric using options \"sym\" or \"asym\" " << std::endl << std::flush;
+            } else if (symasym=="sym") {
+                img_FOD->iseven = true;
+            } else {
+                img_FOD->iseven = false;
+            }
+            
+            // Read spherical domain
+            int ns = pathToSphericalDomain.length();
+            char* psd = new char[ns+1];
+            strcpy(psd, pathToSphericalDomain.c_str());
+            
+            std::string directions;
+            std::ifstream sphere(psd);
+
+            if (!sphere.good()) {
+                std::cout << "TREKKER::Cannot read sphere vertices from " << psd << std::endl << std::flush;
+            }
+
+            int lineNo = 1;
+            bool readError = false;
+            float p[3];
+            while(std::getline(sphere,directions)) {
+                if (!directions.empty()) {
+                    std::stringstream xyz(directions);
+                    if (xyz.good()) xyz >> p[0]; else { readError = true; break; }
+                    if (xyz.good()) xyz >> p[1]; else { readError = true; break; }
+                    if (xyz.good()) xyz >> p[2]; else { readError = true; break; }
+                    normalize(p);
+                    img_FOD->inpSphCoords.push_back(Coordinate(p[0],p[1],p[2]));
+                }
+                lineNo++;
+            }
+            sphere.close();
+            if (readError) {
+                std::cout << "TREKKER::Cannot read sphere vertices from " << psd << ", line " << lineNo << std::endl << std::flush;
+            }
+
+            if ((img_FOD->nim->nt - img_FOD->inpSphCoords.size()) !=0 ) {
+                std::cout << "TREKKER::Number of sphere vertices does not match the number of volumes in the FOD image" << std::endl << std::flush;
+            }
+            
+            TRACKER::fodDiscretization  = FODDISC_ON;
+            img_FOD->discretizationFlag = true;
+            img_FOD->isspheresliced     = true;
+            img_FOD->sphereFileName     = pathToSphericalDomain;
+            
+        }
+        
+        
+        resetAllParameters();
         TRACKER::readFODImage();
         
-    }
-    
-    // Sampling is different when wrappers are used
-    // With below defined, tractogram update will not change how sampling is done
-	// this will allow each streamline to be tracked the same way
-	TRACKER::initMaxEstTrials = 50;
-	TRACKER::propMaxEstTrials = 20;
-
-	timeUp = false;
+    }    
 }
 
+Trekker::Trekker(std::string pathToFODimage) {
+    checkFOD(pathToFODimage, true, false, "", "" );
+    timeUp               = false;
+    GENERAL::initialized = true;
+}
+
+Trekker::Trekker(std::string pathToFODimage, bool discretizationFlag) {
+    checkFOD(pathToFODimage, discretizationFlag, false, "", "" );
+    timeUp               = false;
+    GENERAL::initialized = true;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym) {
+    checkFOD(pathToFODimage, true, true, pathToSphericalDomain, symasym );
+    timeUp               = false;
+    GENERAL::initialized = true;
+}
+
+
 Trekker::~Trekker() {
+    
     if (GENERAL::usingAPI==true) {
         TRACKER::cleanConfigTracker();
         SEED::cleanConfigSeeding();
-        PATHWAY::cleanConfigROI();
+        PATHWAY::cleanConfigROI();        
     }
+    
+    GENERAL::initialized = false;
 }
 
 void Trekker::execute() {
-    
     
     // Some checks for the wrappers
     if (GENERAL::usingAPI) {
@@ -82,7 +213,6 @@ void Trekker::execute() {
         }
         
         TRACKER::setMethodsDefaultParametersWhenNecessary();
-        
         TRACKER::tractogram->reset();
     }
     //-----------------------------
@@ -97,11 +227,12 @@ void Trekker::execute() {
 		std::cout << "Tracking" << std::endl << std::endl;;
 		TRACKER::tractogram->printSummary();
 	}
-
+	
 	int         numberOfThreadsToUse = ( (GENERAL::numberOfThreads<=SEED::count) ? GENERAL::numberOfThreads : SEED::count);
 	
     std::thread             *threads = new std::thread[numberOfThreadsToUse];
 	TrackingThread          *tracker = new TrackingThread[numberOfThreadsToUse];
+    
 	int                 finalThreads = 0;
     
     std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
@@ -157,9 +288,11 @@ void Trekker::execute() {
         
         GENERAL::tracker_lock.unlock();        
 	}
-
+    
 	delete[] threads;
 	delete[] tracker;
+    
+
 }
 
 std::vector< std::vector< std::vector<double> > > Trekker::get_tractogram_coordinates() {
@@ -189,14 +322,16 @@ std::vector< std::vector< std::vector<double> > > Trekker::get_tractogram_coordi
 }
 
 std::vector< std::vector< std::vector<double> > > Trekker::run() {
-	execute();
+    execute();
 	return get_tractogram_coordinates();
 }
 
 
 void Trekker::printParameters() {
+    GENERAL::print();
     TRACKER::print();
     SEED::print();
+    PATHWAY::print();
 }
 
 // Parameter setting
@@ -207,10 +342,79 @@ void Trekker::timeLimit(int t) { GENERAL::timeLimit = t;}
 
 
 // Tracker config
+
+void Trekker::orderOfDirections(std::string ood) {
+    
+    TRACKER::orderOfDirectionsTextInput=ood;
+    
+    if      (ood=="XYZ") TRACKER::orderOfDirections = XYZ;
+    else if (ood=="XYz") TRACKER::orderOfDirections = XYz;
+    else if (ood=="XyZ") TRACKER::orderOfDirections = XyZ;
+    else if (ood=="Xyz") TRACKER::orderOfDirections = Xyz;
+    else if (ood=="xYZ") TRACKER::orderOfDirections = xYZ;
+    else if (ood=="xYz") TRACKER::orderOfDirections = xYz;
+    else if (ood=="xyZ") TRACKER::orderOfDirections = xyZ;
+    else if (ood=="xyz") TRACKER::orderOfDirections = xyz;
+	else if (ood=="XZY") TRACKER::orderOfDirections = XZY;
+    else if (ood=="XZy") TRACKER::orderOfDirections = XZy;
+    else if (ood=="XzY") TRACKER::orderOfDirections = XzY;
+    else if (ood=="Xzy") TRACKER::orderOfDirections = Xzy;
+    else if (ood=="xZY") TRACKER::orderOfDirections = xZY;
+    else if (ood=="xZy") TRACKER::orderOfDirections = xZy;
+    else if (ood=="xzY") TRACKER::orderOfDirections = xzY;
+    else if (ood=="xzy") TRACKER::orderOfDirections = xzy;
+    else if (ood=="YXZ") TRACKER::orderOfDirections = YXZ;
+    else if (ood=="YXz") TRACKER::orderOfDirections = YXz;
+    else if (ood=="YxZ") TRACKER::orderOfDirections = YxZ;
+    else if (ood=="Yxz") TRACKER::orderOfDirections = Yxz;
+    else if (ood=="yXZ") TRACKER::orderOfDirections = yXZ;
+    else if (ood=="yXz") TRACKER::orderOfDirections = yXz;
+    else if (ood=="yxZ") TRACKER::orderOfDirections = yxZ;
+    else if (ood=="yxz") TRACKER::orderOfDirections = yxz;
+    else if (ood=="YZX") TRACKER::orderOfDirections = YZX;
+    else if (ood=="YZx") TRACKER::orderOfDirections = YZx;
+    else if (ood=="YzX") TRACKER::orderOfDirections = YzX;
+    else if (ood=="Yzx") TRACKER::orderOfDirections = Yzx;
+    else if (ood=="yZX") TRACKER::orderOfDirections = yZX;
+    else if (ood=="yZx") TRACKER::orderOfDirections = yZx;
+    else if (ood=="yzX") TRACKER::orderOfDirections = yzX;
+    else if (ood=="yzx") TRACKER::orderOfDirections = yzx;
+    else if (ood=="ZYX") TRACKER::orderOfDirections = ZYX;
+    else if (ood=="ZYx") TRACKER::orderOfDirections = ZYx;
+    else if (ood=="ZyX") TRACKER::orderOfDirections = ZyX;
+    else if (ood=="Zyx") TRACKER::orderOfDirections = Zyx;
+    else if (ood=="zYX") TRACKER::orderOfDirections = zYX;
+    else if (ood=="zYx") TRACKER::orderOfDirections = zYx;
+    else if (ood=="zyX") TRACKER::orderOfDirections = zyX;
+    else if (ood=="zyx") TRACKER::orderOfDirections = zyx;
+    else if (ood=="ZXY") TRACKER::orderOfDirections = ZXY;
+    else if (ood=="ZXy") TRACKER::orderOfDirections = ZXy;
+    else if (ood=="ZxY") TRACKER::orderOfDirections = ZxY;
+    else if (ood=="Zxy") TRACKER::orderOfDirections = Zxy;
+    else if (ood=="zXY") TRACKER::orderOfDirections = zXY;
+    else if (ood=="zXy") TRACKER::orderOfDirections = zXy;
+    else if (ood=="zxY") TRACKER::orderOfDirections = zxY;
+    else if (ood=="zxy") TRACKER::orderOfDirections = zxy;
+    else {
+		std::cout << "TREKKER::Unknown order of directions: " << ood << ", valid options are e.g.\"xYz\", \"ZyX\" etc. "<< std::endl;
+	}
+    
+}
+
+void Trekker::algorithm(std::string alg) {
+    
+    if (alg=="ptt C1")      TRACKER::algorithm = PTT_C1;
+    else if (alg=="ptt C2") TRACKER::algorithm = PTT_C2;
+    else {
+		std::cout << "TREKKER::Unknown algorithm: " << alg << ", valid options are \"ptt C1\" and \"ptt C2\". "<< std::endl;
+	}
+    
+}
+
 void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}
 void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;}
 void Trekker::minFODamp(double x) { TRACKER::minFODamp = x; }
-void Trekker::ignoreWeakLinks(double x) { TRACKER::weakLinkThresh = x; }
+void Trekker::ignoreWeakLinks(double x) { TRACKER::weakLinkThresh = x; TRACKER::checkWeakLinks  = CHECKWEAKLINKS_ON; }
 void Trekker::maxEstInterval(int n) { TRACKER::maxEstInterval = n; }
 void Trekker::dataSupportExponent(double x) { TRACKER::dataSupportExponent = x; }
 void Trekker::minLength(double x) { TRACKER::minLength = x; }
@@ -264,54 +468,44 @@ void Trekker::probeQuality(int n) { TRACKER::probeQuality = n;}
 
 
 // Seed config
-void Trekker::seed_image(std::string pathToSeedImage) {
+
+void se(std::string s, int l, bool q) {
     
-    int n = pathToSeedImage.length();
-	char* char_array = new char[n+1];
-	strcpy(char_array, pathToSeedImage.c_str());
+    SEED::cleanConfigSeeding();
+    
+    int n   = s.length();
+    char* f = new char[n+1];
+    strcpy(f, s.c_str());
     
     ROI_Image*  test = new ROI_Image;
-    if(!test->readHeader(char_array)) {
-        std::cout << "TREKKER::Cannot read seed image: " << char_array << std::endl;
+    if(!test->readHeader(f)) {
+        std::cout << "TREKKER::Cannot read seed image: " << f << std::endl;
     } else {
-        delete img_SEED;
         img_SEED = new ROI_Image;
-        SEED::img_SEED->readHeader(char_array);
+        SEED::img_SEED->readHeader(f);
         SEED::seedingMode = SEED_IMAGE;
+        if (q) SEED::img_SEED->setLabel(l);
         SEED::setDefaultParametersWhenNecessary();
         SEED::readSeedImage();
     }
+    
     delete test;
+    delete[] f;
     
 }
 
-void Trekker::seed_image_using_label(std::string pathToSeedImage, int label) {
-    
-    int n = pathToSeedImage.length();
-	char* char_array = new char[n+1];
-	strcpy(char_array, pathToSeedImage.c_str());
-    
-    ROI_Image*  test = new ROI_Image;
-    if(!test->readHeader(char_array)) {
-        std::cout << "TREKKER::Cannot read seed image: " << char_array << std::endl;
-    } else {
-        delete img_SEED;
-        img_SEED = new ROI_Image;
-        SEED::img_SEED->readHeader(char_array);
-        SEED::seedingMode = SEED_IMAGE;
-        SEED::img_SEED->setLabel(label);
-        SEED::setDefaultParametersWhenNecessary();
-        SEED::readSeedImage();
-    }
-    delete test;
-    
-}
+void Trekker::seed_image(std::string s)         { se(s,0,false); }
+void Trekker::seed_image(std::string s, int l)  { se(s,l,true);  }
+
+
 
 void Trekker::seed_coordinates(std::vector< std::vector<double> > seed_coordinates) {
 
-	SEED::seedingMode 	= SEED_COORDINATES;
-    
-	SEED::count 		= seed_coordinates.size();
+    SEED::cleanConfigSeeding();
+    SEED::img_SEED               = new ROI_Image; // This is necessary for tracker_thread to work, this will be deleted at exit
+	SEED::seedingMode 	         = SEED_COORDINATES;
+	SEED::count 		         = seed_coordinates.size();
+    SEED::seed_coordinate_fname  = "";
 
     SEED::seed_coordinates.clear();
 	for (unsigned int i=0; i<seed_coordinates.size(); i++) {
@@ -330,9 +524,12 @@ void Trekker::seed_coordinates_with_directions(std::vector< std::vector<double> 
         return;
     }
     
-	SEED::seedingMode 	= SEED_COORDINATES_WITH_DIRECTIONS;
-    
-	SEED::count 		= seed_coordinates.size();
+    SEED::cleanConfigSeeding();
+    SEED::img_SEED                   = new ROI_Image; // This is necessary for tracker_thread to work, this will be deleted at exit
+	SEED::seedingMode 	             = SEED_COORDINATES_WITH_DIRECTIONS;
+	SEED::count 		             = seed_coordinates.size();
+    SEED::seed_coordinate_fname      = "";
+    SEED::seed_init_directions_fname = "";
     
 	SEED::seed_coordinates.clear();
 	for (unsigned int i=0; i<seed_coordinates.size(); i++) {
@@ -353,3 +550,176 @@ void Trekker::seed_coordinates_with_directions(std::vector< std::vector<double> 
 void Trekker::seed_count(int n) { SEED::count = (n==0) ? NOTSET : n; SEED::setDefaultParametersWhenNecessary(); }
 void Trekker::seed_countPerVoxel(int n) { SEED::countPerVoxel = (n==0) ? NOTSET : n; SEED::setDefaultParametersWhenNecessary(); }
 void Trekker::seed_maxTrials(int n) { SEED::maxTrialsPerSeed = n;}
+
+
+// Pathway config
+
+void Trekker::clearPathwayRules() {PATHWAY::cleanConfigROI();}
+
+ROI_Image* checkPathway(std::string s) {
+    
+    int n   = s.length();
+    char* f = new char[n+1];
+    strcpy(f, s.c_str());
+    
+    ROI_Image *tmp = new ROI_Image;
+    if(!tmp->readHeader(f)) {
+        std::cout << "TREKKER::Cannot read pathway image: " << f << std::endl;
+        delete[] f;
+        return NULL;
+    }
+    delete[] f;
+    return tmp;
+}
+
+void addPathway(ROI_Image* tmp, int l, bool q, Tracking_Side side) {
+    if (q) tmp->setLabel(l);
+    tmp->side = side;
+    tmp->readImage();
+    if (side == side_undefined) PATHWAY::order_of_ROIs.push_back(tmp);
+    if (side == side_A)         PATHWAY::order_of_side_A_ROIs.push_back(tmp);
+    if (side == side_B)         PATHWAY::order_of_side_B_ROIs.push_back(tmp);
+    PATHWAY::img_ROI.push_back(tmp);
+}
+
+
+// require_entry
+void pren(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_req_entry;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_require_entry(std::string s)          { pren(s, 0, false, side_undefined); }
+void Trekker::pathway_require_entry(std::string s, int l)   { pren(s, l, true,  side_undefined); }
+void Trekker::pathway_A_require_entry(std::string s)        { pren(s, 0, false, side_A); }
+void Trekker::pathway_A_require_entry(std::string s, int l) { pren(s, l, true,  side_A); }
+void Trekker::pathway_B_require_entry(std::string s)        { pren(s, 0, false, side_B); }
+void Trekker::pathway_B_require_entry(std::string s, int l) { pren(s, l, true,  side_B); }
+
+
+
+// require_exit
+void prex(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_req_exit;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_require_exit(std::string s)          { prex(s, 0, false, side_undefined); }
+void Trekker::pathway_require_exit(std::string s, int l)   { prex(s, l, true,  side_undefined); }
+void Trekker::pathway_A_require_exit(std::string s)        { prex(s, 0, false, side_A); }
+void Trekker::pathway_A_require_exit(std::string s, int l) { prex(s, l, true,  side_A); }
+void Trekker::pathway_B_require_exit(std::string s)        { prex(s, 0, false, side_B); }
+void Trekker::pathway_B_require_exit(std::string s, int l) { prex(s, l, true,  side_B); }
+
+
+
+
+// stop_at_entry
+void sten(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_stop_at_entry;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_stop_at_entry(std::string s)          { sten(s, 0, false, side_undefined); }
+void Trekker::pathway_stop_at_entry(std::string s, int l)   { sten(s, l, true,  side_undefined); }
+void Trekker::pathway_A_stop_at_entry(std::string s)        { sten(s, 0, false, side_A); }
+void Trekker::pathway_A_stop_at_entry(std::string s, int l) { sten(s, l, true,  side_A); }
+void Trekker::pathway_B_stop_at_entry(std::string s)        { sten(s, 0, false, side_B); }
+void Trekker::pathway_B_stop_at_entry(std::string s, int l) { sten(s, l, true,  side_B); }
+
+
+
+
+// stop_at_exit
+void stex(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_stop_at_exit;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_stop_at_exit(std::string s)          { stex(s, 0, false, side_undefined); }
+void Trekker::pathway_stop_at_exit(std::string s, int l)   { stex(s, l, true,  side_undefined); }
+void Trekker::pathway_A_stop_at_exit(std::string s)        { stex(s, 0, false, side_A); }
+void Trekker::pathway_A_stop_at_exit(std::string s, int l) { stex(s, l, true,  side_A); }
+void Trekker::pathway_B_stop_at_exit(std::string s)        { stex(s, 0, false, side_B); }
+void Trekker::pathway_B_stop_at_exit(std::string s, int l) { stex(s, l, true,  side_B); }
+
+
+
+
+// discard_if_enters
+void dien(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_discard_if_enters;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_discard_if_enters(std::string s)          { dien(s, 0, false, side_undefined); }
+void Trekker::pathway_discard_if_enters(std::string s, int l)   { dien(s, l, true,  side_undefined); }
+void Trekker::pathway_A_discard_if_enters(std::string s)        { dien(s, 0, false, side_A); }
+void Trekker::pathway_A_discard_if_enters(std::string s, int l) { dien(s, l, true,  side_A); }
+void Trekker::pathway_B_discard_if_enters(std::string s)        { dien(s, 0, false, side_B); }
+void Trekker::pathway_B_discard_if_enters(std::string s, int l) { dien(s, l, true,  side_B); }
+
+
+
+
+// discard_if_exits
+void diex(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_discard_if_exits;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_discard_if_exits(std::string s)          { diex(s, 0, false, side_undefined); }
+void Trekker::pathway_discard_if_exits(std::string s, int l)   { diex(s, l, true,  side_undefined); }
+void Trekker::pathway_A_discard_if_exits(std::string s)        { diex(s, 0, false, side_A); }
+void Trekker::pathway_A_discard_if_exits(std::string s, int l) { diex(s, l, true,  side_A); }
+void Trekker::pathway_B_discard_if_exits(std::string s)        { diex(s, 0, false, side_B); }
+void Trekker::pathway_B_discard_if_exits(std::string s, int l) { diex(s, l, true,  side_B); }
+
+
+
+
+
+// discard_if_ends_inside
+void diei(std::string s, int l, bool q, Tracking_Side side) {
+    ROI_Image *tmp = checkPathway(s);
+    if (tmp!=NULL) {
+        tmp->type = roi_type_discard_if_ends_inside;
+        addPathway(tmp,l,q,side);
+    }
+}
+
+void Trekker::pathway_discard_if_ends_inside(std::string s)          { diei(s, 0, false, side_undefined); }
+void Trekker::pathway_discard_if_ends_inside(std::string s, int l)   { diei(s, l, true,  side_undefined); }
+void Trekker::pathway_A_discard_if_ends_inside(std::string s)        { diei(s, 0, false, side_A); }
+void Trekker::pathway_A_discard_if_ends_inside(std::string s, int l) { diei(s, l, true,  side_A); }
+void Trekker::pathway_B_discard_if_ends_inside(std::string s)        { diei(s, 0, false, side_B); }
+void Trekker::pathway_B_discard_if_ends_inside(std::string s, int l) { diei(s, l, true,  side_B); }
+
+
+
+// satisy_requirements_in_order
+
+void Trekker::pathway_satisy_requirements_in_order(bool q) {
+    if (q)
+        PATHWAY::satisfy_requirements_in_order = IN_ORDER;
+    else
+        PATHWAY::satisfy_requirements_in_order = NO_ORDER;
+}

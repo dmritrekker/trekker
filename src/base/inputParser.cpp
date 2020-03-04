@@ -61,12 +61,11 @@ void InputParser::parse() {
         else if (Option("-dontDiscretizeFod"))      parse_dontDiscretizeFod();
         else if (Option("-orderOfDirections"))      parse_orderOfDirections();
 		else if (Option("-algorithm"))     			parse_algorithm();
-        else if (Option("-ignoreWeakLinks"))        parse_ignoreWeakLinks();
 		else if (Option("-stepSize"))   			parse_stepSize();
 		else if (Option("-minRadiusOfCurvature"))   parse_minRadiusOfCurvature();
 		else if (Option("-minFODamp"))        		parse_minFODamp();
-        else if (Option("-maxEstInterval"))        	parse_maxEstInterval();
         else if (Option("-dataSupportExponent"))    parse_dataSupportExponent();
+        else if (Option("-maxEstInterval"))        	parse_maxEstInterval();
 		else if (Option("-minLength"))        		parse_minLength();
 		else if (Option("-maxLength"))        		parse_maxLength();
 		else if (Option("-atMaxLength"))        	parse_atMaxLength();
@@ -82,6 +81,7 @@ void InputParser::parse() {
 		else if (Option("-probeRadius"))        	parse_probeRadius();
 		else if (Option("-probeCount"))     		parse_probeCount();
 		else if (Option("-probeQuality"))     		parse_probeQuality();
+        else if (Option("-ignoreWeakLinks"))        parse_ignoreWeakLinks();
 
 		// Seed config
 		else if (Option("-seed_image"))     			parse_seed_image();
@@ -969,7 +969,7 @@ void InputParser::parse_algorithm() {
 		exit(EXIT_FAILURE);
 	}
 
-	if      (Option("ptt"))    					TRACKER::algorithm = PTT_C2;
+	if      (Option("ptt"))    					TRACKER::algorithm = PTT_C1;
 	else if (Option("local_probabilistic"))  	TRACKER::algorithm = LOCAL_PROBABILISTIC;
 	else {
 		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\" and \"local_probabilistic\" "<< std::endl;
@@ -979,7 +979,7 @@ void InputParser::parse_algorithm() {
     
     if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
         
-        if (TRACKER::algorithm == PTT_C2) {
+        if (TRACKER::algorithm == PTT_C1) {
             if      (Option("C1"))    					TRACKER::algorithm = PTT_C1;
             else if (Option("C2"))    					TRACKER::algorithm = PTT_C2;
             // else if (Option("C3"))    					TRACKER::algorithm = PTT_C3;

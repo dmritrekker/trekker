@@ -17,7 +17,7 @@ std::mutex                  tracker_lock;
 size_t                      ready_thread_id;
 int                         lineCountToFlush;
 
-int                         genCnt = 0;
+bool                        initialized = false;
 
 
 int runTime() {
@@ -51,15 +51,19 @@ void setDefaultParametersWhenNecessary() {
 		timeLimit = MAXTIMELIMIT; // no time limit by default
 	}
 
+	initialized = true;
+	
 }
 
 
 void print() {
 	std::cout << std::endl;
-	std::cout << "GENERAL OPTIONS"<< std::endl;
-	std::cout << "Verbose level         : "  << verboseLevel 		<< std::endl;
-	std::cout << "Number of threads     : "  << numberOfThreads 	<< std::endl;
-	std::cout << "Time limit            : ";
+    if (GENERAL::usingAPI==false) {
+        std::cout << "GENERAL OPTIONS"<< std::endl;
+        std::cout << "verbose level        : "  << verboseLevel 		<< std::endl;
+    }
+	std::cout << "number of threads    : "  << numberOfThreads 	<< std::endl;
+	std::cout << "time limit           : ";
 	if (timeLimit==MAXTIMELIMIT)
 		std::cout << "infinite minutes";
 	else {
@@ -70,7 +74,9 @@ void print() {
 		else
 			std::cout << " minutes" << std::endl;
 	}
-	std::cout << std::endl;
+	if (GENERAL::usingAPI==false) {
+        std::cout << std::endl;
+    }
 
 }
 

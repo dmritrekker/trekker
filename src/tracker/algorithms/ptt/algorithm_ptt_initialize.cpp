@@ -8,8 +8,9 @@ void TrackWith_PTT::get_initial_curve() {
 	else
 		curve->getARandomFrame();
     
-    curve->getACandidatek1k2();
+    curve->getInitCandidatek1k2();
 	calcDataSupport();
+    
 }
 
 
@@ -40,10 +41,10 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	posteriorMax       *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent); // initial compensation for underestimation
     initialPosteriorMax = posteriorMax;
     
+    
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
-		curve->swap(initial_curve);
 		if (curve->likelihood < modMinFodAmp )
 			curve->likelihood = -2;
 

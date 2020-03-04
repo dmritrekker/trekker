@@ -17,12 +17,11 @@ typedef enum {
 namespace PATHWAY {
 
 extern std::vector<ROI_Image*> img_ROI;
-
-extern Requirement_Order       satisfy_requirements_in_order;
 extern std::vector<ROI_Image*> order_of_ROIs;
 extern std::vector<ROI_Image*> order_of_side_A_ROIs;
 extern std::vector<ROI_Image*> order_of_side_B_ROIs;
 
+extern Requirement_Order       satisfy_requirements_in_order;
 
 void cleanConfigROI();
 void readROIImages();

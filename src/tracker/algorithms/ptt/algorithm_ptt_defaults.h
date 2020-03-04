@@ -24,6 +24,6 @@
 #define DEFAULT_PTT_PROP_MINPOSTESTIT 		 		   			   1
 #define DEFAULT_PTT_MAXPOSTESTCOMPENS 	  		   			       4
 
-#define DEFAULT_PTT_WEAKLINKRATIO 	  		   			         0.2
+#define DEFAULT_PTT_WEAKLINKRATIO 	  		   			           0
 
 #endif

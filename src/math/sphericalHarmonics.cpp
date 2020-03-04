@@ -52,11 +52,17 @@ void clean() {
             delete[] Ylm[i];
         delete[] Ylm;
     }
+    
+    precomputedPhiComponent   = NULL;
+    precomputedThetaComponent = NULL;
+    Ylm                       = NULL;
 }
 
 
 
 void precompute(size_t num) {
+    
+    if (precomputedPhiComponent != NULL) {return;}
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Precomputing spherical harmonic multipliers... " << std::flush;
 
@@ -155,6 +161,8 @@ void precompute(size_t num) {
 
 void precomputeExpansionCoefficients() {
     
+    if (Ylm!=NULL) {return;}
+    
     if (GENERAL::verboseLevel!=QUITE) std::cout << "Precomputing spherical harmonic expansion coefficients... " << std::flush;
     
     Ylm = new float*[TRACKER::img_FOD->inpSphCoords.size()];
@@ -228,9 +236,9 @@ float SH_amplitude(float *values, float *dir) {
     delete[] unit_dir;
     
 	float amp = 0;
-	for (int i=0; i<numberOfSphericalHarmonicCoefficients; i++)
-		amp += values[i]*phiComp[i]*thetaComp[i];
-
+    for (int i=0; i<numberOfSphericalHarmonicCoefficients; i++)
+	 	amp += values[i]*phiComp[i]*thetaComp[i];
+    
 	if (amp>0) 	return amp;
 	else 		return 0;
 

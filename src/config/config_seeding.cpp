@@ -18,6 +18,11 @@ int maxTrialsPerSeed 		= NOTSET;
 
 void cleanConfigSeeding() {
 	delete img_SEED;
+    img_SEED = NULL;
+    
+    seed_indices.clear();
+    seed_coordinates.clear();
+    seed_init_directions.clear();
 }
 
 void setDefaultParametersWhenNecessary() {
@@ -163,6 +168,7 @@ void print() {
 		if (GENERAL::verboseLevel>ON) img_SEED->printInfo();
 		if (GENERAL::verboseLevel>ON) std::cout << "-----------------" << std::endl << std::endl;
 	}
+	
 }
 
 }
