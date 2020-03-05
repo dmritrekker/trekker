@@ -6,7 +6,7 @@
 #include "inputParser.h"
 #include "streamline.h"
 #include "../tracker/tracker_thread.h"
-
+#include "../math/sphericalHarmonics.h"
 
 class TrackingThread;
 

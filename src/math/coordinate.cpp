@@ -68,3 +68,10 @@ void Coordinate::normalize() {
 	y *= magi;
 	z *= magi;
 }
+
+void Coordinate::copyToFloatArray(float *out) {
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+}
+

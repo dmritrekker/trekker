@@ -126,15 +126,14 @@ void InputParser::parse() {
 		else if (Option("-enableOutputOverwrite")) 	parse_enableOutputOverwrite();
 		else if (Option("-writeSeedCoordinates")) 	parse_writeSeedCoordinates();
 		else if (Option("-writeColors")) 			parse_writeColors();
+        else if (Option("-writeFODamp")) 			parse_writeFODamp();
 		else if (Option("-writeTangents")) 			parse_writeTangents();
 		else if (Option("-writek1axes")) 			parse_writek1axes();
 		else if (Option("-writek2axes")) 			parse_writek2axes();
 		else if (Option("-writek1s")) 				parse_writek1s();
 		else if (Option("-writek2s")) 				parse_writek2s();
 		else if (Option("-writeCurvatures")) 		parse_writeCurvatures();
-		else if (Option("-writePriors")) 			parse_writePriors();
 		else if (Option("-writeLikelihoods")) 	    parse_writeLikelihoods();
-		else if (Option("-writePosteriors")) 		parse_writePosteriors();
 
 		else {
 			std::cout << "Unknown option: " << argv[argv_index] << std::endl;
@@ -350,6 +349,15 @@ void InputParser::parse_writeColors() {
 	argv_index++;
 }
 
+void InputParser::parse_writeFODamp() {
+	if (OUTPUT::FODampWriteMode != WRITE_NOTSET) {
+		std::cout << "Cannot use -writeFODamp option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	OUTPUT::FODampWriteMode = WRITE_ON;
+	argv_index++;
+}
+
 void InputParser::parse_writeTangents() {
 	if (OUTPUT::tangentWriteMode != WRITE_NOTSET) {
 		std::cout << "Cannot use -writeTangents option more than once" << std::endl;
@@ -405,30 +413,12 @@ void InputParser::parse_writeCurvatures() {
 	argv_index++;
 }
 
-void InputParser::parse_writePriors() {
-	if (OUTPUT::priorWriteMode != WRITE_NOTSET) {
-		std::cout << "Cannot use -writePriors option more than once" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	OUTPUT::priorWriteMode = WRITE_ON;
-	argv_index++;
-}
-
 void InputParser::parse_writeLikelihoods() {
 	if (OUTPUT::likelihoodWriteMode != WRITE_NOTSET) {
 		std::cout << "Cannot use -writeLikelihoods option more than once" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	OUTPUT::likelihoodWriteMode = WRITE_ON;
-	argv_index++;
-}
-
-void InputParser::parse_writePosteriors() {
-	if (OUTPUT::posteriorWriteMode != WRITE_NOTSET) {
-		std::cout << "Cannot use -writePosteriors option more than once" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	OUTPUT::posteriorWriteMode = WRITE_ON;
 	argv_index++;
 }
 

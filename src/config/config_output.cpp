@@ -10,6 +10,7 @@ std::string   outputFilePath 			= "";
 WriteMode     overwriteMode 		    = WRITE_NOTSET;
 WriteMode     seedCoordinateWriteMode 	= WRITE_NOTSET;
 WriteMode     colorWriteMode 			= WRITE_NOTSET;
+WriteMode     FODampWriteMode 			= WRITE_NOTSET;
 
 // Output options for ptt algorithm
 WriteMode     tangentWriteMode          = WRITE_NOTSET;
@@ -18,9 +19,7 @@ WriteMode     k2axisWriteMode           = WRITE_NOTSET;
 WriteMode     k1WriteMode               = WRITE_NOTSET;
 WriteMode     k2WriteMode               = WRITE_NOTSET;
 WriteMode     curvatureWriteMode        = WRITE_NOTSET;
-WriteMode     priorWriteMode            = WRITE_NOTSET;
 WriteMode     likelihoodWriteMode       = WRITE_NOTSET;
-WriteMode     posteriorWriteMode        = WRITE_NOTSET;
 
 void setDefaultParametersWhenNecessary() {
 
@@ -28,6 +27,7 @@ void setDefaultParametersWhenNecessary() {
 	if (overwriteMode==WRITE_NOTSET) 				overwriteMode 			= WRITE_OFF;
 	if (seedCoordinateWriteMode==WRITE_NOTSET) 		seedCoordinateWriteMode = WRITE_OFF;
 	if (colorWriteMode==WRITE_NOTSET) 				colorWriteMode 			= WRITE_OFF;
+    if (FODampWriteMode==WRITE_NOTSET) 				FODampWriteMode 		= WRITE_OFF;
 
 	// Default parameters for ptt output
 	if (tangentWriteMode==WRITE_NOTSET) 	tangentWriteMode 	= WRITE_OFF;
@@ -36,9 +36,7 @@ void setDefaultParametersWhenNecessary() {
 	if (k1WriteMode==WRITE_NOTSET) 			k1WriteMode 		= WRITE_OFF;
 	if (k2WriteMode==WRITE_NOTSET) 			k2WriteMode 		= WRITE_OFF;
 	if (curvatureWriteMode==WRITE_NOTSET) 	curvatureWriteMode 	= WRITE_OFF;
-	if (priorWriteMode==WRITE_NOTSET) 		priorWriteMode 		= WRITE_OFF;
 	if (likelihoodWriteMode==WRITE_NOTSET) 	likelihoodWriteMode = WRITE_OFF;
-	if (posteriorWriteMode==WRITE_NOTSET) 	posteriorWriteMode 	= WRITE_OFF;
 
 	bool checkOutput = false;
 
@@ -91,6 +89,14 @@ void print() {
 
 	std::cout << "writeColors           : ";
 	switch(colorWriteMode){
+	case WRITE_OFF: std::cout << "OFF"; break;
+	case WRITE_ON:  std::cout << "ON";  break;
+	default: break;
+	}
+	std::cout << std::endl;
+    
+	std::cout << "writeFODamp           : ";
+	switch(FODampWriteMode){
 	case WRITE_OFF: std::cout << "OFF"; break;
 	case WRITE_ON:  std::cout << "ON";  break;
 	default: break;
@@ -150,24 +156,8 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writePriors           : ";
-		switch(priorWriteMode){
-		case WRITE_OFF: std::cout << "OFF"; break;
-		case WRITE_ON:  std::cout << "ON";  break;
-		default: break;
-		}
-		std::cout << std::endl;
-
 		std::cout << "writeLikelihoods      : ";
 		switch(likelihoodWriteMode){
-		case WRITE_OFF: std::cout << "OFF"; break;
-		case WRITE_ON:  std::cout << "ON";  break;
-		default: break;
-		}
-		std::cout << std::endl;
-
-		std::cout << "writePosteriors       : ";
-		switch(posteriorWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
 		default: break;

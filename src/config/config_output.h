@@ -18,6 +18,7 @@ extern std::string   outputFilePath;
 extern WriteMode     overwriteMode;
 extern WriteMode     seedCoordinateWriteMode;
 extern WriteMode     colorWriteMode;
+extern WriteMode     FODampWriteMode;
 
 
 // Output options for ptt algorithm
@@ -27,9 +28,7 @@ extern WriteMode     k2axisWriteMode;
 extern WriteMode     k1WriteMode;
 extern WriteMode     k2WriteMode;
 extern WriteMode     curvatureWriteMode;
-extern WriteMode     priorWriteMode;
 extern WriteMode     likelihoodWriteMode;
-extern WriteMode     posteriorWriteMode;
 
 void setDefaultParametersWhenNecessary();
 void print();

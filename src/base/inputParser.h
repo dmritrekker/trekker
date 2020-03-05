@@ -114,15 +114,14 @@ private:
 	void parse_enableOutputOverwrite();
 	void parse_writeSeedCoordinates();
 	void parse_writeColors();
+    void parse_writeFODamp();
 	void parse_writeTangents();
 	void parse_writek1axes();
 	void parse_writek2axes();
 	void parse_writek1s();
 	void parse_writek2s();
 	void parse_writeCurvatures();
-	void parse_writePriors();
 	void parse_writeLikelihoods();
-	void parse_writePosteriors();
 
 };
 

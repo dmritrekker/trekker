@@ -21,6 +21,7 @@ public:
 	float norm();
 	void  normalize();
 	void  print();
+    void  copyToFloatArray(float*);
 
 	float x;
 	float y;

@@ -124,15 +124,14 @@ void Tractogram_PTT::writeOutput() {
 
 	if (
 			(colorWriteMode==WRITE_ON) 		||
+			(FODampWriteMode==WRITE_ON) 	||
 			(tangentWriteMode==WRITE_ON) 	||
 			(k1axisWriteMode==WRITE_ON)  	||
 			(k2axisWriteMode==WRITE_ON) 	||
 			(k1WriteMode==WRITE_ON) 		||
 			(k2WriteMode==WRITE_ON) 		||
 			(curvatureWriteMode==WRITE_ON) 	||
-			(priorWriteMode==WRITE_ON) 		||
-			(likelihoodWriteMode==WRITE_ON) ||
-			(posteriorWriteMode==WRITE_ON) ) {
+			(likelihoodWriteMode==WRITE_ON) ) {
 		sprintf(buffer,"POINT_DATA %d\n",totalPointCount); 		fwrite(buffer, sizeof(char), strlen(buffer), out);
 	}
 
@@ -158,6 +157,49 @@ void Tractogram_PTT::writeOutput() {
 				tmp = fabs(direction.z); 	swapByteOrder_float(tmp); fwrite(&tmp, sizeof(float), 1, out);
 
 			}
+	}
+	
+    if (FODampWriteMode==WRITE_ON) {
+		sprintf(buffer,"SCALARS FODamp float 1\n"); 			fwrite(buffer, sizeof(char), strlen(buffer), out);
+		sprintf(buffer,"LOOKUP_TABLE default\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
+		for (size_t i=0; i<streamlineCount; i++)
+			if (streamlines[i]->status == STREAMLINE_GOOD) {
+                float  point[3];
+                float  direction[3];
+                float* FOD = new float[SH::numberOfSphericalHarmonicCoefficients];
+                float  FODamp;
+                
+				for (size_t j=0; j<(streamlines[i]->coordinates.size()-1); j++) {
+                    
+                    Coordinate tmp  = streamlines[i]->coordinates.at(j+1)-streamlines[i]->coordinates.at(j);
+					tmp.normalize();
+                    
+                    streamlines[i]->coordinates.at(j).copyToFloatArray(point);
+                    tmp.copyToFloatArray(direction);
+                    
+                    
+                    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+                        img_FOD->getVal(point,FOD);
+                        FODamp = SH::SH_amplitude(FOD,direction);
+                    } else
+                        FODamp = img_FOD->getFODval(point,direction);
+                    
+                    swapByteOrder_float(FODamp); fwrite(&FODamp, sizeof(float), 1, out);
+                    
+				}
+
+				streamlines[i]->coordinates.back().copyToFloatArray(point);
+                if (TRACKER::fodDiscretization==FODDISC_OFF) {
+                        img_FOD->getVal(point,FOD);
+                        FODamp = SH::SH_amplitude(FOD,direction);
+                    } else
+                        FODamp = img_FOD->getFODval(point,direction);
+				
+				swapByteOrder_float(FODamp); fwrite(&FODamp, sizeof(float), 1, out);
+            
+                delete[] FOD;
+			}
+			
 	}
 
 	if (tangentWriteMode==WRITE_ON) {
@@ -232,7 +274,7 @@ void Tractogram_PTT::writeOutput() {
 	}
 
 	if (curvatureWriteMode==WRITE_ON) {
-		sprintf(buffer,"SCALARS curvatures float 1\n"); 			fwrite(buffer, sizeof(char), strlen(buffer), out);
+		sprintf(buffer,"SCALARS curvatures float 1\n"); 		fwrite(buffer, sizeof(char), strlen(buffer), out);
 		sprintf(buffer,"LOOKUP_TABLE default\n"); 				fwrite(buffer, sizeof(char), strlen(buffer), out);
 		for (size_t i=0; i<streamlineCount; i++)
 			if (streamlines[i]->status == STREAMLINE_GOOD) {
@@ -358,6 +400,7 @@ void Tractogram_PTT::writeMetadataOutput() {
 	if (OUTPUT::overwriteMode==WRITE_OFF) 			fprintf(out,",\n\"enableOutputOverwrite\":\"OFF\""); else fprintf(out,",\n\"enableOutputOverwrite\":\"ON\"");
 	if (OUTPUT::seedCoordinateWriteMode==WRITE_OFF)	fprintf(out,",\n\"writeSeedCoordinates\":\"OFF\"");  else fprintf(out,",\n\"writeSeedCoordinates\":\"ON\"");
 	if (OUTPUT::colorWriteMode==WRITE_OFF) 			fprintf(out,",\n\"writeColors\":\"OFF\"");  		 else fprintf(out,",\n\"writeColors\":\"ON\"");
+    if (OUTPUT::FODampWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeFODamp\":\"OFF\"");  		 else fprintf(out,",\n\"writeFODamp\":\"ON\"");
 
 	// Output options for ptt
 	if (OUTPUT::tangentWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeTangents\":\"OFF\"");  	 	 else fprintf(out,",\n\"writeTangents\":\"ON\"");
@@ -366,9 +409,7 @@ void Tractogram_PTT::writeMetadataOutput() {
 	if (OUTPUT::k1WriteMode==WRITE_OFF) 			fprintf(out,",\n\"writek1s\":\"OFF\"");  			 else fprintf(out,",\n\"writek1s\":\"ON\"");
 	if (OUTPUT::k2WriteMode==WRITE_OFF) 			fprintf(out,",\n\"writek2s\":\"OFF\"");  			 else fprintf(out,",\n\"writek2s\":\"ON\"");
 	if (OUTPUT::curvatureWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeCurvatures\":\"OFF\"");  	 else fprintf(out,",\n\"writeCurvatures\":\"ON\"");
-	if (OUTPUT::priorWriteMode==WRITE_OFF) 			fprintf(out,",\n\"writePriors\":\"OFF\"");  		 else fprintf(out,",\n\"writePriors\":\"ON\"");
 	if (OUTPUT::likelihoodWriteMode==WRITE_OFF) 	fprintf(out,",\n\"writeLikelihoods\":\"OFF\"");  	 else fprintf(out,",\n\"writeLikelihoods\":\"ON\"");
-	if (OUTPUT::posteriorWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writePosteriors\":\"OFF\"");  	 else fprintf(out,",\n\"writePosteriors\":\"ON\"");
 
 	fprintf(out,"\n}");
 
