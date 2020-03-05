@@ -48,7 +48,7 @@ void resetAllParameters() {
     GENERAL::numberOfThreads            = NOTSET;
     
     // Tracker config
-    TRACKER::orderOfDirections          = ORDEROFDIRECTIONS_NOTSET;
+    if (img_FOD->discretizationFlag == false) TRACKER::orderOfDirections = ORDEROFDIRECTIONS_NOTSET;
     TRACKER::algorithm                  = ALGORITHM_NOTSET;
     TRACKER::stepSize                   = NOTSET;
     TRACKER::minRadiusOfCurvature   	= NOTSET;
@@ -86,6 +86,65 @@ void resetAllParameters() {
     
 }
 
+void changeOrderOfDirections(std::string ood) {
+    
+    TRACKER::orderOfDirectionsTextInput=ood;
+    
+    if      (ood=="")    TRACKER::orderOfDirections = XYZ;
+    else if (ood=="XYZ") TRACKER::orderOfDirections = XYZ;
+    else if (ood=="XYz") TRACKER::orderOfDirections = XYz;
+    else if (ood=="XyZ") TRACKER::orderOfDirections = XyZ;
+    else if (ood=="Xyz") TRACKER::orderOfDirections = Xyz;
+    else if (ood=="xYZ") TRACKER::orderOfDirections = xYZ;
+    else if (ood=="xYz") TRACKER::orderOfDirections = xYz;
+    else if (ood=="xyZ") TRACKER::orderOfDirections = xyZ;
+    else if (ood=="xyz") TRACKER::orderOfDirections = xyz;
+	else if (ood=="XZY") TRACKER::orderOfDirections = XZY;
+    else if (ood=="XZy") TRACKER::orderOfDirections = XZy;
+    else if (ood=="XzY") TRACKER::orderOfDirections = XzY;
+    else if (ood=="Xzy") TRACKER::orderOfDirections = Xzy;
+    else if (ood=="xZY") TRACKER::orderOfDirections = xZY;
+    else if (ood=="xZy") TRACKER::orderOfDirections = xZy;
+    else if (ood=="xzY") TRACKER::orderOfDirections = xzY;
+    else if (ood=="xzy") TRACKER::orderOfDirections = xzy;
+    else if (ood=="YXZ") TRACKER::orderOfDirections = YXZ;
+    else if (ood=="YXz") TRACKER::orderOfDirections = YXz;
+    else if (ood=="YxZ") TRACKER::orderOfDirections = YxZ;
+    else if (ood=="Yxz") TRACKER::orderOfDirections = Yxz;
+    else if (ood=="yXZ") TRACKER::orderOfDirections = yXZ;
+    else if (ood=="yXz") TRACKER::orderOfDirections = yXz;
+    else if (ood=="yxZ") TRACKER::orderOfDirections = yxZ;
+    else if (ood=="yxz") TRACKER::orderOfDirections = yxz;
+    else if (ood=="YZX") TRACKER::orderOfDirections = YZX;
+    else if (ood=="YZx") TRACKER::orderOfDirections = YZx;
+    else if (ood=="YzX") TRACKER::orderOfDirections = YzX;
+    else if (ood=="Yzx") TRACKER::orderOfDirections = Yzx;
+    else if (ood=="yZX") TRACKER::orderOfDirections = yZX;
+    else if (ood=="yZx") TRACKER::orderOfDirections = yZx;
+    else if (ood=="yzX") TRACKER::orderOfDirections = yzX;
+    else if (ood=="yzx") TRACKER::orderOfDirections = yzx;
+    else if (ood=="ZYX") TRACKER::orderOfDirections = ZYX;
+    else if (ood=="ZYx") TRACKER::orderOfDirections = ZYx;
+    else if (ood=="ZyX") TRACKER::orderOfDirections = ZyX;
+    else if (ood=="Zyx") TRACKER::orderOfDirections = Zyx;
+    else if (ood=="zYX") TRACKER::orderOfDirections = zYX;
+    else if (ood=="zYx") TRACKER::orderOfDirections = zYx;
+    else if (ood=="zyX") TRACKER::orderOfDirections = zyX;
+    else if (ood=="zyx") TRACKER::orderOfDirections = zyx;
+    else if (ood=="ZXY") TRACKER::orderOfDirections = ZXY;
+    else if (ood=="ZXy") TRACKER::orderOfDirections = ZXy;
+    else if (ood=="ZxY") TRACKER::orderOfDirections = ZxY;
+    else if (ood=="Zxy") TRACKER::orderOfDirections = Zxy;
+    else if (ood=="zXY") TRACKER::orderOfDirections = zXY;
+    else if (ood=="zXy") TRACKER::orderOfDirections = zXy;
+    else if (ood=="zxY") TRACKER::orderOfDirections = zxY;
+    else if (ood=="zxy") TRACKER::orderOfDirections = zxy;
+    else {
+		std::cout << "TREKKER::Unknown order of directions: " << ood << ", valid options are e.g.\"xYz\", \"ZyX\" etc. "<< std::endl;
+	}
+    
+}
+
 void Trekker::resetParameters() { resetAllParameters(); }
 
 void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool sphericalFunctionFlag, std::string pathToSphericalDomain, std::string symasym ) {
@@ -108,10 +167,13 @@ void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool spherica
             std::cout << "TREKKER::Discretization is off" << std::endl << std::flush;
             TRACKER::fodDiscretization  = FODDISC_OFF;
             img_FOD->discretizationFlag = false;
-            img_FOD->isspheresliced     = false;
         } else {
             std::cout << "TREKKER::Discretization is on" << std::endl << std::flush;
+            TRACKER::fodDiscretization  = FODDISC_ON;
+            img_FOD->discretizationFlag = true;
         }
+        
+        img_FOD->isspheresliced = sphericalFunctionFlag;
         
         if (sphericalFunctionFlag) {
             
@@ -159,9 +221,6 @@ void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool spherica
                 std::cout << "TREKKER::Number of sphere vertices does not match the number of volumes in the FOD image" << std::endl << std::flush;
             }
             
-            TRACKER::fodDiscretization  = FODDISC_ON;
-            img_FOD->discretizationFlag = true;
-            img_FOD->isspheresliced     = true;
             img_FOD->sphereFileName     = pathToSphericalDomain;
             
         }
@@ -170,25 +229,66 @@ void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool spherica
         resetAllParameters();
         TRACKER::readFODImage();
         
-    }    
+    } 
+    
+    GENERAL::initialized = true;
 }
 
 Trekker::Trekker(std::string pathToFODimage) {
+    changeOrderOfDirections("XYZ"); // If not set here, previous parameter in the namespace will be used since this parameter cannot be reset
     checkFOD(pathToFODimage, true, false, "", "" );
-    timeUp               = false;
-    GENERAL::initialized = true;
+    timeUp = false;
 }
 
 Trekker::Trekker(std::string pathToFODimage, bool discretizationFlag) {
+    changeOrderOfDirections("XYZ"); // If not set here, previous parameter in the namespace will be used since this parameter cannot be reset
     checkFOD(pathToFODimage, discretizationFlag, false, "", "" );
-    timeUp               = false;
-    GENERAL::initialized = true;
+    timeUp = false;
 }
 
+Trekker::Trekker(std::string pathToFODimage, std::string ood) {
+    changeOrderOfDirections(ood);
+    checkFOD(pathToFODimage, true, false, "", "" );
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string ood, bool discretizationFlag) {
+    changeOrderOfDirections(ood);
+    checkFOD(pathToFODimage, discretizationFlag, false, "", "" );
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, bool discretizationFlag, std::string ood) {
+    Trekker(pathToFODimage,ood,discretizationFlag);
+}
+
+
 Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym) {
+    changeOrderOfDirections("XYZ"); // If not set here, previous parameter in the namespace will be used since this parameter cannot be reset
     checkFOD(pathToFODimage, true, true, pathToSphericalDomain, symasym );
-    timeUp               = false;
-    GENERAL::initialized = true;
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, bool discretizationFlag) {
+    changeOrderOfDirections("XYZ"); // If not set here, previous parameter in the namespace will be used since this parameter cannot be reset
+    checkFOD(pathToFODimage, discretizationFlag, true, pathToSphericalDomain, symasym );
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, std::string ood) {
+    changeOrderOfDirections(ood);
+    checkFOD(pathToFODimage, true, true, pathToSphericalDomain, symasym );
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, std::string ood, bool discretizationFlag) {
+    changeOrderOfDirections(ood);
+    checkFOD(pathToFODimage, discretizationFlag, true, pathToSphericalDomain, symasym );
+    timeUp = false;
+}
+
+Trekker::Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, bool discretizationFlag, std::string ood) {
+    Trekker(pathToFODimage,pathToSphericalDomain,symasym,ood,discretizationFlag);
 }
 
 
@@ -344,62 +444,13 @@ void Trekker::timeLimit(int t) { GENERAL::timeLimit = t;}
 // Tracker config
 
 void Trekker::orderOfDirections(std::string ood) {
-    
-    TRACKER::orderOfDirectionsTextInput=ood;
-    
-    if      (ood=="XYZ") TRACKER::orderOfDirections = XYZ;
-    else if (ood=="XYz") TRACKER::orderOfDirections = XYz;
-    else if (ood=="XyZ") TRACKER::orderOfDirections = XyZ;
-    else if (ood=="Xyz") TRACKER::orderOfDirections = Xyz;
-    else if (ood=="xYZ") TRACKER::orderOfDirections = xYZ;
-    else if (ood=="xYz") TRACKER::orderOfDirections = xYz;
-    else if (ood=="xyZ") TRACKER::orderOfDirections = xyZ;
-    else if (ood=="xyz") TRACKER::orderOfDirections = xyz;
-	else if (ood=="XZY") TRACKER::orderOfDirections = XZY;
-    else if (ood=="XZy") TRACKER::orderOfDirections = XZy;
-    else if (ood=="XzY") TRACKER::orderOfDirections = XzY;
-    else if (ood=="Xzy") TRACKER::orderOfDirections = Xzy;
-    else if (ood=="xZY") TRACKER::orderOfDirections = xZY;
-    else if (ood=="xZy") TRACKER::orderOfDirections = xZy;
-    else if (ood=="xzY") TRACKER::orderOfDirections = xzY;
-    else if (ood=="xzy") TRACKER::orderOfDirections = xzy;
-    else if (ood=="YXZ") TRACKER::orderOfDirections = YXZ;
-    else if (ood=="YXz") TRACKER::orderOfDirections = YXz;
-    else if (ood=="YxZ") TRACKER::orderOfDirections = YxZ;
-    else if (ood=="Yxz") TRACKER::orderOfDirections = Yxz;
-    else if (ood=="yXZ") TRACKER::orderOfDirections = yXZ;
-    else if (ood=="yXz") TRACKER::orderOfDirections = yXz;
-    else if (ood=="yxZ") TRACKER::orderOfDirections = yxZ;
-    else if (ood=="yxz") TRACKER::orderOfDirections = yxz;
-    else if (ood=="YZX") TRACKER::orderOfDirections = YZX;
-    else if (ood=="YZx") TRACKER::orderOfDirections = YZx;
-    else if (ood=="YzX") TRACKER::orderOfDirections = YzX;
-    else if (ood=="Yzx") TRACKER::orderOfDirections = Yzx;
-    else if (ood=="yZX") TRACKER::orderOfDirections = yZX;
-    else if (ood=="yZx") TRACKER::orderOfDirections = yZx;
-    else if (ood=="yzX") TRACKER::orderOfDirections = yzX;
-    else if (ood=="yzx") TRACKER::orderOfDirections = yzx;
-    else if (ood=="ZYX") TRACKER::orderOfDirections = ZYX;
-    else if (ood=="ZYx") TRACKER::orderOfDirections = ZYx;
-    else if (ood=="ZyX") TRACKER::orderOfDirections = ZyX;
-    else if (ood=="Zyx") TRACKER::orderOfDirections = Zyx;
-    else if (ood=="zYX") TRACKER::orderOfDirections = zYX;
-    else if (ood=="zYx") TRACKER::orderOfDirections = zYx;
-    else if (ood=="zyX") TRACKER::orderOfDirections = zyX;
-    else if (ood=="zyx") TRACKER::orderOfDirections = zyx;
-    else if (ood=="ZXY") TRACKER::orderOfDirections = ZXY;
-    else if (ood=="ZXy") TRACKER::orderOfDirections = ZXy;
-    else if (ood=="ZxY") TRACKER::orderOfDirections = ZxY;
-    else if (ood=="Zxy") TRACKER::orderOfDirections = Zxy;
-    else if (ood=="zXY") TRACKER::orderOfDirections = zXY;
-    else if (ood=="zXy") TRACKER::orderOfDirections = zXy;
-    else if (ood=="zxY") TRACKER::orderOfDirections = zxY;
-    else if (ood=="zxy") TRACKER::orderOfDirections = zxy;
-    else {
-		std::cout << "TREKKER::Unknown order of directions: " << ood << ", valid options are e.g.\"xYz\", \"ZyX\" etc. "<< std::endl;
-	}
-    
+    if (img_FOD->discretizationFlag == false)
+        changeOrderOfDirections(ood);
+    else
+        std::cout << "TREKKER::Can't change order of directions since FOD is already discretized."<< std::endl;
 }
+
+
 
 void Trekker::algorithm(std::string alg) {
     

@@ -10,8 +10,8 @@ cdef extern from "trekker.h":
     cdef cppclass Trekker:
         
         Trekker(string) except +
-        Trekker(string,bint) except +
-        Trekker(string,string,string) except +
+        Trekker(string,string,bint) except +
+        Trekker(string,string,string,string,bint) except +
         
         vector[vector[vector[double]]] run();
 

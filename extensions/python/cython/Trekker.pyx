@@ -273,7 +273,7 @@ cdef object PyTrekker(Trekker *Trekker_ptr):
     return m
 
 
-def initialize(pathToFODimage=None, arg1=None, arg2=None):
+def initialize(pathToFODimage=None, arg1=None, arg2=None, arg3=None, arg4=None):
     
     if (isInitialized()==True):
         raise Exception('Trekker is already initialized. To initialize with a new FOD image, first delete your existing Trekker object with \"del <variable_name>\" ')
@@ -281,14 +281,16 @@ def initialize(pathToFODimage=None, arg1=None, arg2=None):
     cdef Trekker *_ptr = NULL
 #    
     """Factory function"""
-    if (pathToFODimage is None) and (arg1 is None) and (arg2 is None):
+    if (pathToFODimage is None):
         print("Provide FOD image path")
-    elif (arg1 is None) and (arg2 is None):
+    elif (arg1 is None) and (arg2 is None) and (arg3 is None) and (arg4 is None):
         _ptr = new Trekker(pathToFODimage)
-    elif (arg1 is not None) and (arg2 is not None):
-        _ptr = new Trekker(pathToFODimage, arg1, arg2)
-    elif (arg1 is not None):
-        _ptr = new Trekker(pathToFODimage, arg1)
-    
+    elif (arg1 is not None) and (arg2 is not None) and (arg3 is None) and (arg4 is None):
+        _ptr = new Trekker(pathToFODimage,arg1,arg2)
+    elif (arg1 is not None) and (arg2 is not None) and (arg3 is not None) and (arg4 is not None):
+        _ptr = new Trekker(pathToFODimage,arg1,arg2,arg3,arg4)
+    else:
+        raise Exception('Invalid number of arguments used for initialization.')
+        
     cdef T m = PyTrekker(_ptr)
     return m

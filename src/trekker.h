@@ -7,10 +7,20 @@ class Trekker {
 
 public:
     
-    // Contructor and destructor
+    // Contructors
     Trekker(std::string pathToFODimage);
     Trekker(std::string pathToFODimage, bool discretizationFlag);
+    Trekker(std::string pathToFODimage, std::string orderOfDirections);
+    Trekker(std::string pathToFODimage, std::string orderOfDirections, bool discretizationFlag);
+    Trekker(std::string pathToFODimage, bool discretizationFlag, std::string orderOfDirections);
+    
     Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym);
+    Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, bool discretizationFlag);
+    Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, std::string orderOfDirections);
+    Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, std::string orderOfDirections, bool discretizationFlag);
+    Trekker(std::string pathToFODimage, std::string pathToSphericalDomain, std::string symasym, bool discretizationFlag, std::string orderOfDirections);
+    
+    // Descructor
     ~Trekker();
     
     // Print current parameters
