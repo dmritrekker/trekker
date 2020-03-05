@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'trekker'
-copyright = '2019, Dogu Baran Aydogan'
+copyright = '2020, Dogu Baran Aydogan'
 author = 'Dogu Baran Aydogan'
 
 # The short X.Y version
-version = '0.4'
+version = '0.5'
 # The full version, including alpha/beta/rc tags
-release = '0.4'
+release = '0.5'
 
 
 # -- General configuration ---------------------------------------------------

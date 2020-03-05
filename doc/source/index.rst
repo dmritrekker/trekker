@@ -38,10 +38,10 @@ Trekker software has the following features:
 
 .. |pic2| image:: demo_2.png
 	:width: 49%
-	
+
 .. |pic3| image:: demo_3.png
 	:width: 49%
-	
+
 .. |pic4| image:: demo_4.png
 	:width: 49%
 
@@ -49,7 +49,7 @@ Trekker software has the following features:
 
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
    :caption: Download and install
    :hidden:
 
@@ -57,12 +57,13 @@ Trekker software has the following features:
    installation/installationInstructions
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
    :caption: Get started
    :hidden:
 
    tutorials/tutorial_1
    tutorials/tutorial_2
+   tutorials/tutorial_3
 
 
 .. toctree::
@@ -73,17 +74,16 @@ Trekker software has the following features:
    manual/trekker
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
    :caption: Publications
    :hidden:
 
    publications/publications
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
    :caption: About
    :hidden:
 
    about/licenseAndWarranty
    about/contact
-

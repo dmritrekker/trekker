@@ -39,7 +39,7 @@ setup(
             [
                 Extension(
                 'Trekker',
-                sources=['cython/Trekker.pyx'],
+                sources=['cython/Trekker.pxd','cython/Trekker.pyx'],
                 libraries=LIBS,
                 library_dirs=LIB_DIRS,
                 include_dirs=INC_DIRS,
