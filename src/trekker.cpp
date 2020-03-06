@@ -152,8 +152,8 @@ void checkFOD(std::string pathToFODimage, bool discretizationFlag, bool spherica
 	char* char_array = new char[n+1];
 	strcpy(char_array, pathToFODimage.c_str());
 
-    if (img_FOD  == NULL) { img_FOD  = new FOD_Image; }
-    if (img_SEED == NULL) { img_SEED = new ROI_Image; }
+    if (img_FOD  == NULL) { img_FOD  = new FOD_Image(); }
+    if (img_SEED == NULL) { img_SEED = new ROI_Image(); }
     
 	if(!img_FOD->readHeader(char_array)) {
         
@@ -361,6 +361,8 @@ void Trekker::execute() {
 			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
 		else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed)
 			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+        else
+            tracker[tread_id].updateSeedNoAndTrialCount(seedNo,tracker[tread_id].streamline->tracking_tries);
         
         threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
 		threads[tread_id].detach();
@@ -382,6 +384,7 @@ void Trekker::execute() {
 		} else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
 			finalThreads++;
 		} else {
+            tracker[tread_id].updateSeedNoAndTrialCount(tracker[tread_id].seedNo,tracker[tread_id].streamline->tracking_tries);
             threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
             threads[tread_id].detach();
         }

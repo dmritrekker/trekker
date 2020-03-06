@@ -8,7 +8,7 @@
 #include "config_general.h"
 
 #define MAXNUMBEROFSEEDS				1e6
-#define MAXTRIALSPERSEEDS				1e6
+#define MAXTRIALSPERSEEDS				1e5
 
 typedef enum {
 	SEED_NOTSET = -1,

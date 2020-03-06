@@ -33,8 +33,10 @@ TrackingThread::TrackingThread() {
 
 	tracker_randomThings 						= new RandomDoer();
 	tracker_FOD 								= new FOD_Image(*TRACKER::img_FOD);
-	tracker_SEED 								= new ROI_Image(*SEED::img_SEED);
-
+    if (SEED::seedingMode==SEED_IMAGE) { 
+        tracker_SEED = new ROI_Image(*SEED::img_SEED);
+    }
+    
 	switch (TRACKER::algorithm) {
 	case PTT_C1:
     case PTT_C2:
@@ -49,6 +51,7 @@ TrackingThread::TrackingThread() {
 	}
 	method->setThread(this);
 
+    
 	for (std::vector<ROI_Image*>::iterator it = PATHWAY::img_ROI.begin(); it != PATHWAY::img_ROI.end(); ++it) {
 		tracker_ROI.push_back(new ROI_Image(**it));
 		tracker_ROI_ready_status.push_back(false);
@@ -74,7 +77,7 @@ TrackingThread::TrackingThread() {
 	report_failed_REACHED_TRIAL_LIMIT_DURING_INITIALIZATION = 0;
 	report_failed_REACHED_TRIAL_LIMIT 					 	= 0;
 	report_UNEXPECTED_TRACKING_STATUS 					 	= 0;
-
+    
 	tracker_randomThings->init_uniform_int(SEED::seed_indices.size()-1);
 
 }
@@ -84,9 +87,11 @@ TrackingThread::TrackingThread() {
 TrackingThread::~TrackingThread() {
 
 	tracker_FOD->destroyCopy();
-	tracker_SEED->destroyCopy();
 	delete   tracker_FOD;
-	delete   tracker_SEED;
+    if (SEED::seedingMode==SEED_IMAGE) {
+        tracker_SEED->destroyCopy();
+        delete tracker_SEED;
+    }
 	delete 	 tracker_randomThings;
 	delete   method;
 
@@ -158,6 +163,7 @@ void TrackingThread::track(Coordinate *point) {
 
 	int tries = trialNo;
 
+    // Loop until success - fail and discard cases break the loop
 	while (streamline->status != STREAMLINE_GOOD) {
 
 		// Clean streamline from the previous trial
@@ -192,6 +198,7 @@ void TrackingThread::track(Coordinate *point) {
 		}
 		method->setSeed();
 
+        // Initialize streamline
 		Initialization_Decision init_decision = method->initialize();
         
         if (GENERAL::runTime()>GENERAL::timeLimit) {
@@ -214,6 +221,7 @@ void TrackingThread::track(Coordinate *point) {
             
         }
 		
+		// If initialization is OK, continue tracking
 		if (init_decision==INIT_CONTINUE) {
 
 			// Track first side
@@ -294,8 +302,14 @@ void TrackingThread::track(Coordinate *point) {
 			}
 
 		}
-
+		
 		tries++;
+        
+        // At this point tracking of the streamline is complete and one of the following decisions is made:
+        // - STREAMLINE_GOOD
+        // - STREAMLINE_DISCARDED
+        // - STREAMLINE_FAIL
+        
 
 		if (streamline->status == STREAMLINE_DISCARDED) {
 
@@ -365,22 +379,15 @@ void TrackingThread::track(Coordinate *point) {
 		// Therefore it will be immediately reported to the tractogram in order to update settings for the algorithm
 		// so that such a case will not be caused by the algorithm again
 
-		if (report_failed_BY_THE_ALGORITHM_DURING_INITIALIZATION>0)
-			break;
-
-		if (report_failed_BY_THE_ALGORITHM>0)
-			break;
-
-		if (report_failed_REACHED_TRIAL_LIMIT_DURING_INITIALIZATION>0)
-			break;
-
-		if (report_discard_REACHED_TIME_LIMIT>0)
-			break;
+		if (report_failed_BY_THE_ALGORITHM_DURING_INITIALIZATION>0)       break;
+		if (report_failed_BY_THE_ALGORITHM>0)                             break;
+		if (report_failed_REACHED_TRIAL_LIMIT_DURING_INITIALIZATION>0)    break;
+		if (report_discard_REACHED_TIME_LIMIT>0)                          break;
 
 	}
 
 	if (streamline->status == STREAMLINE_GOOD) {
-		if ((streamline->terminationReason_sideA==MAX_LENGTH_REACHED) || (streamline->terminationReason_sideB==MAX_LENGTH_REACHED))
+		if      ((streamline->terminationReason_sideA==MAX_LENGTH_REACHED)      || (streamline->terminationReason_sideB==MAX_LENGTH_REACHED)     )
 			report_success_REACHED_MAXLENGTH_LIMIT++;
 		else if ((streamline->terminationReason_sideA==MIN_DATASUPPORT_REACHED) || (streamline->terminationReason_sideB==MIN_DATASUPPORT_REACHED))
 			report_success_REACHED_MINDATASUPPORT_LIMIT++;

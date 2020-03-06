@@ -14,14 +14,16 @@ Where to get trekker?
    If you use trekker in your study, please cite our work. Click `here <../publications/publications.html>`__ for more information.
 
 
-Supported systems
------------------
+Stand-alone executables
+-----------------------
 
-- **Linux**: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6.
+You can download precompiled stand-alone executables for:
 
-- **Windows**: Tested on Windows 10.
+- **Linux**: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5>`__ to download.
 
-- **Mac OS**: Not tested.
+- **Windows**: Tested on Windows 10. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe>`__ to download.
+
+- **Mac OS**: A stand-alone executable does not exist.
 
 
 Source code
@@ -36,11 +38,6 @@ The latest source code of Trekker can be obtained with:
 
 Click `here <../installation/installationInstructions.html>`__ for installation instructions.
 
-
-Stand alone executables
------------------------
-
-Pre-compiled stand alone executables for 64bit Linux and Windows machines are located under `https://github.com/dmritrekker/trekker/tree/v0.5/binaries <https://github.com/dmritrekker/trekker/tree/v0.5/binaries>`__.
 
 
 Python package

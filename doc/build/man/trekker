@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "TREKKER" "1" "May 09, 2019" "0.4" "trekker"
+.TH "TREKKER" "1" "Mar 06, 2020" "0.5" "trekker"
 .SH NAME
 trekker \- trekker Documentation
 .
@@ -46,16 +46,16 @@ trekker [ options ]
 .UNINDENT
 .SH DESCRIPTION
 .sp
-To track fibers using a diffusion MRI images, trekker expects at the following inputs to be specified:
+Trekker expects at least the following options to be specified:
 .INDENT 0.0
 .IP \(bu 2
-trekker generates streamlines from a fiber orientation distribution (FOD) image provided by the user with the option \fI\-fod\fP\&.
+\fB\-fod\fP: Trekker generates streamlines from a fiber orientation distribution (FOD) image provided by the user with this option.
 .IP \(bu 2
-trekker expects the user to provide a seed image with the option \fI\-seed_image\fP or a list of seed coordinates with the option \fI\-seed_coordinates\fP\&.
+\fB\-seed_image\fP or \fB\-seed_coordinates\fP: Trekker expects the user to provide seeds using either of these options.
 .IP \(bu 2
-If a seed image is provided, the user can provide the number of streamlines to be generated either with the option \fI\-seed_count\fP or \fI\-seed_countPerVoxel\fP\&. If \fI\-seed_coordinates\fP options is used, trekker will generate one streamline for each specified coordinate. Alternatively the \fI\-timeLimit\fP option can be used to stop tracking after a certain amount of time.
+\fB\-seed_count\fP or \fB\-seed_countPerVoxel\fP or \fB\-timeLimit\fP: If a seed image is provided, the user can provide the number of streamlines to be generated either with the option \fI\-seed_count\fP or \fI\-seed_countPerVoxel\fP\&. If \fI\-seed_coordinates\fP options is used, trekker will generate one streamline for each specified coordinate. Alternatively the \fI\-timeLimit\fP option can be used to stop tracking after a certain amount of time.
 .IP \(bu 2
-Lastly the user has to provide the output path with \fI\-output\fP followed by the path and name of the output file. trekker’s output file format is *.vtk. An additional .json formatted metadata is also saved.
+\fB\-output\fP: Lastly the user has to provide the output path with \fI\-output\fP followed by the path and name of the output file. trekker’s output file format is *.vtk. An additional .json formatted metadata is also saved.
 .IP \(bu 2
 All unspecified parameters will be set to trekker’s default values.
 .UNINDENT
@@ -103,8 +103,14 @@ All unspecified parameters will be set to trekker’s default values.
 .SH OPTIONS
 .SS Tracking options
 .sp
-\fB\-fod <nifti image>\fP Path to FOD image. Accepted file extensions are: nii, nii.gz. FOD contains \fI\%spherical harmonics coefficients\fP\&. Only even degreed FODs are supported. Each coefficient should be stored as a separate volume in the following order with respect to spherical harmonic degree, l and m (i.e: MRtrix convention):
-.SS The format of the FOD image
+\fB\-fod <nifti image of spherical harmonic coefficients>\fP or \fB\-fod <nifti image of spherical function values> <list of spherical coordinates> <either “sym” or “asym”>\fP Starting with version 0.5, trekker supports both symmetric and asymmetric FODs that can be represented with even or odd ordered spherical harmonics.
+.sp
+There are two ways to provide the input FOD image:
+.sp
+\fB1.\fP as spherical harmonic coefficients
+.sp
+The FOD image stores each coefficient as a separate volume with respect to spherical harmonic degree, l and m, as shown in the tables below. Based on the number of volumes in the image, trekker automatically identifies if the FOD is symmetric or asymmetric.
+.SS For symmetric FOD
 .TS
 center;
 |l|l|l|l|l|l|l|l|l|l|l|.
@@ -181,36 +187,184 @@ T}	T{
 T}
 _
 .TE
+.SS For asymmetric FOD
+.TS
+center;
+|l|l|l|l|l|l|l|l|l|l|l|.
+_
+T{
+T}	T{
+vol1
+T}	T{
+vol2
+T}	T{
+vol3
+T}	T{
+vol4
+T}	T{
+vol5
+T}	T{
+vol6
+T}	T{
+vol7
+T}	T{
+vol8
+T}	T{
+vol9
+T}	T{
+…
+T}
+_
+T{
+l
+T}	T{
+0
+T}	T{
+1
+T}	T{
+1
+T}	T{
+1
+T}	T{
+2
+T}	T{
+2
+T}	T{
+2
+T}	T{
+2
+T}	T{
+2
+T}	T{
+…
+T}
+_
+T{
+m
+T}	T{
+0
+T}	T{
+\-1
+T}	T{
+0
+T}	T{
+1
+T}	T{
+\-2
+T}	T{
+\-1
+T}	T{
+0
+T}	T{
+1
+T}	T{
+2
+T}	T{
+…
+T}
+_
+.TE
 .sp
-\fB\-minFODamp <positive real number>\fP Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.01.
+\fB2.\fP as a spherical function defined on provided vertices of a sphere
 .sp
-\fB\-minRadiusOfCurvature <positive real number>\fP Minimum radius of curvature. Default=1/4 x the smallest of the FOD voxel dimensions.
+In this case, FOD image stores a spherical function at each voxel. Volume \fIn\fP of the FOD image corresponds to the value of the spherical function at the coordinates provided in line \fIn\fP of the vertices of the sphere that should be provided after the image. Additionally user should specify if the function is symmetric or asymmetric.
+.INDENT 0.0
+.INDENT 3.5
 .sp
-\fB\-stepSize <positive real number>\fP Step size. Default=1/40 x the smallest of the FOD voxel dimensions.
+.nf
+.ft C
+# Example 4
+\&./trekker \-fod FOD_spherical_function_values.nii.gz FOD_spherical_function_domain.txt asym \e
+          \-seed_image SEED.nii.gz \e
+          \-seed_count 1000 \e
+          \-output OUTPUT.vtk
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .sp
-\fB\-writeInterval <positive integer>\fP Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeInterval enables skipping of a number of steps before saving them in the disk. This parameter does not change the propagation algorithm, internally trekker always walks with the specified \fI\-stepSize\fP\&. \fI\-writeInterval\fP by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.
+\fB\-orderOfDirections <one of the 48 direction options>\fP Switches direction of FOD. By default XYZ is assumed (no change). A lower case can be used to switch the direction, e.g., xYZ switches the sign of the first component. The order of components can be changed as well, e.g., yXz switches the sign of the second component while replacing it with the first, at the same time the sign of the last component is also changed.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# Example 5
+\&./trekker \-fod FOD.nii.gz \e
+          \-orderOfDirections Zyx \e
+          \-seed_image SEED.nii.gz \e
+          \-seed_count 1000 \e
+          \-output OUTPUT.vtk
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fB\-dontDiscretizeFod\fP Turns of FOD discretization. For faster tracking, trekker by default will discretize the FOD on a sphere (using 2076 points for symmetric functions and 1004 points for asymmetric functions).
+.sp
+\fB\-algorithm <either “ptt C1” or “ptt C2”>\fP Trekker implements C1 and C2 continuous versions of the parallel transport tractography algorithm. Default: ptt C1.
+.sp
+\fB\-stepSize <positive real number>\fP Step size. Default=1/50 x the smallest of the FOD voxel dimensions.
+.sp
+\fB\-minRadiusOfCurvature <positive real number>\fP Minimum radius of curvature. Default=1/2 x the smallest of the FOD voxel dimensions.
+.sp
+\fB\-minFODamp <positive real number>\fP Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.1.
+.sp
+\fB\-dataSupportExponent <positive real number>\fP Data support to the power dataSupportExponent is used for rejection sampling. Default=0.25.
 .sp
 \fB\-minLength <positive real number>\fP Minimum length of the tracks. Default=0.
 .sp
 \fB\-maxLength <positive real number>\fP Maximum length of the tracks. Default=infinite.
 .sp
-\fB\-atMaxLength <either “stop” or “discard”>\fP If set to “stop”, when maxLength is reached the propation stops and the streamline is written in the output. If set to “discard”, the streamline is not written in the output. Default=discard.
+\fB\-atMaxLength <either “stop” or “discard”>\fP If set to “stop”, when maxLength is reached the propagation stops and the streamline is written in the output. If set to “discard”, the streamline is not written in the output. Default=discard.
+.sp
+\fB\-writeInterval <positive integer>\fP Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeInterval enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally trekker always walks with the specified \fI\-stepSize\fP\&. \fI\-writeInterval\fP by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.
 .sp
 \fB\-directionality <either “one_sided” or “two_sided”>\fP If set to “two_sided”, tracking is done along both directions starting from the seed point. If set to “one_sided”, tracking is only done along the other way. Default=two_sided.
 .sp
-\fB\-useBestAtInit\fP If used, during initialization, random sampling is skipped and an estimate for the curve that would give the best data support is used.
+\fB\-maxEstInterval <positive integer>\fP For random sampling, an estimate for the maximum posterior probability is needed. If set to \fIn\fP, this estimate is computed at every \fIn\fP \s-2\uth\d\s0 step. Default=1.
+.sp
+\fB\-initMaxEstTrials <positive integer>\fP Number of trials done for the estimation of maximum posterior probability during initialization. Default: is set adaptively based on previous trials.
+.sp
+\fB\-propMaxEstTrials <positive integer>\fP Number of trials done for the estimation of maximum posterior probability during propagation. Default: is set adaptively based on previous trials.
+.sp
+\fB\-maxSamplingPerStep <positive integer>\fP Maximum number of random sampling to select an acceptable candidate for propagation. Tracking stops if a suitable candidate cannot be found after this many attempts. Default: 1000.
+.sp
+\fB\-useBestAtInit\fP If used, during initialization, random sampling is skipped and the candidate that has the largest data support is used for propagation. Default: off
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# Example 6
+\&./trekker \-fod FOD.nii.gz \e
+          \-initMaxEstTrials 500 \e
+          \-useBestAtInit \e # for initialization, out of 500 candidates, the one with the highest data support will be used
+          \-seed_image SEED.nii.gz \e
+          \-seed_count 1000 \e
+          \-output OUTPUT.vtk
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
 .SS Probe options
 .sp
-Trekker uses probes for estimating future propagation steps. A probe is a cylinderical model of the connections.
+Trekker uses probes for estimating future propagation steps. A probe is a short, cylinderical model of the connecting segment.
 .sp
 \fB\-probeLength <positive real number>\fP Length of the probe. Default=1/4 x the smallest of the FOD voxel dimensions.
 .sp
 \fB\-probeRadius <positive real number>\fP Radius of the probe. Default=0.
+.sp
+\fB\-probeCount <integer between 1 and 100>\fP probeCount determines the number of parallel lines used to model the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.
+.sp
+\fB\-probeQuality <integer between 1 and 100>\fP This parameter sets the number of segments to split the cylinder along the length of the probe. Default=3.
+.sp
+\fB\-ignoreWeakLinks <positive real number>\fP If the individual data support (FOD amplitude along the direction of the segment) for any of the points in the probe is lower than what is specified with this parameter, this candidate probe is ignored. Default: 0.
 .SS Seeding options
 .sp
 \fB\-seed_image <nifti image> {optional:labelNo}\fP Path to seed image and optionally a label no. If label is not specified all voxels with values larger than zero are used to seed points. Accepted file extensions are: nii, nii.gz.
 .sp
-\fB\-seed_count <positive integer>\fP Number of seeds to randomly sample from the seed image.
+\fB\-seed_count <positive integer>\fP Number of seeds to randomly sample from the seed image. Trekker tries to generate a single streamline from each seed. For that it tries what is set by \fIseed_maxTrials\fP\&. If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be less streamlines in the output tractogram than what is defined with \fIseed_count\fP\&.
 .sp
 \fB\-seed_countPerVoxel <positive integer>\fP Number of seeds to randomly sample per each voxel of the seed image.
 .sp
@@ -237,7 +391,7 @@ Trekker uses probes for estimating future propagation steps. A probe is a cylind
 .sp
 .nf
 .ft C
-# Example 4
+# Example 7
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_coordinates COORDINATES \e
           \-output OUTPUT.vtk
@@ -250,7 +404,7 @@ Trekker uses probes for estimating future propagation steps. A probe is a cylind
 .sp
 .nf
 .ft C
-# Example 5
+# Example 8
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_coordinates COORDINATES DIRECTIONS \e
           \-output OUTPUT.vtk
@@ -259,7 +413,7 @@ Trekker uses probes for estimating future propagation steps. A probe is a cylind
 .UNINDENT
 .UNINDENT
 .sp
-\fB\-seed_maxTrials <positive integer>\fP Sets the maximum number of attempts to generate streamline from the seed point. Default=1000000.
+\fB\-seed_maxTrials <positive integer>\fP Sets the maximum number of attempts to generate streamline from the seed point. Default=100000.
 .SS Output options
 .sp
 \fB\-output <vtk file>\fP Output file path. Trekker saves tractograms in .vtk format. An additional output file with .json extension is also saved which contains metadata about tracking parameters and information about the results.
@@ -270,7 +424,7 @@ Trekker uses probes for estimating future propagation steps. A probe is a cylind
 .sp
 \fB\-writeColors\fP If used, direction coded colors are written for each segment in the output tractogram. Default=off. (If this is enabled, you can visualize the tracks in the familiar tractography RGB type coloring in Paraview. For that load the .vtk file in Paraview, choose “colors” as the coloring option and make sure that “Map Scalars” option is not selected.)
 .sp
-\fB\-writeTangents\fP, \fB\-writek1axes\fP, \fB\-writek2axes\fP, \fB\-writek1s\fP, \fB\-writek2s\fP, \fB\-writeCurvatures\fP, \fB\-writePriors\fP, \fB\-writeLikelihoods\fP, \fB\-writePosteriors\fP options can be used separately to write these values for each segment in the output. Prior values are currently always 1 and not used. It is included for possible future development. Likelihoods are the computed data supports. Posteriors are Prior x Likelihood.
+\fB\-writeFODamp\fP, \fB\-writeTangents\fP, \fB\-writek1axes\fP, \fB\-writek2axes\fP, \fB\-writek1s\fP, \fB\-writek2s\fP, \fB\-writeCurvatures\fP, \fB\-writeLikelihoods\fP options can be used separately to write these values for each segment in the output. Likelihoods are the computed data supports.
 .SS Pathway options
 .sp
 Starting from the seed point, trekker first propagates along one direction to find one end of the connection. Propagation is then done towards the opposition direction from the seed to find the other end of the connection. (This “two_sided” tracking is the default option in trekker and can be changed to “one_sided” using the \fB\-directionality\fP option.) The two different sides of propagation are named as \fBA\fP and \fBB\fP in trekker.
@@ -278,9 +432,9 @@ Starting from the seed point, trekker first propagates along one direction to fi
 Trekker allows two options to define rules for pathways:
 .INDENT 0.0
 .IP 1. 3
-Rules can be defined for either propagation direction, using options starting with \fB\-pathway=\fP\&. These options define rules for “A or B” not for “A and B”.
-.IP 2. 3
 Rules can be defined for each propagation direction separately, using options \fB\-pathway_A=\fP and \fB\-pathway_B=\fP\&.
+.IP 2. 3
+Rules can be defined for either propagation direction, using options starting with \fB\-pathway=\fP\&. These options define rules for “A or B” not for “A and B”.
 .UNINDENT
 .sp
 Notes:
@@ -288,12 +442,28 @@ Notes:
 .IP \(bu 2
 Trekker accepts multiple pathway rules which are either defined using option 1 or 2, i.e.: if a pathway rule is defined using \fB\-pathway=\fP, all other rules have to start with \fB\-pathway=\fP\&. Or, if a pathway rule is defined using \fB\-pathway_A=\fP, all other rules have to start either with \fB\-pathway_A=\fP or \fB\-pathway_B=\fP\&.
 .IP \(bu 2
-Rules for \fB\-pathway_A=\fP and \fB\-pathway_B=\fP are considered seperate therefore are treated independent of each other. A rule or rules can be defined using  \fB\-pathway_A=\fP at the same time nothing can be specified using \fB\-pathway_B=\fP\&.
+Rules for \fB\-pathway_A=\fP and \fB\-pathway_B=\fP are considered separate. Therefore they are treated independent of each other. Rules can be defined using only \fB\-pathway_A=\fP or \fB\-pathway_B=\fP\&.
 .IP \(bu 2
 Users do not need to think about which side trekker considers to be side A or B. The decision is done automatically based on the first rule that is satisfied. For example, consider the case \fB\-seed_image THAL \-pathway_A=require_entry GRAYMATTER \-pathway_B=stop_at_exit THAL\fP\&. Here, starting from the seed point, trekker propagates towards one direction which will soon exit THAL. But because this is a stopping condition for side B, propagation will stop here and this part will be considered as side B. Trekker then will return back to seed point and start propagating towards the other side which is from now on considered as side A.
 .UNINDENT
 .sp
 Trekker allows the specification of the following pathway rules:
+.INDENT 0.0
+.IP \(bu 2
+\fI=require_entry\fP
+.IP \(bu 2
+\fI=stop_at_entry\fP
+.IP \(bu 2
+\fI=require_exit\fP
+.IP \(bu 2
+\fI=stop_at_exit\fP
+.IP \(bu 2
+\fI=discard_if_enters\fP
+.IP \(bu 2
+\fI=discard_if_exits\fP
+.IP \(bu 2
+\fI=discard_if_ends_inside\fP
+.UNINDENT
 .sp
 \fB\-pathway=require_entry <nifti image> {optional:labelNo}\fP All tracks are required to enter the ROI present in the specified image.
 .sp
@@ -307,7 +477,7 @@ Example: The following will generate connections from left precentral gyrus (Lef
 .sp
 .nf
 .ft C
-# Example 6
+# Example 9
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
@@ -331,7 +501,7 @@ Example: The following will generate connections from left precentral gyrus (Lef
 .sp
 .nf
 .ft C
-# Example 7
+# Example 10
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
@@ -357,7 +527,7 @@ Example: At least one end of each streamline will end outside white matter.
 .sp
 .nf
 .ft C
-# Example 8
+# Example 11
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
@@ -374,35 +544,12 @@ Example: All streamline end points will be outside the white matter.
 .sp
 .nf
 .ft C
-# Example 9
+# Example 12
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
           \-pathway_A=require_exit WHITEMATTER.nii.gz \e
           \-pathway_B=require_exit WHITEMATTER.nii.gz \e
-          \-output OUTPUT.vtk
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-\fB\-pathway=discard_if_ends_inside <nifti image> {optional:labelNo}\fP Tracks are not allowed to stop inside the ROI present in the specified image.
-.sp
-\fB\-pathway_A=discard_if_ends_inside <nifti image> {optional:labelNo}\fP One side of tracks are not allowed to stop inside the ROI present in the specified image.
-.sp
-\fB\-pathway_B=discard_if_ends_inside <nifti image> {optional:labelNo}\fP The other side of tracks are not allowed to stop inside the ROI present in the specified image.
-.sp
-Example: Non of the streamlines will terminate inside the white matter.
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-# Example 10
-\&./trekker \-fod FOD.nii.gz \e
-          \-seed_image WHITEMATTER.nii.gz \e
-          \-seed_count 1000 \e
-          \-pathway=discard_if_ends_inside WHITEMATTER.nii.gz \e
           \-output OUTPUT.vtk
 .ft P
 .fi
@@ -415,13 +562,13 @@ Example: Non of the streamlines will terminate inside the white matter.
 .sp
 \fB\-pathway_B=stop_at_exit <nifti image> {optional:labelNo}\fP The other side of all tracks that enter the ROI present in the specified image will stop propagating if they exit the ROI.
 .sp
-Example: Non of the streamlines will terminate inside the white matter and all streamlines will stop if they reach the end of gray matter.
+Example: None of the streamlines will terminate inside the white matter and all streamlines will stop if they reach the end of gray matter.
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-# Example 11
+# Example 13
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
@@ -441,13 +588,13 @@ Example: Non of the streamlines will terminate inside the white matter and all s
 .sp
 \fB\-pathway_B=discard_if_enters <nifti image> {optional:labelNo}\fP The other side of tracks are not allowed to enter the ROI present in the specified image.
 .sp
-Example: Non of the streamlines generated by the following example ends inside the white matter or projects to CSF.
+Example: None of the streamlines generated by the following example ends inside the white matter or projects to CSF.
 .INDENT 0.0
 .INDENT 3.5
 .sp
 .nf
 .ft C
-# Example 12
+# Example 14
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image WHITEMATTER.nii.gz \e
           \-seed_count 1000 \e
@@ -471,12 +618,35 @@ Example: All connections within hippocampus. Nothing projects inside or outside.
 .sp
 .nf
 .ft C
-# Example 13
+# Example 15
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image HIPPOCAMPUS.nii.gz \e
           \-seed_count 1000 \e
           \-pathway_A=discard_if_exits HIPPOCAMPUS.nii.gz \e
           \-pathway_B=discard_if_exits HIPPOCAMPUS.nii.gz \e
+          \-output OUTPUT.vtk
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fB\-pathway=discard_if_ends_inside <nifti image> {optional:labelNo}\fP Tracks are not allowed to stop inside the ROI present in the specified image.
+.sp
+\fB\-pathway_A=discard_if_ends_inside <nifti image> {optional:labelNo}\fP One side of tracks are not allowed to stop inside the ROI present in the specified image.
+.sp
+\fB\-pathway_B=discard_if_ends_inside <nifti image> {optional:labelNo}\fP The other side of tracks are not allowed to stop inside the ROI present in the specified image.
+.sp
+Example: None of the streamlines will terminate inside the white matter.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+# Example 16
+\&./trekker \-fod FOD.nii.gz \e
+          \-seed_image WHITEMATTER.nii.gz \e
+          \-seed_count 1000 \e
+          \-pathway=discard_if_ends_inside WHITEMATTER.nii.gz \e
           \-output OUTPUT.vtk
 .ft P
 .fi
@@ -491,7 +661,7 @@ Example: Only generates those streamlines that go from the start of ROI_1 till t
 .sp
 .nf
 .ft C
-# Example 14
+# Example 17
 \&./trekker \-fod FOD.nii.gz \e
           \-seed_image ROI_3.nii.gz \e
           \-seed_count 1000 \e
@@ -505,29 +675,18 @@ Example: Only generates those streamlines that go from the start of ROI_1 till t
 .fi
 .UNINDENT
 .UNINDENT
-.SS Advanced options
-.sp
-\fB\-probeCount <integer between 1 and 100>\fP probeCount determines the number of lines outside the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.
-.sp
-\fB\-probeQuality <integer between 1 and 100>\fP This parameter sets the number of segments to split the cylinder along the length of the probe. The larger the value is, the slower the computation gets. Default=4.
-.sp
-\fB\-maxSamplingPerStep <positive integer>\fP This option limits the number of samples that can be tested for rejection sampling during propagation. Default=10000.
-.sp
-\fB\-initMaxEstTrials <positive integer>\fP This option sets the number of samples used to estimate the maximum data support for initialization. This estimate is used for rejection sampling. By default, this number is adaptively determined based on the success rate of previous estimates.
-.sp
-\fB\-propMaxEstTrials <positive integer>\fP This option sets the number of samples used to estimate the maximum data support for propagation. This estimate is used for rejection sampling. By default, this number is adaptively determined based on the success rate of previous estimates.
 .SS Other options
 .sp
 \fB\-numberOfThreads <positive integer>\fP Number of parallel threads to run during tracking. Default=number of CPU cores of the local processor
 .sp
 \fB\-timeLimit <positive real number>\fP Sets the maximum allowed duration in minutes for trekker to continue tracking. If any of the \fI\-seed_coordinates\fP, \fI\-seed_count\fP or \fI\-seed_countPerVoxel\fP options are used together with \fI\-timeLimit\fP, tracking stops either when the required number of streamlines are reconstructed or the time limit is hit, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.
 .sp
-\fB\-verboseLevel <integer between 0 and 4>\fP Determines the level of information displayed on the terminal. Verbose level must be between 0\-4. A verbose level of 0 displays no information. Default=1.
+\fB\-verboseLevel <integer between 0 and 4>\fP Determines the level of information displayed on the terminal. Verbose level must be between 0\-4. No information is displayed at level 0. Default=1.
 .sp
 \fB\-help\fP Displays this manual.
 .SH AUTHOR
 Dogu Baran Aydogan
 .SH COPYRIGHT
-2019, Dogu Baran Aydogan
+2020, Dogu Baran Aydogan
 .\" Generated by docutils manpage writer.
 .

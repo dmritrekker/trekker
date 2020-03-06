@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial 3: Python package usage &mdash; trekker 0.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="trekker" href="../manual/trekker.html" />
+    <link rel="prev" title="Tutorial 2: Trekker’s pathways" href="tutorial_2.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Download and install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html">Where to get trekker?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#stand-alone-executables">Stand-alone executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#source-code">Source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#python-package">Python package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#extensions">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#other-tools">Other tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/installationInstructions.html">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/installationInstructions.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#linux-and-windows">Linux and Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../installation/installationInstructions.html#mac-os">MAC OS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Get started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_1.html">Tutorial 1: The short trek</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_1.html#tracking-with-trekker">Tracking with trekker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_1.html#visualizing-results">Visualizing results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_2.html">Tutorial 2: Trekker’s pathways</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#defining-pathway-rules">Defining pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#whole-brain-tractography">Whole brain tractography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#using-atlases-or-labeled-images-in-pathway-rules">Using atlases or labeled images in pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_2.html#tracking-in-order">Tracking in order</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 3: Python package usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../manual/trekker.html">trekker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#tracking-options">Tracking options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#probe-options">Probe options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#seeding-options">Seeding options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#output-options">Output options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#pathway-options">Pathway options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#other-options">Other options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications/publications.html">How to cite?</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/licenseAndWarranty.html">License and warranty</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/contact.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">trekker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial 3: Python package usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorials/tutorial_3.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial-3-python-package-usage">
+<h1>Tutorial 3: Python package usage<a class="headerlink" href="#tutorial-3-python-package-usage" title="Permalink to this headline">¶</a></h1>
+<p>Use <code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">trekker</span></code> to install the trekker python 3.7 package in Linux or Windows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tutorial 3 - Example 1</span>
+<span class="kn">import</span> <span class="nn">Trekker</span>
+
+<span class="n">myTrekker</span><span class="o">=</span><span class="n">Trekker</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Fod.nii&quot;</span><span class="p">)</span>
+<span class="n">myTrekker</span><span class="o">.</span><span class="n">seed_image</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;Seed.nii&quot;</span><span class="p">)</span>
+<span class="n">myTrekker</span><span class="o">.</span><span class="n">seed_count</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">streamlines</span> <span class="o">=</span> <span class="n">myTrekker</span><span class="o">.</span><span class="n">run</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>All parameters explained in the <a class="reference external" href="../manual/trekker.html">manual</a> can be set as demonstrated in the example above. One exception to this is the output options which can’t be specified yet, i.e., only the output streamline coordinates are returned, one cannot save colors or any other information associated with the streamlines.</p>
+<p><strong>Notes on initialization</strong></p>
+<p>Python package of Trekker allows one to <em>initialize</em> only a single FOD image at one time. Initialization can be done with 1, 3 or 5 arguments as explained below:</p>
+<ul class="simple">
+<li><em>myTrekker=Trekker.initialize(b”Fod.nii”)</em> : FOD image will be descretized and the default orientation of “XYZ” will be used.</li>
+<li><em>myTrekker=Trekker.initialize(b”Fod.nii”, orientation=b”xYZ”, discretization=False)</em> : The default parameters for orientation and discretization can be changed.</li>
+<li><em>myTrekker=Trekker.initialize(b”FOD_spherical_function_values.nii”, b”FOD_spherical_function_domain.txt”, b”asym”,orientation=b”xYZ”, discretization=True)</em> : A spherical function instead of spherical harmonic coefficients can be used as input.</li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../manual/trekker.html" class="btn btn-neutral float-right" title="trekker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorial_2.html" class="btn btn-neutral" title="Tutorial 2: Trekker’s pathways" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Dogu Baran Aydogan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.5',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

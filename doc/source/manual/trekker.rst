@@ -109,7 +109,7 @@ In this case, FOD image stores a spherical function at each voxel. Volume *n* of
               -output OUTPUT.vtk
 
 
-**-dontDiscretizeFod** Turns of FOD discretization. For faster tracking, trekker by default will discretize the FOD on a sphere (using 2076 points for symmetric functions and 1004 points for asymmetric functions). *dontDiscretizeFod* option is ignored if FOD is provided as a spherical function instead of using spherical harmonic coefficients. Because for this case, trekker first does the spherical harmonics expansion and then discretizes the FOD in trekker's own grid.
+**-dontDiscretizeFod** Turns of FOD discretization. For faster tracking, trekker by default will discretize the FOD on a sphere (using 2076 points for symmetric functions and 1004 points for asymmetric functions).
 
 **-algorithm <either \"ptt C1\" or \"ptt C2\">** Trekker implements C1 and C2 continuous versions of the parallel transport tractography algorithm. Default: ptt C1.
 
@@ -119,7 +119,7 @@ In this case, FOD image stores a spherical function at each voxel. Volume *n* of
 
 **-minFODamp <positive real number>** Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.1.
 
-**-dataSupportExponent <positive real number>** Instead of the computed data support, the power of it with the dataSupportExponent is used for rejection sampling. Default=0.25.
+**-dataSupportExponent <positive real number>** Data support to the power dataSupportExponent is used for rejection sampling. Default=0.25.
 
 **-minLength <positive real number>** Minimum length of the tracks. Default=0.
 
@@ -137,7 +137,7 @@ In this case, FOD image stores a spherical function at each voxel. Volume *n* of
 
 **-propMaxEstTrials <positive integer>** Number of trials done for the estimation of maximum posterior probability during propagation. Default: is set adaptively based on previous trials.
 
-**-maxSamplingPerStep <positive integer>** Maximum number of random sampling to select an acceptable candidate for propagation. Tracking stops if a suitable candidate cannot be found after this many attempts. Default: 10000.
+**-maxSamplingPerStep <positive integer>** Maximum number of random sampling to select an acceptable candidate for propagation. Tracking stops if a suitable candidate cannot be found after this many attempts. Default: 1000.
 
 **-useBestAtInit** If used, during initialization, random sampling is skipped and the candidate that has the largest data support is used for propagation. Default: off
 
@@ -161,11 +161,11 @@ Trekker uses probes for estimating future propagation steps. A probe is a short,
 
 **-probeRadius <positive real number>** Radius of the probe. Default=0.
 
-**-probeCount <integer between 1 and 100>** probeCount determines the number of lines outside the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.
+**-probeCount <integer between 1 and 100>** probeCount determines the number of parallel lines used to model the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.
 
 **-probeQuality <integer between 1 and 100>** This parameter sets the number of segments to split the cylinder along the length of the probe. Default=3.
 
-**-ignoreWeakLinks <positive real number>** If the individual data support contribution for any of the points in the probe is lower than that is specified with this parameter, this candidate probe is ignored. Default: 0.
+**-ignoreWeakLinks <positive real number>** If the individual data support (FOD amplitude along the direction of the segment) for any of the points in the probe is lower than what is specified with this parameter, this candidate probe is ignored. Default: 0.
 
 
 Seeding options
@@ -173,7 +173,7 @@ Seeding options
 
 **-seed_image <nifti image> {optional:labelNo}** Path to seed image and optionally a label no. If label is not specified all voxels with values larger than zero are used to seed points. Accepted file extensions are: nii, nii.gz.
 
-**-seed_count <positive integer>** Number of seeds to randomly sample from the seed image.
+**-seed_count <positive integer>** Number of seeds to randomly sample from the seed image. Trekker tries to generate a single streamline from each seed. For that it tries what is set by *seed_maxTrials*. If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be less streamlines in the output tractogram than what is defined with *seed_count*.
 
 **-seed_countPerVoxel <positive integer>** Number of seeds to randomly sample per each voxel of the seed image.
 
@@ -204,7 +204,7 @@ Seeding options
               -seed_coordinates COORDINATES DIRECTIONS \
               -output OUTPUT.vtk
 
-**-seed_maxTrials <positive integer>** Sets the maximum number of attempts to generate streamline from the seed point. Default=1000000.
+**-seed_maxTrials <positive integer>** Sets the maximum number of attempts to generate streamline from the seed point. Default=100000.
 
 Output options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -217,7 +217,7 @@ Output options
 
 **-writeColors** If used, direction coded colors are written for each segment in the output tractogram. Default=off. (If this is enabled, you can visualize the tracks in the familiar tractography RGB type coloring in Paraview. For that load the .vtk file in Paraview, choose "colors" as the coloring option and make sure that "Map Scalars" option is not selected.)
 
-**-writeTangents**, **-writek1axes**, **-writek2axes**, **-writek1s**, **-writek2s**, **-writeCurvatures**, **-writeLikelihoods** options can be used separately to write these values for each segment in the output. Likelihoods are the computed data supports.
+**-writeFODamp**, **-writeTangents**, **-writek1axes**, **-writek2axes**, **-writek1s**, **-writek2s**, **-writeCurvatures**, **-writeLikelihoods** options can be used separately to write these values for each segment in the output. Likelihoods are the computed data supports.
 
 
 
@@ -419,6 +419,6 @@ Other options
 
 **-timeLimit <positive real number>** Sets the maximum allowed duration in minutes for trekker to continue tracking. If any of the *-seed_coordinates*, *-seed_count* or *-seed_countPerVoxel* options are used together with *-timeLimit*, tracking stops either when the required number of streamlines are reconstructed or the time limit is hit, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.
 
-**-verboseLevel <integer between 0 and 4>** Determines the level of information displayed on the terminal. Verbose level must be between 0-4. A verbose level of 0 displays no information. Default=1.
+**-verboseLevel <integer between 0 and 4>** Determines the level of information displayed on the terminal. Verbose level must be between 0-4. No information is displayed at level 0. Default=1.
 
 **-help** Displays this manual.

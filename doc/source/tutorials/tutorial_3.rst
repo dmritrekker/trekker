@@ -1,5 +1,5 @@
-Tutorial 3: Python usage
-========================
+Tutorial 3: Python package usage
+================================
 
 Use :code:`pip install trekker` to install the trekker python 3.7 package in Linux or Windows.
 
@@ -8,52 +8,20 @@ Use :code:`pip install trekker` to install the trekker python 3.7 package in Lin
     # Tutorial 3 - Example 1
     import Trekker
 
-    myTrekker=Trekker.tracker(b"Fod.nii");
-    myTrekker.seed_image(b"Seed.nii");
-    myTrekker.seed_count(1000);
+    myTrekker=Trekker.initialize(b"Fod.nii")
+    myTrekker.seed_image(b"Seed.nii")
+    myTrekker.seed_count(1000)
 
     streamlines = myTrekker.run();
 
-Trekker's python package is still under active development and it does not support all the functionality. Below are examples for how to use the currently available options: (unset parameters are set to default values explained in the `manual <../manual/trekker.html>`__)
+All parameters explained in the `manual <../manual/trekker.html>`__ can be set as demonstrated in the example above. One exception to this is the output options which can't be specified yet, i.e., only the output streamline coordinates are returned, one cannot save colors or any other information associated with the streamlines.
 
-**Global options**
+**Notes on initialization**
 
-- numberOfThreads(8);
-- timeLimit(10);
+Python package of Trekker allows one to *initialize* only a single FOD image at one time. Initialization can be done with 1, 3 or 5 arguments as explained below:
 
-**Tracker options**
+- *myTrekker=Trekker.initialize(b"Fod.nii")* : FOD image will be descretized and the default orientation of "XYZ" will be used.
 
-- orderOfDirections(b"xZy");
-- algorithm(b"ptt C1");
-- stepSize(0.01);
-- minRadiusOfCurvature(0.5);
-- minFODamp(0.05);
-- dataSupportExponent(1);
-- minLength(30);
-- maxLength(200);
-- atMaxLength(b"discard");
-- writeInterval(50);
-- directionality(b"one_sided");
-- maxEstInterval(1)
-- initMaxEstTrials(50);
-- propMaxEstTrials(20);
-- maxSamplingPerStep(10000);
-- useBestAtInit(false);
+- *myTrekker=Trekker.initialize(b"Fod.nii", orientation=b"xYZ", discretization=False)* : The default parameters for orientation and discretization can be changed.
 
-**Probe options**
-
-- probeLength(0.25);
-- probeRadius(0);
-- probeCount(1);
-- probeQuality(5);
-- ignoreWeakLinks(0.005);
-
-**Seeding options**
-
-- seed_image(b"WM.nii")
-- seed_image_using_label(b"aseg.nii",41)
-- seed_coordinates(coords); # *coords is a 2D numpy array with dimensions (N,3)*
-- seed_coordinates_with_directions(coords,dirs); # *dirs is a 2D numpy array with dimensions (N,3)*
-- seed_count(1000);
-- seed_countPerVoxel(10);
-- seed_maxTrials(1000);
+- *myTrekker=Trekker.initialize(b"FOD_spherical_function_values.nii", b"FOD_spherical_function_domain.txt", b"asym",orientation=b"xYZ", discretization=True)* : A spherical function instead of spherical harmonic coefficients can be used as input.

@@ -334,7 +334,9 @@ inline void PTF::prepInitProbePropagator() {
         
         C2_useC1 = false;
         if ((std::fabs(k1-k1_cand)<SMALL) && (std::fabs(k2-k2_cand)<SMALL)) {
-            C2_useC1 = true;
+            C2_useC1   = true;
+            probe_k1   = k1;
+            probe_k2   = k2;
             prepProbePropagator_C1();
         } else {
             C2_k1_step = (k1_cand-k1)/(TRACKER::probeQuality-1);

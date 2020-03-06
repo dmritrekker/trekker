@@ -24,6 +24,7 @@ void TrackWith_PTT::calcDataSupport() {
             p[i]  += curve->PP[0]*F[0][i] +  curve->PP[1]*F[1][i]  +  curve->PP[2]*F[2][i];
             T[i]   = curve->PP[3]*F[0][i] +  curve->PP[4]*F[1][i]  +  curve->PP[5]*F[2][i];
         }
+        normalize(T);
         
         if (q<(TRACKER::probeQuality-1)) {
             

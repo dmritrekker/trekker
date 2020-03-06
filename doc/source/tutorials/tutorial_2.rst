@@ -9,7 +9,7 @@ This tutorial shows how to specify pathway rules in Trekker. Before describing t
 
 	Trekker regards each streamline to be composed of two sides which are called **pathway_A** and **pathway_B**. Pathway rules can be specified for each side separately or the complete **pathway** as a whole.
 
-But is the first side **A** and the other **B**? The answer is no. If the first side meets the criteria for **B** then Trekker assigns it as pathway **B**.
+Trekker automatically determines the sides as **pathway_A** or **pathway_B** based on how they meet the user defined pathway constraints, i.e., if the first side meets the criteria for **B** then trekker assigns it as pathway **B**.
 
 .. note::
 
@@ -115,7 +115,9 @@ The following will create only gray matter to gray matter connections and nothin
              -seed_image WHITEMATTER.nii.gz \                     # Input seed image
              -seed_count 1000 \                                   # Number of seeds
              -pathway_A=require_entry GRAYMATTER.nii.gz \         # A self descriptive pathway rule
+             -pathway_A=stop_at_exit GRAYMATTER.nii.gz \          # A self descriptive pathway rule
              -pathway_B=require_entry GRAYMATTER.nii.gz \         # A self descriptive pathway rule
+             -pathway_B=stop_at_exit GRAYMATTER.nii.gz \          # A self descriptive pathway rule
              -output OUTPUT.vtk                                   # Output
 
 
