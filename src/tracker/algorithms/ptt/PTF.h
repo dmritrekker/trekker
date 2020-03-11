@@ -315,8 +315,8 @@ inline void PTF::prepCandStepPropagator_C3() {
     k1           = C3_r*std::cos(ang) + C3_xc;
     k2           = C3_r*std::sin(ang) + C3_yc;
     
-    kT1          = std::cos(ang + C3_sign*M_PI_2);
-    kT2          = std::sin(ang + C3_sign*M_PI_2);
+    kT1          = std::cos(ang + C3_sign*PIOVERTWO);
+    kT2          = std::sin(ang + C3_sign*PIOVERTWO);
     
 }
 
@@ -405,7 +405,7 @@ inline void PTF::prepInitProbePropagator() {
                     // An example given below, but this is only heuristic and currently does not produce reasonable results
                     if (C3_r < (TRACKER::maxCurvature)) {
                         isAcceptable = true;
-                    } else if (std::fabs(2*C3_theta) < M_PI) {
+                    } else if (std::fabs(2*C3_theta) < PI) {
                         C3_useC2     = true;
                         isAcceptable = true;
                     } else {
