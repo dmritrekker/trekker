@@ -64,7 +64,7 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle derived probe parameters
     TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
     TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
-    TRACKER::angularSeparation = M_2_PI/float(TRACKER::probeCount);
+    TRACKER::angularSeparation = TWOPI/float(TRACKER::probeCount);
 
 	// Handle dataSupportExponent
 	if (TRACKER::dataSupportExponent<0.0) TRACKER::dataSupportExponent = DEFAULT_PTT_DATASUPPORTEXPONENT;
