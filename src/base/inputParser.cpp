@@ -698,7 +698,7 @@ void InputParser::parse_probeQuality() {
 
 	argv_index++;
 	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
-		std::cout << "Input quality level of the probe after -probeQuality, must be between 1 and 100" << std::endl;
+		std::cout << "Input quality level of the probe after -probeQuality, must be between 2 and 100" << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	probeQuality = atoi(argv[argv_index]);

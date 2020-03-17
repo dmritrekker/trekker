@@ -27,6 +27,7 @@ public:
 
 	PTF 			*curve;
 	void 			 calcDataSupport();
+    void 			 calcInitDataSupport();
     float            getFODamp(float *pv, float *Tv);
 
 

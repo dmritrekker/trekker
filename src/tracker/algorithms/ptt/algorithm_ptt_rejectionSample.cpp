@@ -22,6 +22,7 @@ void TrackWith_PTT::rejectionSample() {
 			break;
 		} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
             // This candidate is now selected and it will be propagated
+            curve->lastVal = curve->lastVal_cand;
 			break;
 		}
 

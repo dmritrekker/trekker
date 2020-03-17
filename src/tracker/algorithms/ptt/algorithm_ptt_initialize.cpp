@@ -9,7 +9,7 @@ void TrackWith_PTT::get_initial_curve() {
 		curve->getARandomFrame();
     
     curve->getInitCandidatek1k2();
-	calcDataSupport();
+	calcInitDataSupport();
     
 }
 
@@ -32,7 +32,9 @@ Initialization_Decision TrackWith_PTT::initialize() {
         
 		if (curve->likelihood > posteriorMax) {
             // This candidate is now selected and it will be propagated
-			posteriorMax = curve->likelihood;
+			posteriorMax        = curve->likelihood;
+            curve->initFirstVal = curve->initFirstVal_cand;
+            curve->lastVal      = curve->lastVal_cand;
 			initial_curve->swap(curve);
 		}
 		
@@ -63,6 +65,8 @@ Initialization_Decision TrackWith_PTT::initialize() {
 				break;
 			} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
                 // This candidate is now selected and it will be propagated
+                curve->initFirstVal = curve->initFirstVal_cand;
+                curve->lastVal      = curve->lastVal_cand;
 				initial_curve->swap(curve);
 				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
 				break;

@@ -56,13 +56,13 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	}
 
 	// Handle probeQuality
-	if ((TRACKER::probeQuality<=0.0) || (TRACKER::probeQuality>100)) {
+	if ((TRACKER::probeQuality<=1.0) || (TRACKER::probeQuality>100)) {
 		TRACKER::probeQuality = DEFAULT_PTT_PROBEQUALITY;
 		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default probeQuality: " << TRACKER::probeQuality << std::endl;
 	}
 	
 	// Handle derived probe parameters
-    TRACKER::probeStepSize     = TRACKER::probeLength/TRACKER::probeQuality;
+    TRACKER::probeStepSize     = TRACKER::probeLength/(TRACKER::probeQuality-1);
     TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
     TRACKER::angularSeparation = TWOPI/float(TRACKER::probeCount);
 

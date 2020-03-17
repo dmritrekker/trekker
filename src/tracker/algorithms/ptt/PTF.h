@@ -51,6 +51,11 @@ public:
     float  *PP;         // Propagator for probe
     
 	float 	likelihood;	// Likelihood
+	float   lastVal;
+    float   lastVal_cand;
+    
+    float   initFirstVal;
+    float   initFirstVal_cand;
 	
 	bool    initialized;
     
@@ -339,8 +344,8 @@ inline void PTF::prepInitProbePropagator() {
             probe_k2   = k2;
             prepProbePropagator_C1();
         } else {
-            C2_k1_step = (k1_cand-k1)/(TRACKER::probeQuality-1);
-            C2_k2_step = (k2_cand-k2)/(TRACKER::probeQuality-1);
+            C2_k1_step = (k1_cand-k1)/(TRACKER::probeQuality-2);
+            C2_k2_step = (k2_cand-k2)/(TRACKER::probeQuality-2);
             probe_k1   = k1;
             probe_k2   = k2;
             prepProbePropagator_C2();
@@ -398,7 +403,7 @@ inline void PTF::prepInitProbePropagator() {
                     C3_xc        = dirC1*C3_r + k1;
                     C3_yc        = dirC2*C3_r + k2;
                     C3_alpha     = std::atan2(k2-C3_yc,k1-C3_xc);
-                    C3_thetaStep = 2*C3_theta/float(TRACKER::probeQuality-1);
+                    C3_thetaStep = 2*C3_theta/float(TRACKER::probeQuality-2);
                     
                     
                     // TODO: Need to apply constraints to eliminate erronous propagations
@@ -423,8 +428,8 @@ inline void PTF::prepInitProbePropagator() {
     if (C3_useC1) {
         prepProbePropagator_C1();
     } else if (C3_useC2) {
-        C2_k1_step = (k1_cand-k1)/float(TRACKER::probeQuality-1);
-        C2_k2_step = (k2_cand-k2)/float(TRACKER::probeQuality-1);
+        C2_k1_step = (k1_cand-k1)/float(TRACKER::probeQuality-2);
+        C2_k2_step = (k2_cand-k2)/float(TRACKER::probeQuality-2);
         probe_k1   = k1;
         probe_k2   = k2;
         prepProbePropagator_C2();
@@ -521,7 +526,7 @@ inline void PTF::walk() {
     F[0][1]=T[1];
     F[0][2]=T[2];
     
-	likelihood 	=   0.0;
+	likelihood 	= 0.0;
     
 }
 

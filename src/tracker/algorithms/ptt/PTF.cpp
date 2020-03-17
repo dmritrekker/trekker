@@ -23,6 +23,7 @@ void PTF::init_Frame() {
     sPP         = new float[8];
     
 	likelihood 	= 0.0;
+    lastVal     = 0.0;
 }
 
 PTF::~PTF() {
@@ -74,7 +75,9 @@ void PTF::swap(PTF *ptf) {
         sPP[i] = ptf->sPP[i];
     }
 	
-	likelihood 	= ptf->likelihood;
+	likelihood 	 = ptf->likelihood;
+    initFirstVal = ptf->initFirstVal;
+    lastVal      = ptf->lastVal;
 }
 
 void PTF::getARandomFrame() {
@@ -107,7 +110,8 @@ void PTF::flip() {
     kT1 *= -1;
     kT2 *= -1;
 
-	likelihood 	=  0.0;
+	likelihood 	= 0.0;
+    lastVal     = initFirstVal;
 }
 
 

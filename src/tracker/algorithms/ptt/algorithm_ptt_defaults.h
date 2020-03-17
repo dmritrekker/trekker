@@ -7,7 +7,7 @@
 #define DEFAULT_PTT_PROBERADIUS_IN_PIXELDIM                      0.5
 #define DEFAULT_PTT_PROBECOUNT                                     1
 #define DEFAULT_PTT_PROBECOUNT_WHEN_THEREIS_PROBERADIUS            4
-#define DEFAULT_PTT_PROBEQUALITY                                   3
+#define DEFAULT_PTT_PROBEQUALITY                                   4
 #define DEFAULT_PTT_MINFODAMP                                   0.05
 #define DEFAULT_PTT_MAXESTINTERVAL                                 1
 #define DEFAULT_PTT_DATASUPPORTEXPONENT                            1
