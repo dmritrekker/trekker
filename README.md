@@ -9,27 +9,58 @@ Trekker software has the following features:
 - **Pathway rules** that offer flexible options to reconstruct intricate connections.
 - **Time limiting** enables tracking for a given length of duration, specification of streamline count is optional.
 - **Multithreading** reconstructs streamlines using multiple cores of a CPU.
+- **Support for asymmetric FODs**, for interested researcher.
 - **Command line interface**, an essential requirement to write scripts for processing *big data* in computer grids.
+- **Python package**, wrapped using Cython from Trekker's C/C++ code which provides easy access to PTT algorithm for python lovers.
 - **.vtk** output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.
 
 For complete documentation, tutorials and examples, visit https://dmritrekker.github.io/.
 
+**Example:**
+
+    #Clean whole brain tractography with intuitive options
+
+    ./trekker -fod FOD.nii.gz \
+              -seed_image WHITEMATTER.nii.gz \
+              -seed_count 100000 \
+              -pathway=discard_if_ends_inside WHITEMATTER.nii.gz \
+              -pathway=discard_if_enters CSF.nii.gz \
+              -minLength 20 \
+              -maxLength 300 \
+              -output OUTPUT.vtk
 
 
 Installation
 ------------
 
-**Building from source:**
-
-	git clone https://github.com/dmritrekker/trekker
-	
-	cd trekker
-
-	make
-
 
 **Stand-alone executables:**
 
-For Linux: https://github.com/dmritrekker/trekker/tree/v0.4/binaries/trekker_linux_x64_v0.4
+For Linux: https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5
 
-For Windows: https://github.com/dmritrekker/trekker/tree/v0.4/binaries/trekker_win_x64_v0.4.exe
+For Windows: https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe
+
+
+**Building from source:**
+
+Step 1. Download the source code:
+
+	git clone https://github.com/dmritrekker/trekker
+
+Step 2. Modify the first few lines in the build script:
+
+- For Linux -> build_Linux.sh
+- For Windows -> build_Windows.bat
+
+Step 3. Run the build script. This will build Trekker under:
+
+- For Linux -> <TrekkerFolder>/build/Linux/install/bin
+- For Windows -> <TrekkerFolder>/build/Windows/install/bin
+
+
+Publications:
+------------
+
+- [Aydogan2019a] Aydogan DB, Shi Y., "Parallel transport tractography", *under review*
+
+- [[Aydogan2019b](https://www.researchgate.net/publication/336847169_A_novel_fiber-tracking_algorithm_using_parallel_transport_frames)] Aydogan DB, Shi Y., "A novel fiber tracking algorithm using parallel transport frames", ISMRM 2019, Montreal
