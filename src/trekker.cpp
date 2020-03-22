@@ -350,19 +350,21 @@ void Trekker::execute() {
 	while(seedNo<SEED::count) {
     
         GENERAL::exit_cv.wait(lk);
-        int tread_id = ready_thread_id;
+        int tread_id = GENERAL::ready_thread_id;
         
 		// timeUp case
 		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
 			finalThreads = 1; // 1 thread is done tracking
 			timeUp 		 = true;
+            GENERAL::tracker_lock.unlock();
 			break;
-		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD)
+		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD) {
 			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
-		else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed)
+        } else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
 			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
-        else
+        } else {
             tracker[tread_id].updateSeedNoAndTrialCount(seedNo,tracker[tread_id].streamline->tracking_tries);
+        }
         
         threads[tread_id] = std::thread(getStreamline, (tracker+tread_id));
 		threads[tread_id].detach();
@@ -370,10 +372,11 @@ void Trekker::execute() {
         GENERAL::tracker_lock.unlock();
 	}
 	
+	
 	while (finalThreads<numberOfThreadsToUse) {
         
         GENERAL::exit_cv.wait(lk);
-        int tread_id = ready_thread_id;
+        int tread_id = GENERAL::ready_thread_id;
 
 		// timeUp case
 		if ((tracker[tread_id].streamline->status==STREAMLINE_DISCARDED) && (tracker[tread_id].streamline->discardingReason==REACHED_TIME_LIMIT)) {
@@ -389,8 +392,9 @@ void Trekker::execute() {
             threads[tread_id].detach();
         }
         
-        GENERAL::tracker_lock.unlock();        
+        GENERAL::tracker_lock.unlock();
 	}
+	
     
 	delete[] threads;
 	delete[] tracker;
