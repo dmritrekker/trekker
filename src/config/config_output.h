@@ -17,6 +17,7 @@ namespace OUTPUT {
 extern std::string   outputFilePath;
 extern WriteMode     overwriteMode;
 extern WriteMode     seedCoordinateWriteMode;
+extern WriteMode     dontWriteSegmentsInSeedROI;
 extern WriteMode     colorWriteMode;
 extern WriteMode     FODampWriteMode;
 

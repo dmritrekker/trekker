@@ -122,18 +122,19 @@ void InputParser::parse() {
 		else if (Option("-pathway=satisfy_requirements_in_order")) parse_pathway_satisfy_requirements_in_order();
 
 		// Output config
-		else if (Option("-output")) 				parse_output();
-		else if (Option("-enableOutputOverwrite")) 	parse_enableOutputOverwrite();
-		else if (Option("-writeSeedCoordinates")) 	parse_writeSeedCoordinates();
-		else if (Option("-writeColors")) 			parse_writeColors();
-        else if (Option("-writeFODamp")) 			parse_writeFODamp();
-		else if (Option("-writeTangents")) 			parse_writeTangents();
-		else if (Option("-writek1axes")) 			parse_writek1axes();
-		else if (Option("-writek2axes")) 			parse_writek2axes();
-		else if (Option("-writek1s")) 				parse_writek1s();
-		else if (Option("-writek2s")) 				parse_writek2s();
-		else if (Option("-writeCurvatures")) 		parse_writeCurvatures();
-		else if (Option("-writeLikelihoods")) 	    parse_writeLikelihoods();
+		else if (Option("-output")) 				      parse_output();
+		else if (Option("-enableOutputOverwrite")) 	      parse_enableOutputOverwrite();
+		else if (Option("-writeSeedCoordinates")) 	      parse_writeSeedCoordinates();
+        else if (Option("-dontWriteSegmentsInSeedROI"))   parse_dontWriteSegmentsInSeedROI();
+		else if (Option("-writeColors")) 			      parse_writeColors();
+        else if (Option("-writeFODamp")) 			      parse_writeFODamp();
+		else if (Option("-writeTangents")) 			      parse_writeTangents();
+		else if (Option("-writek1axes")) 			      parse_writek1axes();
+		else if (Option("-writek2axes")) 			      parse_writek2axes();
+		else if (Option("-writek1s")) 				      parse_writek1s();
+		else if (Option("-writek2s")) 				      parse_writek2s();
+		else if (Option("-writeCurvatures")) 		      parse_writeCurvatures();
+		else if (Option("-writeLikelihoods")) 	          parse_writeLikelihoods();
 
 		else {
 			std::cout << "Unknown option: " << argv[argv_index] << std::endl;
@@ -337,6 +338,15 @@ void InputParser::parse_writeSeedCoordinates() {
 		exit(EXIT_FAILURE);
 	}
 	OUTPUT::seedCoordinateWriteMode = WRITE_ON;
+	argv_index++;
+}
+
+void InputParser::parse_dontWriteSegmentsInSeedROI() {
+	if (OUTPUT::dontWriteSegmentsInSeedROI != WRITE_NOTSET) {
+		std::cout << "Cannot use -dontWriteSegmentsInSeedROI option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	OUTPUT::dontWriteSegmentsInSeedROI = WRITE_ON;
 	argv_index++;
 }
 

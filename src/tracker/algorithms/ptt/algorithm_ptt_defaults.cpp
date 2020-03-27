@@ -127,9 +127,9 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	
 	// Handle weak link checking
 	if (TRACKER::checkWeakLinks == CHECKWEAKLINKS_NOTSET) {
-        TRACKER::checkWeakLinks = CHECKWEAKLINKS_ON;
-        TRACKER::weakLinkThresh = TRACKER::minFODamp*DEFAULT_PTT_WEAKLINKRATIO;
-        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default ignoreWeakLinks: " << TRACKER::weakLinkThresh << " (" << TRACKER::minFODamp << " x " << DEFAULT_PTT_WEAKLINKRATIO << ")"<< std::endl;
+        TRACKER::checkWeakLinks = CHECKWEAKLINKS_OFF;
+        TRACKER::weakLinkThresh = 0.0;
+        if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default ignoreWeakLinks: " << TRACKER::weakLinkThresh << std::endl;
     } else if (TRACKER::checkWeakLinks == CHECKWEAKLINKS_ON) {
         if (TRACKER::weakLinkThresh<=0) {
             TRACKER::checkWeakLinks = CHECKWEAKLINKS_OFF;

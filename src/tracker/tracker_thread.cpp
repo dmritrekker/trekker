@@ -70,6 +70,7 @@ TrackingThread::TrackingThread() {
 	report_discard_REQUIRED_ROI_NOT_MET 				 	= 0;
 	report_discard_REQUIRED_ROI_ORDER_NOT_MET 			 	= 0;
 	report_discard_ENDED_INSIDE_DISCARD_ROI 			 	= 0;
+    report_discard_REENTERED_SEED_ROI                       = 0;
 	report_discard_REACHED_TIME_LIMIT 						= 0;
 
 	report_failed_BY_THE_ALGORITHM_DURING_INITIALIZATION 	= 0;
@@ -342,6 +343,10 @@ void TrackingThread::track(Coordinate *point) {
 				if (GENERAL::verboseLevel > ON) std::cout << "ENDED_INSIDE_DISCARD_ROI";
 				report_discard_ENDED_INSIDE_DISCARD_ROI++;
 				break;
+            case REENTERED_SEED_ROI:
+				if (GENERAL::verboseLevel > ON) std::cout << "REENTERED_SEED_ROI";
+				report_discard_REENTERED_SEED_ROI++;
+				break;
 			case REACHED_TIME_LIMIT:
 				if (GENERAL::verboseLevel > ON) std::cout << "REACHED TIME LIMIT";
 				report_discard_REACHED_TIME_LIMIT++;
@@ -402,12 +407,20 @@ void TrackingThread::track(Coordinate *point) {
 StreamlineStatus TrackingThread::run(bool side) {
 
 	int countWriter 	= 0;
-	int stepCounter     = 0;
-
-	if (side == true)
+	int stepCounter     = 0;    
+    
+	if (side == true) {
 		method->append();
+    }
 
 	ROI_Rule_Decision roiDecision 	= checkPathway();
+    
+    tracker_SEED->entry_status = entered;
+    tracker_SEED->exit_status  = notExited;
+    
+    if ( (OUTPUT::dontWriteSegmentsInSeedROI==WRITE_ON) && (TRACKER::directionality==ONE_SIDED) && (SEED::seedingMode==SEED_IMAGE) && (isInsideSeedROI()==DONTAPPEND) ) {
+        method->removeLast();
+    }
 
 	while (roiDecision==CONTINUE_TRACKING) {
 
@@ -432,6 +445,14 @@ StreamlineStatus TrackingThread::run(bool side) {
 			roiDecision = STOP_TRACKING;
 			break;
 		}
+		
+        if ( (TRACKER::directionality==ONE_SIDED) && (SEED::seedingMode==SEED_IMAGE) && (OUTPUT::dontWriteSegmentsInSeedROI==WRITE_ON) && (tracker_SEED->exit_status == notExited) && (isInsideSeedROI()==APPEND) ) {
+            method->append();     // Make a dummy append to update seed coordinate
+            streamline->seed_coordinates = streamline->coordinates.back();
+            method->removeLast(); // Revert back
+            countWriter = 0;      // Initialize countWrite to begin writing at correct intervals
+        }
+        
 
 
 		// Increment first so that the first element after initialization is not written
@@ -463,7 +484,27 @@ StreamlineStatus TrackingThread::run(bool side) {
 			}
 
 			roiDecision = checkPathway();
+            
+            // Skip appending of streamline if requested
+            if ( (OUTPUT::dontWriteSegmentsInSeedROI) && (TRACKER::directionality==ONE_SIDED) && (SEED::seedingMode==SEED_IMAGE) ) {
+                switch (isInsideSeedROI()) {
+                    case DONTAPPEND: {
+                        method->removeLast();
+                        break;
+                    }
+                    case REENTERED: {
+                        streamline->discardingReason = REENTERED_SEED_ROI;
+                        roiDecision = DISCARD_STREAMLINE;
+                        break;
+                    }
+                    case APPEND: {
+                        break; // DO NOTHING DIFFERENT
+                    }
+                }
+            }
+            
 		}
+		
 
 	}
 

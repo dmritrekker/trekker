@@ -9,6 +9,7 @@ namespace OUTPUT {
 std::string   outputFilePath 			= "";
 WriteMode     overwriteMode 		    = WRITE_NOTSET;
 WriteMode     seedCoordinateWriteMode 	= WRITE_NOTSET;
+WriteMode     dontWriteSegmentsInSeedROI= WRITE_NOTSET;
 WriteMode     colorWriteMode 			= WRITE_NOTSET;
 WriteMode     FODampWriteMode 			= WRITE_NOTSET;
 
@@ -24,10 +25,11 @@ WriteMode     likelihoodWriteMode       = WRITE_NOTSET;
 void setDefaultParametersWhenNecessary() {
 
 	// Default output parameters
-	if (overwriteMode==WRITE_NOTSET) 				overwriteMode 			= WRITE_OFF;
-	if (seedCoordinateWriteMode==WRITE_NOTSET) 		seedCoordinateWriteMode = WRITE_OFF;
-	if (colorWriteMode==WRITE_NOTSET) 				colorWriteMode 			= WRITE_OFF;
-    if (FODampWriteMode==WRITE_NOTSET) 				FODampWriteMode 		= WRITE_OFF;
+	if (overwriteMode==WRITE_NOTSET) 				overwriteMode 			   = WRITE_OFF;
+	if (seedCoordinateWriteMode==WRITE_NOTSET) 		seedCoordinateWriteMode    = WRITE_OFF;
+    if (dontWriteSegmentsInSeedROI==WRITE_NOTSET) 	dontWriteSegmentsInSeedROI = WRITE_OFF;
+	if (colorWriteMode==WRITE_NOTSET) 				colorWriteMode 			   = WRITE_OFF;
+    if (FODampWriteMode==WRITE_NOTSET) 				FODampWriteMode 		   = WRITE_OFF;
 
 	// Default parameters for ptt output
 	if (tangentWriteMode==WRITE_NOTSET) 	tangentWriteMode 	= WRITE_OFF;
@@ -69,9 +71,9 @@ void setDefaultParametersWhenNecessary() {
 void print() {
 	std::cout << std::endl;
 	std::cout << "OUTPUT OPTIONS"<< std::endl;
-	std::cout << "Output                : "  << outputFilePath 	<< std::endl;
+	std::cout << "Output                     : "  << outputFilePath 	<< std::endl;
 
-	std::cout << "enableOutputOverwrite : ";
+	std::cout << "enableOutputOverwrite      : ";
 	switch(overwriteMode){
 	case WRITE_OFF: std::cout << "OFF"; break;
 	case WRITE_ON:  std::cout << "ON";  break;
@@ -79,15 +81,23 @@ void print() {
 	}
 	std::cout << std::endl;
 
-	std::cout << "writeSeedCoordinates  : ";
+	std::cout << "writeSeedCoordinates       : ";
 	switch(seedCoordinateWriteMode){
 	case WRITE_OFF: std::cout << "OFF"; break;
 	case WRITE_ON:  std::cout << "ON";  break;
 	default: break;
 	}
 	std::cout << std::endl;
+    
+	std::cout << "dontWriteSegmentsInSeedROI : ";
+	switch(dontWriteSegmentsInSeedROI){
+	case WRITE_OFF: std::cout << "OFF"; break;
+	case WRITE_ON:  std::cout << "ON";  break;
+	default: break;
+	}
+	std::cout << std::endl;
 
-	std::cout << "writeColors           : ";
+	std::cout << "writeColors                : ";   
 	switch(colorWriteMode){
 	case WRITE_OFF: std::cout << "OFF"; break;
 	case WRITE_ON:  std::cout << "ON";  break;
@@ -95,7 +105,7 @@ void print() {
 	}
 	std::cout << std::endl;
     
-	std::cout << "writeFODamp           : ";
+	std::cout << "writeFODamp                : ";
 	switch(FODampWriteMode){
 	case WRITE_OFF: std::cout << "OFF"; break;
 	case WRITE_ON:  std::cout << "ON";  break;
@@ -108,7 +118,7 @@ void print() {
     case PTT_C2:
     case PTT_C3:
     {
-		std::cout << "writeTangents         : ";
+		std::cout << "writeTangents              : ";
 		switch(tangentWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -116,7 +126,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writek1axes           : ";
+		std::cout << "writek1axes                : ";
 		switch(k1axisWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -124,7 +134,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writek2axes           : ";
+		std::cout << "writek2axes                : ";
 		switch(k2axisWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -132,7 +142,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writek1s              : ";
+		std::cout << "writek1s                   : ";
 		switch(k1WriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -140,7 +150,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writek2s              : ";
+		std::cout << "writek2s                   : ";
 		switch(k2WriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -148,7 +158,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writeCurvatures       : ";
+		std::cout << "writeCurvatures            : ";
 		switch(curvatureWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;
@@ -156,7 +166,7 @@ void print() {
 		}
 		std::cout << std::endl;
 
-		std::cout << "writeLikelihoods      : ";
+		std::cout << "writeLikelihoods           : ";
 		switch(likelihoodWriteMode){
 		case WRITE_OFF: std::cout << "OFF"; break;
 		case WRITE_ON:  std::cout << "ON";  break;

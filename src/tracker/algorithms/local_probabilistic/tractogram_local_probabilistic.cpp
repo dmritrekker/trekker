@@ -265,10 +265,11 @@ void Tractogram_Local_Probabilistic::writeMetadataOutput() {
 	fprintf(out,("\n\"output\":\"" + OUTPUT::outputFilePath + "\"").c_str());
 
 	// Common output options
-	if (OUTPUT::overwriteMode==WRITE_OFF) 			fprintf(out,",\n\"enableOutputOverwrite\":\"OFF\""); else fprintf(out,",\n\"enableOutputOverwrite\":\"ON\"");
-	if (OUTPUT::seedCoordinateWriteMode==WRITE_OFF)	fprintf(out,",\n\"writeSeedCoordinates\":\"OFF\"");  else fprintf(out,",\n\"writeSeedCoordinates\":\"ON\"");
-	if (OUTPUT::colorWriteMode==WRITE_OFF) 			fprintf(out,",\n\"writeColors\":\"OFF\"");  		 else fprintf(out,",\n\"writeColors\":\"ON\"");
-    if (OUTPUT::FODampWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeFODamp\":\"OFF\"");  		 else fprintf(out,",\n\"writeFODamp\":\"ON\"");
+	if (OUTPUT::overwriteMode==WRITE_OFF) 			   fprintf(out,",\n\"enableOutputOverwrite\":\"OFF\""); else fprintf(out,",\n\"enableOutputOverwrite\":\"ON\"");
+	if (OUTPUT::seedCoordinateWriteMode==WRITE_OFF)	   fprintf(out,",\n\"writeSeedCoordinates\":\"OFF\"");  else fprintf(out,",\n\"writeSeedCoordinates\":\"ON\"");
+    if (OUTPUT::dontWriteSegmentsInSeedROI==WRITE_OFF) fprintf(out,",\n\"dontWriteSegmentsInSeedROI\":\"OFF\"");  else fprintf(out,",\n\"dontWriteSegmentsInSeedROI\":\"ON\"");
+	if (OUTPUT::colorWriteMode==WRITE_OFF) 			   fprintf(out,",\n\"writeColors\":\"OFF\"");  		 else fprintf(out,",\n\"writeColors\":\"ON\"");
+    if (OUTPUT::FODampWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writeFODamp\":\"OFF\"");  		 else fprintf(out,",\n\"writeFODamp\":\"ON\"");
 
 	fprintf(out,"\n}");
 

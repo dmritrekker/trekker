@@ -326,7 +326,6 @@ void Tractogram_PTT::writeMetadataOutput() {
     fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
     fprintf(out,(",\n\"ignoreWeakLinks\":" 	    + std::to_string(TRACKER::weakLinkThresh)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());
-    if (TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) 			fprintf(out,",\n\"checkWeakLinks\":\"ON\""); else fprintf(out,",\n\"checkWeakLinks\":\"OFF\"");
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());
 
 	if (TRACKER::maxLength==DEFAULT_PTT_MAXLENGTH)
@@ -397,19 +396,20 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,("\n\"output\":\"" + OUTPUT::outputFilePath + "\"").c_str());
 
 	// Common output options
-	if (OUTPUT::overwriteMode==WRITE_OFF) 			fprintf(out,",\n\"enableOutputOverwrite\":\"OFF\""); else fprintf(out,",\n\"enableOutputOverwrite\":\"ON\"");
-	if (OUTPUT::seedCoordinateWriteMode==WRITE_OFF)	fprintf(out,",\n\"writeSeedCoordinates\":\"OFF\"");  else fprintf(out,",\n\"writeSeedCoordinates\":\"ON\"");
-	if (OUTPUT::colorWriteMode==WRITE_OFF) 			fprintf(out,",\n\"writeColors\":\"OFF\"");  		 else fprintf(out,",\n\"writeColors\":\"ON\"");
-    if (OUTPUT::FODampWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeFODamp\":\"OFF\"");  		 else fprintf(out,",\n\"writeFODamp\":\"ON\"");
+	if (OUTPUT::overwriteMode==WRITE_OFF) 			   fprintf(out,",\n\"enableOutputOverwrite\":\"OFF\""); else fprintf(out,",\n\"enableOutputOverwrite\":\"ON\"");
+	if (OUTPUT::seedCoordinateWriteMode==WRITE_OFF)	   fprintf(out,",\n\"writeSeedCoordinates\":\"OFF\"");  else fprintf(out,",\n\"writeSeedCoordinates\":\"ON\"");
+    if (OUTPUT::dontWriteSegmentsInSeedROI==WRITE_OFF) fprintf(out,",\n\"dontWriteSegmentsInSeedROI\":\"OFF\"");  else fprintf(out,",\n\"dontWriteSegmentsInSeedROI\":\"ON\"");
+	if (OUTPUT::colorWriteMode==WRITE_OFF) 			   fprintf(out,",\n\"writeColors\":\"OFF\"");  		 else fprintf(out,",\n\"writeColors\":\"ON\"");
+    if (OUTPUT::FODampWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writeFODamp\":\"OFF\"");  		 else fprintf(out,",\n\"writeFODamp\":\"ON\"");
 
 	// Output options for ptt
-	if (OUTPUT::tangentWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeTangents\":\"OFF\"");  	 	 else fprintf(out,",\n\"writeTangents\":\"ON\"");
-	if (OUTPUT::k1axisWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writek1axes\":\"OFF\"");  		 else fprintf(out,",\n\"writek1axes\":\"ON\"");
-	if (OUTPUT::k2axisWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writek2axes\":\"OFF\"");  		 else fprintf(out,",\n\"writek2axes\":\"ON\"");
-	if (OUTPUT::k1WriteMode==WRITE_OFF) 			fprintf(out,",\n\"writek1s\":\"OFF\"");  			 else fprintf(out,",\n\"writek1s\":\"ON\"");
-	if (OUTPUT::k2WriteMode==WRITE_OFF) 			fprintf(out,",\n\"writek2s\":\"OFF\"");  			 else fprintf(out,",\n\"writek2s\":\"ON\"");
-	if (OUTPUT::curvatureWriteMode==WRITE_OFF) 		fprintf(out,",\n\"writeCurvatures\":\"OFF\"");  	 else fprintf(out,",\n\"writeCurvatures\":\"ON\"");
-	if (OUTPUT::likelihoodWriteMode==WRITE_OFF) 	fprintf(out,",\n\"writeLikelihoods\":\"OFF\"");  	 else fprintf(out,",\n\"writeLikelihoods\":\"ON\"");
+	if (OUTPUT::tangentWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writeTangents\":\"OFF\"");  	 	 else fprintf(out,",\n\"writeTangents\":\"ON\"");
+	if (OUTPUT::k1axisWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writek1axes\":\"OFF\"");  		 else fprintf(out,",\n\"writek1axes\":\"ON\"");
+	if (OUTPUT::k2axisWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writek2axes\":\"OFF\"");  		 else fprintf(out,",\n\"writek2axes\":\"ON\"");
+	if (OUTPUT::k1WriteMode==WRITE_OFF) 			   fprintf(out,",\n\"writek1s\":\"OFF\"");  			 else fprintf(out,",\n\"writek1s\":\"ON\"");
+	if (OUTPUT::k2WriteMode==WRITE_OFF) 			   fprintf(out,",\n\"writek2s\":\"OFF\"");  			 else fprintf(out,",\n\"writek2s\":\"ON\"");
+	if (OUTPUT::curvatureWriteMode==WRITE_OFF) 		   fprintf(out,",\n\"writeCurvatures\":\"OFF\"");  	 else fprintf(out,",\n\"writeCurvatures\":\"ON\"");
+	if (OUTPUT::likelihoodWriteMode==WRITE_OFF) 	   fprintf(out,",\n\"writeLikelihoods\":\"OFF\"");  	 else fprintf(out,",\n\"writeLikelihoods\":\"ON\"");
 
 	fprintf(out,"\n}");
 

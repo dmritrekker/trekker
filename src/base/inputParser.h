@@ -113,6 +113,7 @@ private:
 	void parse_output();
 	void parse_enableOutputOverwrite();
 	void parse_writeSeedCoordinates();
+    void parse_dontWriteSegmentsInSeedROI();
 	void parse_writeColors();
     void parse_writeFODamp();
 	void parse_writeTangents();

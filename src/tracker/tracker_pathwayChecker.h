@@ -4,31 +4,92 @@
 #include "tracker_thread.h"
 
 ROI_Rule_Decision TrackingThread::checkPathway() {
+   
+    // First handle the discard rules
+    for (size_t i=0; i<tracker_ROI.size(); i++ ) {
+   
+        if (tracker_ROI[i]->type == roi_type_discard_if_enters) {
+        
+            float val = tracker_ROI[i]->getVal(streamline->coordinates.back());
+            
+            if (val>=0.5) {
 
-	std::vector<bool>::iterator bit = tracker_ROI_ready_status.begin();
+                if (tracker_ROI[i]->side==side_undefined) {
 
-	for (std::vector<ROI_Image*>::iterator it = tracker_ROI.begin(); it != tracker_ROI.end(); it++) {
+                    streamline->discardingReason = DISCARD_ROI_REACHED;
+                    return DISCARD_STREAMLINE;
 
-		if ( (*bit)==false ) {
+                } else if (tracker_side==side_undefined) {
 
-			float val 		= (*it)->getVal(streamline->coordinates.back());
+                    tracker_side=tracker_ROI[i]->side;
+                    tracker_ROI_ready_status[i] = true;
+                    streamline->discardingReason = DISCARD_ROI_REACHED;
+                    return DISCARD_STREAMLINE;
 
-			switch ((*it)->type) {
+                } else if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) || ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
+
+                    tracker_ROI_ready_status[i] = true;
+                    streamline->discardingReason = DISCARD_ROI_REACHED;
+                    return DISCARD_STREAMLINE;
+
+                }
+            }
+            
+        }
+        
+        
+        
+        if (tracker_ROI[i]->type == roi_type_discard_if_exits) {
+        
+            float val = tracker_ROI[i]->getVal(streamline->coordinates.back());
+            
+            if ((tracker_ROI[i]->entry_status!=entered) && (val>=0.5)) {
+                tracker_ROI[i]->entry_status = entered;
+                if (tracker_side==side_undefined)
+                    tracker_side=tracker_ROI[i]->side;
+                break;
+            } else if ((tracker_ROI[i]->entry_status==entered) && (val<0.5)) {
+
+                if (tracker_ROI[i]->side==side_undefined) {
+                    streamline->discardingReason = DISCARD_ROI_REACHED;
+                    return DISCARD_STREAMLINE;
+                } else if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) || ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
+                    tracker_ROI_ready_status[i] = true;
+                    streamline->discardingReason = DISCARD_ROI_REACHED;
+                    return DISCARD_STREAMLINE;
+                }
+            }
+            
+        }
+        
+            
+    }
+    
+    
+    // Then handle the rest
+	for (size_t i=0; i<tracker_ROI.size(); i++ ) {
+
+		if ( tracker_ROI_ready_status[i]==false ) {
+
+			float val 		= tracker_ROI[i]->getVal(streamline->coordinates.back());
+
+			switch (tracker_ROI[i]->type) {
+                
 			case roi_type_req_entry: {
 
-				if ((*it)->side==side_undefined) {
+				if (tracker_ROI[i]->side==side_undefined) {
 
 					if (val>=0.5)
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 
 				} else if (tracker_side==side_undefined) {
 
 					if (val>=0.5) {
 
-						tracker_side=(*it)->side;
+						tracker_side=tracker_ROI[i]->side;
 
 						if ((PATHWAY::satisfy_requirements_in_order==IN_ORDER) && (tracker_side==side_A)) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
@@ -37,7 +98,7 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 						}
 
 						if ((PATHWAY::satisfy_requirements_in_order==IN_ORDER) && (tracker_side==side_B)) {
-							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
@@ -45,15 +106,15 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 								tracker_ROI_order++;
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 					}
 
-				} else if ( ((tracker_side==side_A) && ((*it)->side==side_A)) ) {
+				} else if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) ) {
 
 					if (val>=0.5) {
 
 						if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
@@ -61,15 +122,15 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 								tracker_ROI_order++;
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 					}
 
-				} else if ( ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
+				} else if ( ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
 
 					if (val>=0.5) {
 
 						if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
-							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
@@ -77,7 +138,7 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 								tracker_ROI_order++;
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 					}
 
 				}
@@ -87,36 +148,36 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 			case roi_type_req_exit: {
 
-				if (((*it)->entry_status!=entered) && (val>=0.5)) {
-					(*it)->entry_status = entered;
+				if ((tracker_ROI[i]->entry_status!=entered) && (val>=0.5)) {
+					tracker_ROI[i]->entry_status = entered;
 					if (tracker_side==side_undefined)
-						tracker_side=(*it)->side;
+						tracker_side=tracker_ROI[i]->side;
 					break;
-				} else if (((*it)->entry_status==entered) && (val<0.5)) {
+				} else if ((tracker_ROI[i]->entry_status==entered) && (val<0.5)) {
 
-					if ((*it)->side==side_undefined) {
-						(*bit) = true;
+					if (tracker_ROI[i]->side==side_undefined) {
+						tracker_ROI_ready_status[i] = true;
 						break;
 					} else if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
 
-						if (( ((tracker_side==side_A) && ((*it)->side==side_A)) )) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+						if (( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) )) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 							else {
 								tracker_ROI_order++;
-								(*bit) = true;
+								tracker_ROI_ready_status[i] = true;
 								break;
 							}
-						} else if (( ((tracker_side==side_B) && ((*it)->side==side_B)) )) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+						} else if (( ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) )) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 							else {
 								tracker_ROI_order++;
-								(*bit) = true;
+								tracker_ROI_ready_status[i] = true;
 								break;
 							}
 
@@ -124,8 +185,8 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 					} else {
 
-						if ( ((tracker_side==side_A) && ((*it)->side==side_A)) || ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
-							(*bit) = true;
+						if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) || ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
+							tracker_ROI_ready_status[i] = true;
 							break;
 						}
 
@@ -139,7 +200,7 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 			case roi_type_stop_at_entry: {
 
-				if ((*it)->side==side_undefined) {
+				if (tracker_ROI[i]->side==side_undefined) {
 
 					if (val>=0.5) {
 						if (streamline->terminationReason_sideA==TERMINATIONREASON_NOTSET)
@@ -153,58 +214,58 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 					if (val>=0.5) {
 
-						tracker_side=(*it)->side;
+						tracker_side=tracker_ROI[i]->side;
 
 						if ((PATHWAY::satisfy_requirements_in_order==IN_ORDER) && (tracker_side==side_A)) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 						}
 
 						if ((PATHWAY::satisfy_requirements_in_order==IN_ORDER) && (tracker_side==side_B)) {
-							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 						if       (tracker_side==side_A) streamline->terminationReason_sideA = STOP_ROI_REACHED;
 						else if  (tracker_side==side_B) streamline->terminationReason_sideB = STOP_ROI_REACHED;
 						return STOP_TRACKING;
 
 					}
 
-				} else if ( ((tracker_side==side_A) && ((*it)->side==side_A)) ) {
+				} else if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) ) {
 
 					if (val>=0.5) {
 
 						if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 						streamline->terminationReason_sideA = STOP_ROI_REACHED;
 						return STOP_TRACKING;
 
 					}
 
-				} else if ( ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
+				} else if ( ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
 
 					if (val>=0.5) {
 
 						if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
-							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 						}
 
-						(*bit) = true;
+						tracker_ROI_ready_status[i] = true;
 						streamline->terminationReason_sideB = STOP_ROI_REACHED;
 						return STOP_TRACKING;
 
@@ -218,15 +279,15 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 			case roi_type_stop_at_exit: {
 
-				if (((*it)->entry_status!=entered) && (val>=0.5)) {
-					(*it)->entry_status = entered;
+				if ((tracker_ROI[i]->entry_status!=entered) && (val>=0.5)) {
+					tracker_ROI[i]->entry_status = entered;
 
 					if (tracker_side==side_undefined)
-						tracker_side=(*it)->side;
+						tracker_side=tracker_ROI[i]->side;
 					break;
-				} else if (((*it)->entry_status==entered) && (val<0.5)) {
+				} else if ((tracker_ROI[i]->entry_status==entered) && (val<0.5)) {
 
-					if ((*it)->side==side_undefined) {
+					if (tracker_ROI[i]->side==side_undefined) {
 						if (streamline->terminationReason_sideA==TERMINATIONREASON_NOTSET)
 							streamline->terminationReason_sideA = STOP_ROI_REACHED;
 						else
@@ -234,25 +295,25 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 						return STOP_TRACKING;
 					} else if (PATHWAY::satisfy_requirements_in_order==IN_ORDER) {
 
-						if (( ((tracker_side==side_A) && ((*it)->side==side_A)) )) {
-							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+						if (( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) )) {
+							if (PATHWAY::order_of_side_A_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 							else {
 								tracker_ROI_order++;
-								(*bit) = true;
+								tracker_ROI_ready_status[i] = true;
 								streamline->terminationReason_sideA = STOP_ROI_REACHED;
 								return STOP_TRACKING;
 							}
-						} else if (( ((tracker_side==side_B) && ((*it)->side==side_B)) )) {
-							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=(*it)->self) {
+						} else if (( ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) )) {
+							if (PATHWAY::order_of_side_B_ROIs.at(tracker_ROI_order)!=tracker_ROI[i]->self) {
 								streamline->discardingReason=REQUIRED_ROI_ORDER_NOT_MET;
 								return DISCARD_STREAMLINE;
 							}
 							else {
 								tracker_ROI_order++;
-								(*bit) = true;
+								tracker_ROI_ready_status[i] = true;
 								streamline->terminationReason_sideB = STOP_ROI_REACHED;
 								return STOP_TRACKING;
 							}
@@ -261,8 +322,8 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 					} else {
 
-						if ( ((tracker_side==side_A) && ((*it)->side==side_A)) || ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
-							(*bit) = true;
+						if ( ((tracker_side==side_A) && (tracker_ROI[i]->side==side_A)) || ((tracker_side==side_B) && (tracker_ROI[i]->side==side_B)) ) {
+							tracker_ROI_ready_status[i] = true;
 							if       (tracker_side==side_A) streamline->terminationReason_sideA = STOP_ROI_REACHED;
 							else if  (tracker_side==side_B) streamline->terminationReason_sideB = STOP_ROI_REACHED;
 							return STOP_TRACKING;
@@ -275,64 +336,12 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 				break;
 			}
 
-			case roi_type_discard_if_enters: {
-
-				if (val>=0.5) {
-
-					if ((*it)->side==side_undefined) {
-
-						streamline->discardingReason = DISCARD_ROI_REACHED;
-						return DISCARD_STREAMLINE;
-
-					} else if (tracker_side==side_undefined) {
-
-						tracker_side=(*it)->side;
-						(*bit) = true;
-						streamline->discardingReason = DISCARD_ROI_REACHED;
-						return DISCARD_STREAMLINE;
-
-					} else if ( ((tracker_side==side_A) && ((*it)->side==side_A)) || ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
-
-						(*bit) = true;
-						streamline->discardingReason = DISCARD_ROI_REACHED;
-						return DISCARD_STREAMLINE;
-
-					}
-				}
-
-				break;
-			}
-
-			case roi_type_discard_if_exits: {
-
-				if (((*it)->entry_status!=entered) && (val>=0.5)) {
-					(*it)->entry_status = entered;
-					if (tracker_side==side_undefined)
-						tracker_side=(*it)->side;
-					break;
-				} else if (((*it)->entry_status==entered) && (val<0.5)) {
-
-					if ((*it)->side==side_undefined) {
-						streamline->discardingReason = DISCARD_ROI_REACHED;
-						return DISCARD_STREAMLINE;
-					} else if ( ((tracker_side==side_A) && ((*it)->side==side_A)) || ((tracker_side==side_B) && ((*it)->side==side_B)) ) {
-						(*bit) = true;
-						streamline->discardingReason = DISCARD_ROI_REACHED;
-						return DISCARD_STREAMLINE;
-					}
-
-				}
-
-				break;
-			}
-
-			default: break;
+			default: { break; }
 
 			}
 
 		}
 
-		bit++;
 	}
 
 
@@ -340,5 +349,20 @@ ROI_Rule_Decision TrackingThread::checkPathway() {
 
 }
 
+seedROI_Append_Decision TrackingThread::isInsideSeedROI() {
+    
+    float val 		= tracker_SEED->getVal(streamline->coordinates.back());
+    
+    if (val<0.5) {
+        tracker_SEED->exit_status  = exited;
+        tracker_SEED->entry_status = notEntered;
+        return APPEND;
+    } else if (tracker_SEED->entry_status == notEntered) {
+        return REENTERED;
+    } else {
+        return DONTAPPEND;
+    }
+    
+}
 
 #endif

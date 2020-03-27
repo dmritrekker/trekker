@@ -16,6 +16,12 @@ typedef enum {
 	FAIL_STREAMLINE
 } ROI_Rule_Decision;
 
+typedef enum {
+    DONTAPPEND,
+	APPEND,
+	REENTERED
+} seedROI_Append_Decision;
+
 class TractographyAlgorithm;
 class TrackWith_Trekker;
 class Tractogram;
@@ -41,6 +47,7 @@ public:
 	size_t 					report_discard_REQUIRED_ROI_NOT_MET;
 	size_t 					report_discard_REQUIRED_ROI_ORDER_NOT_MET;
 	size_t 					report_discard_ENDED_INSIDE_DISCARD_ROI;
+    size_t                  report_discard_REENTERED_SEED_ROI;
 	size_t 					report_discard_REACHED_TIME_LIMIT;
 
 	size_t 					report_failed_BY_THE_ALGORITHM_DURING_INITIALIZATION;
@@ -75,6 +82,7 @@ public:
 	void 		            getSeed(Coordinate* point);
 	void 		            track(Coordinate* point);
 	ROI_Rule_Decision 	    checkPathway();
+    seedROI_Append_Decision isInsideSeedROI();
 	StreamlineStatus 	    run(bool side);
     
     void                    setThreadID(size_t id);

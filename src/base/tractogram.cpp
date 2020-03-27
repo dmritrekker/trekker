@@ -20,6 +20,7 @@ Tractogram::Tractogram() {
 	total_discard_REQUIRED_ROI_NOT_MET 			= 0;
 	total_discard_REQUIRED_ROI_ORDER_NOT_MET 	= 0;
 	total_discard_ENDED_INSIDE_DISCARD_ROI 		= 0;
+    total_discard_REENTERED_SEED_ROI            = 0;
 	total_discard_REACHED_TIME_LIMIT 			= 0;
 	total_UNEXPECTED_TRACKING_STATUS 			= 0;
 
@@ -67,6 +68,7 @@ void Tractogram::reset() {
 	total_discard_REQUIRED_ROI_NOT_MET 			= 0;
 	total_discard_REQUIRED_ROI_ORDER_NOT_MET 	= 0;
 	total_discard_ENDED_INSIDE_DISCARD_ROI 		= 0;
+    total_discard_REENTERED_SEED_ROI            = 0;
 	total_discard_REACHED_TIME_LIMIT 			= 0;
 	total_UNEXPECTED_TRACKING_STATUS 			= 0;
 
@@ -162,6 +164,11 @@ void Tractogram::printBaseSummary() {
 			std::cout 	<< " Ended inside discard ROI                         : " << total_discard_ENDED_INSIDE_DISCARD_ROI << std::endl;
 			lineCountToFlush++;
 		}
+		
+        if (total_discard_REENTERED_SEED_ROI>0) {
+			std::cout 	<< " Reentered seed ROI                               : " << total_discard_REENTERED_SEED_ROI << std::endl;
+			lineCountToFlush++;
+		}
 
 		if (total_discard_REACHED_TIME_LIMIT>0) {
 			std::cout 	<< " Reached time limit                               : " << total_discard_REACHED_TIME_LIMIT << std::endl;
@@ -219,6 +226,7 @@ void Tractogram::baseUpdate(TrackingThread *thread) {
 	total_discard_REQUIRED_ROI_NOT_MET 								+= thread->report_discard_REQUIRED_ROI_NOT_MET;
 	total_discard_REQUIRED_ROI_ORDER_NOT_MET 						+= thread->report_discard_REQUIRED_ROI_ORDER_NOT_MET;
 	total_discard_ENDED_INSIDE_DISCARD_ROI 							+= thread->report_discard_ENDED_INSIDE_DISCARD_ROI;
+    total_discard_REENTERED_SEED_ROI 							    += thread->report_discard_REENTERED_SEED_ROI;
 	total_discard_REACHED_TIME_LIMIT 								+= thread->report_discard_REACHED_TIME_LIMIT;
 
 	total_discard =
@@ -228,6 +236,7 @@ void Tractogram::baseUpdate(TrackingThread *thread) {
 			total_discard_REQUIRED_ROI_NOT_MET+
 			total_discard_REQUIRED_ROI_ORDER_NOT_MET+
 			total_discard_ENDED_INSIDE_DISCARD_ROI+
+			total_discard_REENTERED_SEED_ROI+
 			total_discard_REACHED_TIME_LIMIT;
 
 
@@ -518,6 +527,9 @@ void Tractogram::writeTrackingReportInMetadataOutput(FILE *out) {
 	if (total_discard_ENDED_INSIDE_DISCARD_ROI>0)
 		fprintf(out,(",\n\"Ended inside discard ROI\":" + std::to_string(total_discard_ENDED_INSIDE_DISCARD_ROI)).c_str());
 
+    if (total_discard_REENTERED_SEED_ROI>0)
+		fprintf(out,(",\n\"Reentered seed ROI\":" + std::to_string(total_discard_REENTERED_SEED_ROI)).c_str());
+    
 	if (total_discard_REACHED_TIME_LIMIT>0)
 		fprintf(out,(",\n\"Reached time limit\":" + std::to_string(total_discard_REACHED_TIME_LIMIT)).c_str());
 

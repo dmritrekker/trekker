@@ -61,6 +61,7 @@ private:
 	size_t 	total_discard_REQUIRED_ROI_NOT_MET;
 	size_t 	total_discard_REQUIRED_ROI_ORDER_NOT_MET;
 	size_t 	total_discard_ENDED_INSIDE_DISCARD_ROI;
+    size_t  total_discard_REENTERED_SEED_ROI;
 	size_t 	total_discard_REACHED_TIME_LIMIT;
 
 	size_t  total_failed_DISCARDED_BY_THE_ALGORITHM_DURING_INITIALIZATION;
