@@ -225,9 +225,9 @@
 <span class="n">streamlines</span> <span class="o">=</span> <span class="n">myTrekker</span><span class="o">.</span><span class="n">run</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>All parameters explained in the <a class="reference external" href="../manual/trekker.html">manual</a> can be set as demonstrated in the example above. One exception to this is the output options which can’t be specified yet, i.e., only the output streamline coordinates are returned, one cannot save colors or any other information associated with the streamlines.</p>
+<p>All parameters explained in the <a class="reference external" href="../manual/trekker.html">manual</a> can be set as demonstrated in the example above. Exceptions to these are the output options which can’t be specified yet, i.e., only the output streamline coordinates are returned, and it is not at the moment possible to save colors or any other information associated with the streamlines.</p>
 <p><strong>Notes on initialization</strong></p>
-<p>Python package of Trekker allows one to <em>initialize</em> only a single FOD image at one time. Initialization can be done with 1, 3 or 5 arguments as explained below:</p>
+<p>Python package of Trekker allows one to <em>initialize</em> only a single FOD image at a time. Initialization can be done with 1, 3 or 5 arguments as explained below:</p>
 <ul class="simple">
 <li><em>myTrekker=Trekker.initialize(b”Fod.nii”)</em> : FOD image will be descretized and the default orientation of “XYZ” will be used.</li>
 <li><em>myTrekker=Trekker.initialize(b”Fod.nii”, orientation=b”xYZ”, discretization=False)</em> : The default parameters for orientation and discretization can be changed.</li>

@@ -61,6 +61,6 @@ Step 3. Run the build script. This will build Trekker under:
 Publications:
 ------------
 
-- [Aydogan2019a] Aydogan DB, Shi Y., "Parallel transport tractography", *under review*
+- [Aydogan2019a] Aydogan D.B., Shi Y., "Parallel transport tractography", *under review*
 
-- [[Aydogan2019b](https://www.researchgate.net/publication/336847169_A_novel_fiber-tracking_algorithm_using_parallel_transport_frames)] Aydogan DB, Shi Y., "A novel fiber tracking algorithm using parallel transport frames", ISMRM 2019, Montreal
+- [[Aydogan2019b](https://www.researchgate.net/publication/336847169_A_novel_fiber-tracking_algorithm_using_parallel_transport_frames)] Aydogan D.B., Shi Y., "A novel fiber tracking algorithm using parallel transport frames", Proceedings of the 27th Annual Meeting of the International Society of Magnetic Resonance in Medicine (ISMRM) 2019

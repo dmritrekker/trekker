@@ -111,15 +111,13 @@ In this case, FOD image stores a spherical function at each voxel. Volume *n* of
 
 **-dontDiscretizeFod** Turns of FOD discretization. For faster tracking, trekker by default will discretize the FOD on a sphere (using 2076 points for symmetric functions and 1004 points for asymmetric functions).
 
-**-algorithm <either \"ptt C1\" or \"ptt C2\">** Trekker implements C1 and C2 continuous versions of the parallel transport tractography algorithm. Default: ptt C1.
-
-**-stepSize <positive real number>** Step size. Default=1/50 x the smallest of the FOD voxel dimensions.
+**-stepSize <positive real number>** Step size. Default=1/40 x the smallest of the FOD voxel dimensions.
 
 **-minRadiusOfCurvature <positive real number>** Minimum radius of curvature. Default=1/2 x the smallest of the FOD voxel dimensions.
 
-**-minFODamp <positive real number>** Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.1.
+**-minFODamp <positive real number>** Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.05.
 
-**-dataSupportExponent <positive real number>** Data support to the power dataSupportExponent is used for rejection sampling. Default=0.25.
+**-dataSupportExponent <positive real number>** Data support to the power dataSupportExponent is used for rejection sampling. Default=1.
 
 **-minLength <positive real number>** Minimum length of the tracks. Default=0.
 
@@ -161,9 +159,9 @@ Trekker uses probes for estimating future propagation steps. A probe is a short,
 
 **-probeRadius <positive real number>** Radius of the probe. Default=0.
 
-**-probeCount <integer between 1 and 100>** probeCount determines the number of parallel lines used to model the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.
+**-probeCount <integer between 1 and 100>** probeCount determines the number of parallel lines used to model the cylinder. Default: 1 if probeRadius=0, 4 if probeRadius≠0.
 
-**-probeQuality <integer between 1 and 100>** This parameter sets the number of segments to split the cylinder along the length of the probe. Default=3.
+**-probeQuality <integer between 1 and 100>** This parameter sets the number of segments to split the cylinder along the length of the probe. Default=4.
 
 **-ignoreWeakLinks <positive real number>** If the individual data support (FOD amplitude along the direction of the segment) for any of the points in the probe is lower than what is specified with this parameter, this candidate probe is ignored. Default: 0.
 
@@ -214,6 +212,8 @@ Output options
 **-enableOutputOverwrite** If used, output file will be overwritten in the case that it already exists in the specified path. Default=off.
 
 **-writeSeedCoordinates** If used, seed coordinates of each streamline is written in the output.
+
+**-dontWriteSegmentsInSeedROI** If used, seeding is done using the provided seed image but streamlines are saved starting from the surface of the seed ROI. The seed coordinates with this option are also written starting from the seed surface.
 
 **-writeColors** If used, direction coded colors are written for each segment in the output tractogram. Default=off. (If this is enabled, you can visualize the tracks in the familiar tractography RGB type coloring in Paraview. For that load the .vtk file in Paraview, choose "colors" as the coloring option and make sure that "Map Scalars" option is not selected.)
 

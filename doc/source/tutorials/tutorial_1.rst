@@ -20,7 +20,7 @@ Trekker options start with a \"-\" sign. All parameters and constraints are set 
 
 .. note::
 
-	Trekker does not require input nifti files to be in the same image space, i.e.: spatial dimensions of the FOD image can be 100x100x100 and the seed image can be 128x128x60. As long as images are in the same physical space (based on nifti sform), trekker will handle nifti files with different headers. This is valid also for images used to specify pathway rules.
+	Trekker does not require input nifti files to be in the same image space, i.e., spatial dimensions of the FOD image can be 100x100x100 and the seed image can be 128x128x60. As long as images are in the same physical space (based on nifti sform), trekker will handle nifti files with different headers. This is valid also for images used to specify pathway rules.
 
 
 

@@ -390,11 +390,10 @@
 </pre></div>
 </div>
 <p><strong>-dontDiscretizeFod</strong> Turns of FOD discretization. For faster tracking, trekker by default will discretize the FOD on a sphere (using 2076 points for symmetric functions and 1004 points for asymmetric functions).</p>
-<p><strong>-algorithm &lt;either “ptt C1” or “ptt C2”&gt;</strong> Trekker implements C1 and C2 continuous versions of the parallel transport tractography algorithm. Default: ptt C1.</p>
-<p><strong>-stepSize &lt;positive real number&gt;</strong> Step size. Default=1/50 x the smallest of the FOD voxel dimensions.</p>
+<p><strong>-stepSize &lt;positive real number&gt;</strong> Step size. Default=1/40 x the smallest of the FOD voxel dimensions.</p>
 <p><strong>-minRadiusOfCurvature &lt;positive real number&gt;</strong> Minimum radius of curvature. Default=1/2 x the smallest of the FOD voxel dimensions.</p>
-<p><strong>-minFODamp &lt;positive real number&gt;</strong> Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.1.</p>
-<p><strong>-dataSupportExponent &lt;positive real number&gt;</strong> Data support to the power dataSupportExponent is used for rejection sampling. Default=0.25.</p>
+<p><strong>-minFODamp &lt;positive real number&gt;</strong> Threshold for minimum data support. For PTT algorithm this is minimum FOD threshold. Default=0.05.</p>
+<p><strong>-dataSupportExponent &lt;positive real number&gt;</strong> Data support to the power dataSupportExponent is used for rejection sampling. Default=1.</p>
 <p><strong>-minLength &lt;positive real number&gt;</strong> Minimum length of the tracks. Default=0.</p>
 <p><strong>-maxLength &lt;positive real number&gt;</strong> Maximum length of the tracks. Default=infinite.</p>
 <p><strong>-atMaxLength &lt;either “stop” or “discard”&gt;</strong> If set to “stop”, when maxLength is reached the propagation stops and the streamline is written in the output. If set to “discard”, the streamline is not written in the output. Default=discard.</p>
@@ -420,8 +419,8 @@
 <p>Trekker uses probes for estimating future propagation steps. A probe is a short, cylinderical model of the connecting segment.</p>
 <p><strong>-probeLength &lt;positive real number&gt;</strong> Length of the probe. Default=1/4 x the smallest of the FOD voxel dimensions.</p>
 <p><strong>-probeRadius &lt;positive real number&gt;</strong> Radius of the probe. Default=0.</p>
-<p><strong>-probeCount &lt;integer between 1 and 100&gt;</strong> probeCount determines the number of parallel lines used to model the cylinder. Default: 1, i.e: by default, the radius of the cylinder (probeRadius) is zero and only a single line is used to model a cylinder.</p>
-<p><strong>-probeQuality &lt;integer between 1 and 100&gt;</strong> This parameter sets the number of segments to split the cylinder along the length of the probe. Default=3.</p>
+<p><strong>-probeCount &lt;integer between 1 and 100&gt;</strong> probeCount determines the number of parallel lines used to model the cylinder. Default: 1 if probeRadius=0, 4 if probeRadius≠0.</p>
+<p><strong>-probeQuality &lt;integer between 1 and 100&gt;</strong> This parameter sets the number of segments to split the cylinder along the length of the probe. Default=4.</p>
 <p><strong>-ignoreWeakLinks &lt;positive real number&gt;</strong> If the individual data support (FOD amplitude along the direction of the segment) for any of the points in the probe is lower than what is specified with this parameter, this candidate probe is ignored. Default: 0.</p>
 </div>
 <div class="section" id="seeding-options">
@@ -459,6 +458,7 @@
 <p><strong>-output &lt;vtk file&gt;</strong> Output file path. Trekker saves tractograms in .vtk format. An additional output file with .json extension is also saved which contains metadata about tracking parameters and information about the results.</p>
 <p><strong>-enableOutputOverwrite</strong> If used, output file will be overwritten in the case that it already exists in the specified path. Default=off.</p>
 <p><strong>-writeSeedCoordinates</strong> If used, seed coordinates of each streamline is written in the output.</p>
+<p><strong>-dontWriteSegmentsInSeedROI</strong> If used, seeding is done using the provided seed image but streamlines are saved starting from the surface of the seed ROI. The seed coordinates with this option are also written starting from the seed surface.</p>
 <p><strong>-writeColors</strong> If used, direction coded colors are written for each segment in the output tractogram. Default=off. (If this is enabled, you can visualize the tracks in the familiar tractography RGB type coloring in Paraview. For that load the .vtk file in Paraview, choose “colors” as the coloring option and make sure that “Map Scalars” option is not selected.)</p>
 <p><strong>-writeFODamp</strong>, <strong>-writeTangents</strong>, <strong>-writek1axes</strong>, <strong>-writek2axes</strong>, <strong>-writek1s</strong>, <strong>-writek2s</strong>, <strong>-writeCurvatures</strong>, <strong>-writeLikelihoods</strong> options can be used separately to write these values for each segment in the output. Likelihoods are the computed data supports.</p>
 </div>

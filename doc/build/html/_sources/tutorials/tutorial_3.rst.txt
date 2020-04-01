@@ -14,11 +14,11 @@ Use :code:`pip install trekker` to install the trekker python 3.7 package in Lin
 
     streamlines = myTrekker.run();
 
-All parameters explained in the `manual <../manual/trekker.html>`__ can be set as demonstrated in the example above. One exception to this is the output options which can't be specified yet, i.e., only the output streamline coordinates are returned, one cannot save colors or any other information associated with the streamlines.
+All parameters explained in the `manual <../manual/trekker.html>`__ can be set as demonstrated in the example above. Exceptions to these are the output options which can't be specified yet, i.e., only the output streamline coordinates are returned, and it is not at the moment possible to save colors or any other information associated with the streamlines.
 
 **Notes on initialization**
 
-Python package of Trekker allows one to *initialize* only a single FOD image at one time. Initialization can be done with 1, 3 or 5 arguments as explained below:
+Python package of Trekker allows one to *initialize* only a single FOD image at a time. Initialization can be done with 1, 3 or 5 arguments as explained below:
 
 - *myTrekker=Trekker.initialize(b"Fod.nii")* : FOD image will be descretized and the default orientation of "XYZ" will be used.
 

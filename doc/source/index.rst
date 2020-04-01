@@ -29,24 +29,6 @@ Trekker software has the following features:
              -maxLength 300 \
              -output OUTPUT.vtk
 
-
-**Result of the above command, click to enlarge**
-
-|pic1| |pic2|
-|pic3| |pic4|
-
-.. |pic1| image:: demo_1.png
-	:width: 49%
-
-.. |pic2| image:: demo_2.png
-	:width: 49%
-
-.. |pic3| image:: demo_3.png
-	:width: 49%
-
-.. |pic4| image:: demo_4.png
-	:width: 49%
-
 ------------
 
 
