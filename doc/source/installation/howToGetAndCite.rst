@@ -19,25 +19,33 @@ Stand-alone executables
 
 You can download precompiled stand-alone executables for:
 
-- **Linux**: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5>`__ to download.
+- *Linux*: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5>`__ to download.
 
-- **Windows**: Tested on Windows 10. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe>`__ to download.
+- *Windows*: Tested on Windows 10. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe>`__ to download.
 
-- **Mac OS**: A stand-alone executable does not exist.
+- *Mac OS*: A stand-alone executable does not exist.
 
 
 Source code
 -----------
 
-The latest source code of Trekker can be obtained with:
+*Step 1*. Download the source code from `github <https://github.com/dmritrekker/trekker>`__, using:
+  ::
 
-::
+    git clone https://github.com/dmritrekker/trekker
 
-	git clone https://github.com/dmritrekker/trekker
+*Step 2*. Modify the first few lines in the build script (make sure to have cmake-3.15 or newer):
+  - For Linux -> build_Linux.sh
+  - For Windows -> build_Windows.bat
 
+*Step 3*. Run the build script. This will build Trekker:
+  - For Linux -> <TrekkerFolder>/build/Linux/install
+  - For Windows -> <TrekkerFolder>/build/Windows/install
 
-Click `here <../installation/installationInstructions.html>`__ for installation instructions.
-
+Under the install folder, the following will be generated:
+  1. :code:`trekker` executable under :code:`/bin`
+  2. Static and shared libraries under :code:`/lib` with library header under :code:`/include`
+  3. If specified, a python package under :code:`/extensions/python/dist`
 
 
 Python package
@@ -47,19 +55,22 @@ Python 3.7 packages for Linux and Windows can be installed using pip.
 
 ::
 
-	pip install trekker
+	pip install Trekker
+
+
+Test your installation
+======================
+
+You can use the demo scripts in `here <https://github.com/dmritrekker/trekker/tree/v0.5/demo>`__ for testing your installation.
+
 
 
 Extensions
-----------
+==========
 
 - **Matlab**: Trekker formatted .vtk files can be read in Matlab using the following function, :code:`extensions/matlab/readTrekkerOutput.m`.
 
 - **LONI pipeline**: A LONI pipeline module and workflow examples for Trekker can be found under: :code:`extensions/LONI_Pipeline/`.
-
-
-Other tools
---------------
 
 - **trekker_mergeTracksWithPrefix**: This tool can be used to merge Trekker formatted (.vtk) tractograms inside a folder that start with given filename prefix.
 

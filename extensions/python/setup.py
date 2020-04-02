@@ -52,4 +52,11 @@ setup(
     author="Dogu Baran Aydogan",
     author_email="baran.aydogan@aalto.fi",
     description="Trekker",
+    url="https://dmritrekker.github.io/",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.6',
 )

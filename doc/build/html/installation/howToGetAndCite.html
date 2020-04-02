@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Installation instructions" href="installationInstructions.html" />
+    <link rel="next" title="Tutorial 1: The short trek" href="../tutorials/tutorial_1.html" />
     <link rel="prev" title="Trekker" href="../index.html" /> 
 
   
@@ -92,19 +92,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#stand-alone-executables">Stand-alone executables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#source-code">Source code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#python-package">Python package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#extensions">Extensions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#other-tools">Other tools</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="installationInstructions.html">Installation instructions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installationInstructions.html#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installationInstructions.html#installation">Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installationInstructions.html#linux-and-windows">Linux and Windows</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installationInstructions.html#mac-os">MAC OS</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="#test-your-installation">Test your installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#extensions">Extensions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Get started</span></p>
 <ul>
@@ -229,40 +220,60 @@
 <h2>Stand-alone executables<a class="headerlink" href="#stand-alone-executables" title="Permalink to this headline">¶</a></h2>
 <p>You can download precompiled stand-alone executables for:</p>
 <ul class="simple">
-<li><strong>Linux</strong>: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5">here</a> to download.</li>
-<li><strong>Windows</strong>: Tested on Windows 10. Click <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe">here</a> to download.</li>
-<li><strong>Mac OS</strong>: A stand-alone executable does not exist.</li>
+<li><em>Linux</em>: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5">here</a> to download.</li>
+<li><em>Windows</em>: Tested on Windows 10. Click <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe">here</a> to download.</li>
+<li><em>Mac OS</em>: A stand-alone executable does not exist.</li>
 </ul>
 </div>
 <div class="section" id="source-code">
 <h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h2>
-<p>The latest source code of Trekker can be obtained with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dmritrekker</span><span class="o">/</span><span class="n">trekker</span>
+<dl class="docutils">
+<dt><em>Step 1</em>. Download the source code from <a class="reference external" href="https://github.com/dmritrekker/trekker">github</a>, using:</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dmritrekker</span><span class="o">/</span><span class="n">trekker</span>
 </pre></div>
 </div>
-<p>Click <a class="reference external" href="../installation/installationInstructions.html">here</a> for installation instructions.</p>
+</dd>
+<dt><em>Step 2</em>. Modify the first few lines in the build script (make sure to have cmake-3.15 or newer):</dt>
+<dd><ul class="first last simple">
+<li>For Linux -&gt; build_Linux.sh</li>
+<li>For Windows -&gt; build_Windows.bat</li>
+</ul>
+</dd>
+<dt><em>Step 3</em>. Run the build script. This will build Trekker:</dt>
+<dd><ul class="first last simple">
+<li>For Linux -&gt; &lt;TrekkerFolder&gt;/build/Linux/install</li>
+<li>For Windows -&gt; &lt;TrekkerFolder&gt;/build/Windows/install</li>
+</ul>
+</dd>
+<dt>Under the install folder, the following will be generated:</dt>
+<dd><ol class="first last arabic simple">
+<li><code class="code docutils literal notranslate"><span class="pre">trekker</span></code> executable under <code class="code docutils literal notranslate"><span class="pre">/bin</span></code></li>
+<li>Static and shared libraries under <code class="code docutils literal notranslate"><span class="pre">/lib</span></code> with library header under <code class="code docutils literal notranslate"><span class="pre">/include</span></code></li>
+<li>If specified, a python package under <code class="code docutils literal notranslate"><span class="pre">/extensions/python/dist</span></code></li>
+</ol>
+</dd>
+</dl>
 </div>
 <div class="section" id="python-package">
 <h2>Python package<a class="headerlink" href="#python-package" title="Permalink to this headline">¶</a></h2>
 <p>Python 3.7 packages for Linux and Windows can be installed using pip.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">trekker</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">Trekker</span>
 </pre></div>
 </div>
 </div>
+</div>
+<div class="section" id="test-your-installation">
+<h1>Test your installation<a class="headerlink" href="#test-your-installation" title="Permalink to this headline">¶</a></h1>
+<p>You can use the demo scripts in <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/demo">here</a> for testing your installation.</p>
+</div>
 <div class="section" id="extensions">
-<h2>Extensions<a class="headerlink" href="#extensions" title="Permalink to this headline">¶</a></h2>
+<h1>Extensions<a class="headerlink" href="#extensions" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><strong>Matlab</strong>: Trekker formatted .vtk files can be read in Matlab using the following function, <code class="code docutils literal notranslate"><span class="pre">extensions/matlab/readTrekkerOutput.m</span></code>.</li>
 <li><strong>LONI pipeline</strong>: A LONI pipeline module and workflow examples for Trekker can be found under: <code class="code docutils literal notranslate"><span class="pre">extensions/LONI_Pipeline/</span></code>.</li>
-</ul>
-</div>
-<div class="section" id="other-tools">
-<h2>Other tools<a class="headerlink" href="#other-tools" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
 <li><strong>trekker_mergeTracksWithPrefix</strong>: This tool can be used to merge Trekker formatted (.vtk) tractograms inside a folder that start with given filename prefix.</li>
 <li><strong>trekker_addColor</strong>: This tool can be used to add direction coded color information for each segment in a Trekker formatted (.vtk) tractogram.</li>
 </ul>
-</div>
 </div>
 
 
@@ -273,7 +284,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="installationInstructions.html" class="btn btn-neutral float-right" title="Installation instructions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../tutorials/tutorial_1.html" class="btn btn-neutral float-right" title="Tutorial 1: The short trek" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../index.html" class="btn btn-neutral" title="Trekker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

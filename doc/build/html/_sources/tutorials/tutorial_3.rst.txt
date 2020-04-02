@@ -1,7 +1,7 @@
 Tutorial 3: Python package usage
 ================================
 
-Use :code:`pip install trekker` to install the trekker python 3.7 package in Linux or Windows.
+Use :code:`pip install Trekker` to install the trekker python 3.7 package in Linux or Windows.
 
 ::
 
