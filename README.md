@@ -47,15 +47,24 @@ Step 1. Download the source code:
 
 	git clone https://github.com/dmritrekker/trekker
 
-Step 2. Modify the first few lines in the build script:
+Step 2. Modify the first few lines in the build script (make sure to have cmake-3.15 or newer):
 
 - For Linux -> build_Linux.sh
 - For Windows -> build_Windows.bat
 
 Step 3. Run the build script. This will build Trekker under:
 
-- For Linux -> <TrekkerFolder>/build/Linux/install/bin
-- For Windows -> <TrekkerFolder>/build/Windows/install/bin
+- For Linux -> <TrekkerFolder>/build/Linux/install
+- For Windows -> <TrekkerFolder>/build/Windows/install
+
+**Python package:**
+
+	pip install Trekker
+
+Demo
+----
+
+To test your installation, please use the scripts under -> <TrekkerFolder>/demo
 
 
 Publications:

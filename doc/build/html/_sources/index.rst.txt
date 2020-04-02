@@ -38,7 +38,6 @@ Trekker software has the following features:
    :hidden:
 
    installation/howToGetAndCite
-   installation/installationInstructions
 
 .. toctree::
    :maxdepth: 2
