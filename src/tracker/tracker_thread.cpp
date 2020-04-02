@@ -415,10 +415,9 @@ StreamlineStatus TrackingThread::run(bool side) {
 
 	ROI_Rule_Decision roiDecision 	= checkPathway();
     
-    tracker_SEED->entry_status = entered;
-    tracker_SEED->exit_status  = notExited;
-    
     if ( (OUTPUT::dontWriteSegmentsInSeedROI==WRITE_ON) && (TRACKER::directionality==ONE_SIDED) && (SEED::seedingMode==SEED_IMAGE) && (isInsideSeedROI()==DONTAPPEND) ) {
+        tracker_SEED->entry_status = entered;
+        tracker_SEED->exit_status  = notExited;
         method->removeLast();
     }
 
