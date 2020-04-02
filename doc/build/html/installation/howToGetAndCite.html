@@ -249,15 +249,16 @@
 <dd><ol class="first last arabic simple">
 <li><code class="code docutils literal notranslate"><span class="pre">trekker</span></code> executable under <code class="code docutils literal notranslate"><span class="pre">/bin</span></code></li>
 <li>Static and shared libraries under <code class="code docutils literal notranslate"><span class="pre">/lib</span></code> with library header under <code class="code docutils literal notranslate"><span class="pre">/include</span></code></li>
-<li>If specified, a python package under <code class="code docutils literal notranslate"><span class="pre">/extensions/python/dist</span></code></li>
+<li>If specified, a python built distribution (.whl) under <code class="code docutils literal notranslate"><span class="pre">/python/dist</span></code></li>
 </ol>
 </dd>
 </dl>
 </div>
 <div class="section" id="python-package">
 <h2>Python package<a class="headerlink" href="#python-package" title="Permalink to this headline">¶</a></h2>
-<p>Python 3.7 packages for Linux and Windows can be installed using pip.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">Trekker</span>
+<p>A python package can be built from source. You can also download a built distributions (.whl) from the <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/v0.5/binaries">/binaries</a> folder.</p>
+<p>To install the python package use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">Trekker</span><span class="o">-&lt;</span><span class="n">VERSION</span><span class="o">&gt;.</span><span class="n">whl</span>
 </pre></div>
 </div>
 </div>
