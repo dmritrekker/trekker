@@ -45,7 +45,7 @@ Source code
 Under the install folder, the following will be generated:
   1. :code:`trekker` executable under :code:`/bin`
   2. Static and shared libraries under :code:`/lib` with library header under :code:`/include`
-  3. If specified, a python package under :code:`/extensions/python/dist`
+  3. If specified, a python built distribution (.whl) under :code:`/python/dist`
 
 
 Python package
@@ -57,6 +57,7 @@ Python 3.7 packages for Linux and Windows can be installed using pip.
 
 	pip install Trekker
 
+If you built from source for your system, you can also pip install the .whl file.
 
 Test your installation
 ======================
