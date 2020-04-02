@@ -51,13 +51,13 @@ Under the install folder, the following will be generated:
 Python package
 --------------
 
-Python 3.7 packages for Linux and Windows can be installed using pip.
+A python package can be built from source. You can also download a built distributions (.whl) from the `/binaries <https://github.com/dmritrekker/trekker/tree/v0.5/binaries>`__ folder.
+
+To install the python package use:
 
 ::
 
-	pip install Trekker
-
-If you built from source for your system, you can also pip install the .whl file.
+    pip install Trekker-<VERSION>.whl
 
 Test your installation
 ======================
