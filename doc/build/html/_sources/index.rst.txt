@@ -70,4 +70,5 @@ Trekker software has the following features:
    :hidden:
 
    about/licenseAndWarranty
+   about/acknowledgements
    about/contact
