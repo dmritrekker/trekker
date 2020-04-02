@@ -206,7 +206,7 @@
             
   <div class="section" id="tutorial-3-python-package-usage">
 <h1>Tutorial 3: Python package usage<a class="headerlink" href="#tutorial-3-python-package-usage" title="Permalink to this headline">¶</a></h1>
-<p>Use <code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">Trekker</span></code> to install the trekker python 3.7 package in Linux or Windows.</p>
+<p>Below demonstrates the basic usage of Trekker’s python package.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tutorial 3 - Example 1</span>
 <span class="kn">import</span> <span class="nn">Trekker</span>
 
@@ -221,7 +221,7 @@
 <p><strong>Notes on initialization</strong></p>
 <p>Python package of Trekker allows one to <em>initialize</em> only a single FOD image at a time. Initialization can be done with 1, 3 or 5 arguments as explained below:</p>
 <ul class="simple">
-<li><em>myTrekker=Trekker.initialize(b”Fod.nii”)</em> : FOD image will be descretized and the default orientation of “XYZ” will be used.</li>
+<li><em>myTrekker=Trekker.initialize(b”Fod.nii”)</em> : FOD image will be discretized and the default orientation of “XYZ” will be used.</li>
 <li><em>myTrekker=Trekker.initialize(b”Fod.nii”, orientation=b”xYZ”, discretization=False)</em> : The default parameters for orientation and discretization can be changed.</li>
 <li><em>myTrekker=Trekker.initialize(b”FOD_spherical_function_values.nii”, b”FOD_spherical_function_domain.txt”, b”asym”,orientation=b”xYZ”, discretization=True)</em> : A spherical function instead of spherical harmonic coefficients can be used as input.</li>
 </ul>

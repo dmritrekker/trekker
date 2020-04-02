@@ -28,8 +28,14 @@ if (platform.system()=="Linux"):
 if (platform.system()=="Windows"):
     LIBS              = ["Trekker"]
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='Trekker',
+    description='Python package for parallel transport tractography (PTT)',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     version='0.5',
     setup_requires=[
         'setuptools>=18.0',
@@ -51,7 +57,6 @@ setup(
     cmdclass=dict(build_ext=TrekkerBuildExt),
     author="Dogu Baran Aydogan",
     author_email="baran.aydogan@aalto.fi",
-    description="Trekker",
     url="https://dmritrekker.github.io/",
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -59,4 +64,6 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    license='BSD 2-Clause License',
+    platforms=['linux','win'],
 )

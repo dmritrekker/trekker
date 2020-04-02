@@ -59,7 +59,12 @@ Step 3. Run the build script. This will build Trekker under:
 
 **Python package:**
 
-	pip install Trekker
+A python package can be built from source. You can also download a built distributions (.whl) from the /binaries folder.
+
+To install the python package use:
+
+    pip install Trekker-<VERSION>.whl
+
 
 Demo
 ----

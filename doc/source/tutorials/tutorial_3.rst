@@ -1,7 +1,7 @@
 Tutorial 3: Python package usage
 ================================
 
-Use :code:`pip install Trekker` to install the trekker python 3.7 package in Linux or Windows.
+Below demonstrates the basic usage of Trekker's python package.
 
 ::
 
@@ -20,7 +20,7 @@ All parameters explained in the `manual <../manual/trekker.html>`__ can be set a
 
 Python package of Trekker allows one to *initialize* only a single FOD image at a time. Initialization can be done with 1, 3 or 5 arguments as explained below:
 
-- *myTrekker=Trekker.initialize(b"Fod.nii")* : FOD image will be descretized and the default orientation of "XYZ" will be used.
+- *myTrekker=Trekker.initialize(b"Fod.nii")* : FOD image will be discretized and the default orientation of "XYZ" will be used.
 
 - *myTrekker=Trekker.initialize(b"Fod.nii", orientation=b"xYZ", discretization=False)* : The default parameters for orientation and discretization can be changed.
 
