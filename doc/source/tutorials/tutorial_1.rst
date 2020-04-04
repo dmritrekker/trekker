@@ -51,14 +51,14 @@ Paraview interface is very simple to use and it provides professional 3D renderi
 
 Below are examples drawn by Paraview using the trekker command shown in this tutorial applied on the Human Connectome Project subject 100307.
 
-.. figure:: tut1_0.png
+.. figure:: tut1_0.jpg
 	:scale: 50 %
 	:alt: Paraview rendering 1
 
 	Paraview by default renders streamlines using a solid (single) color.
 
 
-.. figure:: tut1_1.png
+.. figure:: tut1_1.jpg
 	:scale: 50 %
 	:alt: Paraview rendering 2
 
@@ -68,7 +68,7 @@ Below are examples drawn by Paraview using the trekker command shown in this tut
 	Trekker can save many other information in the output that can be visualized in Paraview, such as the FOD amplitude along the direction of the segment with **-writeFODamp** option. You can view the other output options by clicking `here <../manual/trekker.html#output-options>`__.
 
 
-.. figure:: tut1_2.png
+.. figure:: tut1_2.jpg
 	:scale: 50 %
 	:alt: Paraview rendering 2
 

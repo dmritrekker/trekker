@@ -3,11 +3,21 @@
 
 float TrackWith_PTT::getFODamp(float *pv, float *Tv) {
     
-    if (TRACKER::fodDiscretization==FODDISC_OFF) {
-        thread->tracker_FOD->getVal(pv,FOD);
-        return SH::SH_amplitude(FOD,Tv);
-    } else
-        return thread->tracker_FOD->getFODval(pv,Tv);
+    if (TRACKER::img_FOD->iseven) {
+        if (TRACKER::fodDiscretization==FODDISC_OFF) {
+            thread->tracker_FOD->getVal(pv,FOD);
+            return SH::SH_amplitude(FOD,Tv);
+        } else
+            return thread->tracker_FOD->getFODval(pv,Tv);
+    } else {
+        float TvAsym[3]={-Tv[0],-Tv[1],-Tv[2]};
+        if (TRACKER::fodDiscretization==FODDISC_OFF) {
+            thread->tracker_FOD->getVal(pv,FOD);
+            return (SH::SH_amplitude(FOD,Tv) + SH::SH_amplitude(FOD,TvAsym))/float(2.0);
+        } else {
+            return (thread->tracker_FOD->getFODval(pv,Tv) + thread->tracker_FOD->getFODval(pv,TvAsym))/float(2.0);
+        }
+    }
     
 }
 

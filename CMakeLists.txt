@@ -1,4 +1,4 @@
-﻿cmake_minimum_required (VERSION 3.15)
+﻿cmake_minimum_required (VERSION 3.12)
 
 PROJECT(Trekker)
 
@@ -60,15 +60,10 @@ endif()
 option(Build_Python3_WRAPPER "Enable to build a python package for Trekker" ${Build_Python3_WRAPPER})
 
 if(${Build_Python3_WRAPPER} STREQUAL "ON")
-    find_package(Python3)
-    if(Python3_FOUND)
-        message(STATUS "Enabled Python wrapper. A Python package will be build.")
-        message(WARNING "Please change Python path if necessary which is currently set as: ${Python3_EXECUTABLE}")
-    else()
-        set(Build_Python3_WRAPPER "OFF")
-        message(STATUS "Python not found. A Python package will not be build.")
-    endif()
+    message(STATUS "Enabled Python wrapper. A Python package will be build.")
+    message(WARNING "Please change Python path if necessary which is currently set as: ${Python3_EXECUTABLE}")
 else()
+    set(Build_Python3_WRAPPER "OFF")
 	message(STATUS "A Python package will not be build.")
 endif()
 
@@ -102,7 +97,11 @@ if(UNIX AND NOT APPLE)
     set_target_properties(c PROPERTIES IMPORTED_LOCATION ${trekkerLib})
 
     add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-    target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
+    if(ZLIB_LIBRARIES)
+        target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
+    else()
+        target_link_libraries(${trekkerExe} c)
+    endif()
 
     INSTALL(TARGETS ${trekkerExe} DESTINATION ${CMAKE_BINARY_DIR}/install/bin)
     INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/libTrekker.a ${CMAKE_BINARY_DIR}/install/lib/libTrekker.a COPYONLY)")
