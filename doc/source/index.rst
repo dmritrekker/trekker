@@ -9,7 +9,7 @@ Trekker software has the following features:
 - **Pathway rules** that offer flexible options to reconstruct intricate connections.
 - **Time limiting** enables tracking for a given length of duration, specification of streamline count is optional.
 - **Multithreading** reconstructs streamlines using multiple cores of a CPU.
-- **Support for asymmetric FODs**, for interested researcher.
+- **Support for asymmetric FODs** provides a more flexible option for fiber tracking.
 - **Command line interface**, an essential requirement to write scripts for processing *big data* in computer grids.
 - **Python package**, wrapped using Cython from Trekker's C/C++ code which provides easy access to PTT algorithm for python lovers.
 - **.vtk** output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.

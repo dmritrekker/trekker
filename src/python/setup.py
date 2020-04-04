@@ -51,6 +51,7 @@ setup(
                 include_dirs=INC_DIRS,
                 language="c++",)
             ],
+            language_level=3,
             build_dir="build",
             compiler_directives=dict(always_allow_keywords=True),
         ),
