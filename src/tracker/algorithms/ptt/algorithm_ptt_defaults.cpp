@@ -63,7 +63,11 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	
 	// Handle derived probe parameters
     TRACKER::probeStepSize     = TRACKER::probeLength/(TRACKER::probeQuality-1);
-    TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
+    if (TRACKER::img_FOD->iseven) {
+        TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
+    } else {
+        TRACKER::probeNormalizer   = 1/float((TRACKER::probeQuality-1)*TRACKER::probeCount);
+    }
     TRACKER::angularSeparation = TWOPI/float(TRACKER::probeCount);
 
 	// Handle dataSupportExponent
