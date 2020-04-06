@@ -56,7 +56,7 @@ int FOD_Image::getSHorder() {
 
 }
 
-void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor) {
+void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor, size_t nnt) {
     
     float* FOD;
     if (FODImg->isspheresliced==false) {
@@ -67,8 +67,12 @@ void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataA
     
     for (size_t n=begin_ind; n<end_ind; n++) {
         
-        size_t   ind = FODImg->nnzVoxelInds[n];
-        size_t reInd = FODImg->nnzVoxelReInds[n];
+        size_t ind  = FODImg->nnzVoxelInds[n];
+        size_t x    = ind % FODImg->nim->nx;
+        size_t y    = (ind - x)/FODImg->nim->nx % FODImg->nim->ny;
+        size_t z    = ((ind - x)/FODImg->nim->nx-y)/FODImg->nim->ny;
+        
+        float *vals = new float[nnt];
         
         if (FODImg->isspheresliced==false) {
             for (int t=0; t<FODImg->nim->nt; t++)
@@ -83,14 +87,16 @@ void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataA
     
         if (FODImg->discretizationFlag==true) {
             for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
-                float dir[3]            = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
-                FODImg->data[reInd+t]   = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
+                float dir[3] = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
+                vals[t]      = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
             }
         } else {
             for (int t=0; t<SH::numberOfSphericalHarmonicCoefficients; t++) {
-                FODImg->data[reInd+t]   = FOD[t]/FODImg->voxelVolume;
+                vals[t]      = FOD[t]/FODImg->voxelVolume;
             }
         }
+        
+        FODImg->data->at(x).at(y).at(z) = vals;
         
     }
     
@@ -149,35 +155,37 @@ bool FOD_Image::readImage() {
         nnt = discVolSphCoords.size();
     }
     
-    data = (float*) calloc(nim->nx * nim->ny * nim->nz * nnt, sizeof(float));
+    data    = new std::vector< std::vector < std::vector<float*> > >;
     
-    if (data==NULL) {
-        std::cout << "OUT OF MEMORY" << std::endl << std::flush;
-        assert(0);
-    }
-    
-    // Mark non-zero voxels
+    // Mark non-zero voxels and allocate pointers for data
     size_t ind   = 0;
-    for (int z=0; z<(nim->nz); z++) {
+    for (int x=0; x<(nim->nx); x++) {
         for (int y=0; y<(nim->ny); y++) {
-            for (int x=0; x<(nim->nx); x++) {
+            for (int z=0; z<(nim->nz); z++) {
                 
                 ind = (x+y*sx+z*sxy);
                 
                 for (int t=0; t<(nim->nt); t++) {
                     
-                    if (accessor->get(nim->data,ind+t*sxyz)!=0) {                            
+                    if (accessor->get(nim->data,ind+t*sxyz)!=0) {
                         nnzVoxelInds.push_back(ind);
-                        nnzVoxelReInds.push_back(ind*nnt);
                         break;
                     }
                     
                 }
-                    
             }
-            
         }
     }
+    
+    zero = (float*)calloc(nnt,sizeof(float));
+    std::vector<float*> Z;
+    std::vector< std::vector<float*> > YZ;
+    
+    for (int z=0; z<(nim->nz); z++) {     Z.push_back(zero); }
+    for (int y=0; y<(nim->ny); y++) {    YZ.push_back(Z);    }
+    for (int x=0; x<(nim->nx); x++) { data->push_back(YZ);   }
+    
+    size_t nnz = nnzVoxelInds.size();
     
     // Prepare data
     if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == true) ) std::cout << "Discretizing FOD: 0%" << '\r' << std::flush;
@@ -189,27 +197,27 @@ bool FOD_Image::readImage() {
     size_t taskCount = 0;
     
     for (int i=0; i<GENERAL::numberOfThreads; i++) {
-        if (eind < nnzVoxelInds.size()) {
+        if (eind < nnz) {
             bind = eind;
             eind = bind + chunkSize;
-            if (eind>nnzVoxelInds.size()) eind=nnzVoxelInds.size();
+            if (eind>nnz) eind=nnz;
         } else {
             break;
         }
-        std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
+        std::thread task = std::thread(loadingTask, this, bind, eind, accessor, nnt);
         task.detach();
         taskCount++;
     }
     
-    while(eind < nnzVoxelInds.size()) {
+    while(eind < nnz) {
         
         GENERAL::exit_cv.wait(lk);
         
         bind = eind;
         eind = bind + chunkSize;
-        if (eind>nnzVoxelInds.size()) eind=nnzVoxelInds.size();
+        if (eind>nnz) eind=nnz;
         
-        std::thread task = std::thread(loadingTask, this, bind, eind, accessor);
+        std::thread task = std::thread(loadingTask, this, bind, eind, accessor, nnt);
         task.detach();
         GENERAL::tracker_lock.unlock();
     }
@@ -228,7 +236,6 @@ bool FOD_Image::readImage() {
     nim->nvox   = nim->nx * nim->ny * nim->nz * nim->nt;
     
     nnzVoxelInds.clear();
-    nnzVoxelReInds.clear();
     discVolSphCoords.clear();
     
     nifti_image_unload(nim);

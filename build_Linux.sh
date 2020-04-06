@@ -1,13 +1,13 @@
 #!/bin/bash
 
-cmakeExe=cmake
+cmakeExe=/home/baran/apps/cmake-3.15.0-Linux-x86_64/bin/cmake
 buildType=Release #Release or Debug
 
 c_compiler=gcc
 cxx_compiler=g++
 
 buildPythonPackage=ON #ON or OFF
-pythonExe=python3
+pythonExe=/home/baran/apps/anaconda3/envs/trekkerWrapper/bin/python
 
 
 rm -rf build/Linux

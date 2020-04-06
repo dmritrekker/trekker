@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <assert.h>
+#include "vector"
 
 #include "../config/config_general.h"
 #include "../image/voxel.h"
@@ -60,8 +61,11 @@ public:
 
 	void  		  readHeader_detail();
 
+    std::vector< std::vector < std::vector<float*> > > *data;
+    
+    std::vector<size_t> nnzVoxelInds;
+    
 	std::string   filePath;
-	float 	     *data;
 	float         voxelVolume;
 	float 	     *xyz2ijk;
 

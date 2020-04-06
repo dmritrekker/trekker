@@ -1,0 +1,22 @@
+Metadata-Version: 2.1
+Name: Trekker
+Version: 0.5
+Summary: Python package for parallel transport tractography (PTT)
+Home-page: https://dmritrekker.github.io/
+Author: Dogu Baran Aydogan
+Author-email: baran.aydogan@aalto.fi
+License: BSD 2-Clause License
+Description: Trekker
+        =======
+        
+        Python package for parallel transport tractography (PTT). PTT is capable of reconstructing geometrically smooth and topographically organized fiber bundles.
+        
+        For complete documentation with tutorials and examples, visit [https://dmritrekker.github.io/](https://dmritrekker.github.io/).
+        
+Platform: linux
+Platform: win
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

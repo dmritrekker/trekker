@@ -5,7 +5,7 @@ NiftiDataAccessor::~NiftiDataAccessor() { }
 Image::Image() {
 	filePath 		= "";
 	nim 			= NULL;
-	data 			= NULL;
+ 	data 			= NULL;
 	xyz2ijk 		= NULL;
 	voxelVolume 	= 0.0;
 
@@ -38,7 +38,30 @@ Image::Image(const Image& obj) {
 
 Image::~Image() {
     
-    if (data!=NULL)             free(data);
+    if (data!=NULL) {
+        
+        for (size_t x=0; x < data->size(); x++) {
+            for (size_t y=0; y < data->at(x).size(); y++) {
+                for (size_t z=0; z < data->at(x).at(y).size(); z++) {
+                    
+                    if (data->at(x).at(y).at(z) != zero) {
+                        
+                        delete[] data->at(x).at(y).at(z);
+                        data->at(x).at(y).at(z) = NULL;
+                        
+                    }
+                    
+                }
+                data->at(x).at(y).clear();
+            }
+            data->at(x).clear();
+        }
+        
+        data->clear();
+        data = NULL;
+        
+    }
+    
     if (nim!=NULL)              nifti_image_free(nim);
 	if (xyz2ijk!=NULL)			delete[] xyz2ijk;
 	if (voxels!=NULL)			delete[] voxels;
@@ -182,7 +205,6 @@ bool Image::indexVoxels() {
 
 	// voxels are indexed on a zero padded image in order to avoid boundary checking
 	voxels = new Voxel[zp_sxyz];
-    zero   = (float*)calloc(nim->nt,sizeof(float));
     
 	size_t index = 0;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
@@ -191,14 +213,14 @@ bool Image::indexVoxels() {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
                 
-                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y-1).at(z-1);
+                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y-1).at(z-1);
+                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y  ).at(z-1);
+                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y  ).at(z-1);
+                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y-1).at(z  );
+                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y-1).at(z  );
+                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y  ).at(z  );
+                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y  ).at(z  );
                 
 				index++;
 			}
