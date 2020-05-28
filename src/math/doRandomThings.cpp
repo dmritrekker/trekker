@@ -13,9 +13,9 @@ RandomDoer::RandomDoer() {
 #endif
 
 	gen.seed(randSeed);
-	unidis_01  				= new std::uniform_real_distribution<float>(0,std::nextafter(1, FLT_MAX));
-	unidis_m05_p05 			= new std::uniform_real_distribution<float>(-0.5,std::nextafter(0.5, FLT_MAX));
-	unidis_m1_p1 			= new std::uniform_real_distribution<float>(-1,std::nextafter(1, FLT_MAX));
+	unidis_01  				= new std::uniform_real_distribution<float>(   0, std::nextafter(1,   FLT_MAX));
+	unidis_m05_p05 			= new std::uniform_real_distribution<float>(-0.5, std::nextafter(0.5, FLT_MAX));
+	unidis_m1_p1 			= new std::uniform_real_distribution<float>(  -1, std::nextafter(1,   FLT_MAX));
 	unidis_int 				= NULL;
 
 }

@@ -24,9 +24,6 @@ public:
     
     static void  orderDirections(float* unit_dir);
     
-    std::vector<size_t>     nnzVoxelInds;
-    std::vector<size_t>     nnzVoxelReInds;
-    
     int                     discVolSphDim;
     int*                    discVolSphInds;
     std::vector<Coordinate> discVolSphCoords;

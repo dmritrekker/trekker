@@ -33,7 +33,7 @@ private:
 	std::uniform_real_distribution<float> *unidis_01;
 	std::uniform_real_distribution<float> *unidis_m05_p05;
 	std::uniform_real_distribution<float> *unidis_m1_p1;
-	std::uniform_int_distribution<int> *unidis_int;
+	std::uniform_int_distribution<int>    *unidis_int;
 
 };
 
@@ -56,9 +56,9 @@ inline int RandomDoer::uniform_int() {
 inline void RandomDoer::getAUnitRandomVector(float* out) {
 
 	do {
-		out[0] = uniform_m1_p1();
-		out[1] = uniform_m1_p1();
-		out[2] = uniform_m1_p1();
+		out[0] = (*unidis_m1_p1)(gen);
+		out[1] = (*unidis_m1_p1)(gen);
+		out[2] = (*unidis_m1_p1)(gen);
 	} while ((out[0]==0) && (out[1]==0) && (out[2]==0));
 	normalize(out);
 
@@ -67,8 +67,8 @@ inline void RandomDoer::getAUnitRandomVector(float* out) {
 inline void RandomDoer::getARandomPointWithinDisk(float* x, float *y, float r) {
 
 	do {
-		*x = uniform_m1_p1();
-		*y = uniform_m1_p1();
+		*x = (*unidis_m1_p1)(gen);
+		*y = (*unidis_m1_p1)(gen);
 	} while ((*x**x+*y**y)>1);
 	*x *= r;  
     *y *= r;
