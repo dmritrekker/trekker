@@ -26,9 +26,6 @@ public:
 	virtual void print();
 
 	PTF 			*curve;
-	void 			 calcDataSupport();
-    void 			 calcInitDataSupport();
-    float            getFODamp(float *pv, float *Tv);
 
 
 
@@ -43,18 +40,11 @@ private:
     float 		 	 initialPosteriorMax;
     
 	float 		 	 posteriorMax;
+    float 		 	 posteriorMaxScalingFactor;
     
 	size_t 		 	 current_init_postEstItCount;
 	size_t 		 	 current_prop_postEstItCount;
 
-	float 			*FOD;
-    
-    float*           p;
-    float**          F;
-    
-    float            T[3];
-    float            N1[3];
-    float            N2[3];
 
 	RandomDoer  	*doRandomThings;
 

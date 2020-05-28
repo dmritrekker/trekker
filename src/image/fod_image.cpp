@@ -354,44 +354,48 @@ int FOD_Image::vertexCoord2volInd(float* vertexCoord) {
     
     if (iseven) { 
         if (vertexCoord[2]<0) {
-            x = std::round(-vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-            y = std::round(-vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-            z = std::round(-vertexCoord[2]*discVolSphRadius);
+            x = std::nearbyint(-vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::nearbyint(-vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::nearbyint(-vertexCoord[2]*discVolSphRadius);
         } else {
-            x = std::round( vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-            y = std::round( vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-            z = std::round( vertexCoord[2]*discVolSphRadius);
+            x = std::nearbyint( vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+            y = std::nearbyint( vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+            z = std::nearbyint( vertexCoord[2]*discVolSphRadius);
         }
     } else {
-        x = std::round(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
-        y = std::round(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
-        z = std::round(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
+        x = std::nearbyint(vertexCoord[0]*discVolSphRadius) + discVolSphShift;
+        y = std::nearbyint(vertexCoord[1]*discVolSphRadius) + discVolSphShift;
+        z = std::nearbyint(vertexCoord[2]*discVolSphRadius) + discVolSphShift;
     }
-    
+
     int volInd = discVolSphInds[x+(y+z*discVolSphDim)*discVolSphDim];
     
     return volInd;
 }
 
+
+
 float FOD_Image::getFODval(float *p, float* vertexCoord) {
-    
-    int   cor_ijk[3];
-	float volFrac[8];
-    
-	if ( prepInterp(p,cor_ijk,volFrac) == false )
-		return 0;
+
+	for (int i=0; i<3; i++) {
+		ijk 	    = xyz2ijk[i][0]*p[0] + xyz2ijk[i][1]*p[1] + xyz2ijk[i][2]*p[2] + xyz2ijk[i][3] + 1; //+1 because the image is zero padded
+		cor_ijk[i] 	= int(ijk);
+        if ( (cor_ijk[i] < 0) || (cor_ijk[i] > dims[i]) ) return 0;
+        iwa[i] 		= (ijk-cor_ijk[i])*pixDims[i];
+		iwb[i] 		= pixDims[i]-iwa[i];
+	}
 
     int volInd   = vertexCoord2volInd(vertexCoord);
- 
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;    
     
-    return  volFrac[0]*vals[0][volInd] +
-			volFrac[1]*vals[1][volInd] +
-			volFrac[2]*vals[2][volInd] +
-			volFrac[3]*vals[3][volInd] +
-			volFrac[4]*vals[4][volInd] +
-			volFrac[5]*vals[5][volInd] +
-			volFrac[6]*vals[6][volInd] +
-			volFrac[7]*vals[7][volInd];
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
+    
+    return  iwb[0]*iwb[1]*iwb[2]*vals[0][volInd] +
+			iwa[0]*iwb[1]*iwb[2]*vals[1][volInd] +
+			iwb[0]*iwa[1]*iwb[2]*vals[2][volInd] +
+			iwa[0]*iwa[1]*iwb[2]*vals[3][volInd] +
+			iwb[0]*iwb[1]*iwa[2]*vals[4][volInd] +
+			iwa[0]*iwb[1]*iwa[2]*vals[5][volInd] +
+			iwb[0]*iwa[1]*iwa[2]*vals[6][volInd] +
+			iwa[0]*iwa[1]*iwa[2]*vals[7][volInd];
     
 }

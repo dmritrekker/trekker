@@ -142,7 +142,8 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
     } else {
         TRACKER::weakLinkThresh = 0;
     }
-
+    
+    
 }
 
 void TrackWith_PTT::print() {
