@@ -4,7 +4,6 @@ Tutorial 2: Trekker's pathways
 This tutorial shows how to specify pathway rules in Trekker. Before describing the rules in detail, please check the illustration below for definitions that Trekker use.
 
 .. figure:: tut2_0.svg
-	:scale: 50 %
 	:alt: Trekker's pathways
 
 	Trekker regards each streamline to be composed of two sides which are called **pathway_A** and **pathway_B**. Pathway rules can be specified for each side separately or the complete **pathway** as a whole.

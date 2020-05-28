@@ -24,9 +24,9 @@ copyright = '2020, Dogu Baran Aydogan'
 author = 'Dogu Baran Aydogan'
 
 # The short X.Y version
-version = '0.5'
+version = '0.6'
 # The full version, including alpha/beta/rc tags
-release = '0.5'
+release = '0.6'
 
 
 # -- General configuration ---------------------------------------------------
@@ -84,7 +84,7 @@ html_theme_path = ["_templates"]
 # documentation.
 #
 # html_theme_options = {"sidebarwidth": "10em"}
-html_logo = "_static/logo.svg"
+html_logo = "_static/logo.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
