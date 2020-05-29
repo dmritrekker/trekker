@@ -8,27 +8,17 @@ TrackWith_PTT::TrackWith_PTT() {
 	doRandomThings 		= NULL;
 	initial_curve		= NULL;
 	curve 				= NULL;
-	FOD 				= NULL;
-    p                   = NULL;
-    F                   = NULL;
 
 	if (TRACKER::defaultsSet == true) {
 		doRandomThings 				= new RandomDoer();
 		initial_curve				= new PTF(doRandomThings);
 		curve 						= new PTF(doRandomThings);
-		FOD 						= new float[SH::numberOfSphericalHarmonicCoefficients];
+        
 		posteriorMax 				= 0.0;
+        posteriorMaxScalingFactor   = std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
 
 		current_init_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;
-		current_prop_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->prop_postEstItCount;
-        
-        
-        p           = new float[3];
-        F           = new float*[3];
-        F[0]        = new float[3];
-        F[1]        = new float[3];
-        F[2]        = new float[3];
-
+		current_prop_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->prop_postEstItCount;   
 	}
 	
 }
@@ -38,17 +28,6 @@ TrackWith_PTT::~TrackWith_PTT() {
 	if (doRandomThings!=NULL) 	delete 	 doRandomThings;
 	if (initial_curve!=NULL) 	delete 	 initial_curve;
 	if (curve!=NULL) 			delete   curve;
-	if (FOD!=NULL) 				delete[] FOD;
-    
-    if (F!=NULL) {
-        delete[] F[0];
-        delete[] F[1];
-        delete[] F[2];
-        delete[] F;
-    }
-    
-    if (p!=NULL) 				delete[] p;
-    
 }
 
 

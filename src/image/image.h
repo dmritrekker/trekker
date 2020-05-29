@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <assert.h>
+#include "vector"
 
 #include "../config/config_general.h"
 #include "../image/voxel.h"
@@ -47,7 +48,7 @@ public:
 	void          destroyCopy();
 	unsigned char checkImageBounds(float i, float j, float k);
 	unsigned char checkWorldBounds(float x, float y, float z);
-	bool 		  prepInterp(float *p, int *cor_ijk, float *volFrac);
+	bool 		  prepInterp(float *p);
 
 	void 		  getVal(float *p, float* out);
 
@@ -60,16 +61,29 @@ public:
 
 	void  		  readHeader_detail();
 
+    std::vector< std::vector < std::vector<float*> > > *data;
+    
+    std::vector<size_t> nnzVoxelInds;
+    
 	std::string   filePath;
-	float 	     *data;
 	float         voxelVolume;
-	float 	     *xyz2ijk;
+	float**       xyz2ijk;
 
 	// The following are useful for trilinear interpolation
 	bool  		  indexVoxels();
 	size_t        sx;
 	size_t        sxy;
 	size_t        sxyz;
+    
+    float*        dims;
+    float*        pixDims;
+    
+    // Interpolation related variables
+    float         ijk;
+    int*          cor_ijk;
+    float*        volFrac;
+    float*        iwa;
+    float*        iwb;
 
 
 };

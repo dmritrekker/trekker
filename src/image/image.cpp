@@ -5,7 +5,9 @@ NiftiDataAccessor::~NiftiDataAccessor() { }
 Image::Image() {
 	filePath 		= "";
 	nim 			= NULL;
-	data 			= NULL;
+ 	data 			= NULL;
+    dims            = NULL;
+    pixDims         = NULL;
 	xyz2ijk 		= NULL;
 	voxelVolume 	= 0.0;
 
@@ -17,12 +19,20 @@ Image::Image() {
 	zp_sxy 			= 0;
 	zp_sxyz			= 0;
     zero            = NULL;
+    
+    ijk             = 0;
+    cor_ijk         = new int[3];
+    volFrac         = new float[8];
+    iwa             = new float[3];
+    iwb             = new float[3];
 }
 
 Image::Image(const Image& obj) {
 	filePath 		= obj.filePath;
 	nim 			= obj.nim;
 	data 			= obj.data;
+    dims 			= obj.dims;
+    pixDims 		= obj.pixDims;
 	xyz2ijk 		= obj.xyz2ijk;
 	voxelVolume 	= obj.voxelVolume;
 
@@ -34,15 +44,59 @@ Image::Image(const Image& obj) {
 	zp_sxy 			= obj.zp_sxy;
 	zp_sxyz 		= obj.zp_sxyz;
     zero            = obj.zero;
+    
+    ijk             = 0;
+    cor_ijk         = new int[3];
+    volFrac         = new float[8];
+    iwa             = new float[3];
+    iwb             = new float[3];
 }
 
 Image::~Image() {
     
-    if (data!=NULL)             free(data);
+    if (data!=NULL) {
+        
+        for (size_t x=0; x < data->size(); x++) {
+            for (size_t y=0; y < data->at(x).size(); y++) {
+                for (size_t z=0; z < data->at(x).at(y).size(); z++) {
+                    
+                    if (data->at(x).at(y).at(z) != zero) {
+                        
+                        delete[] data->at(x).at(y).at(z);
+                        data->at(x).at(y).at(z) = NULL;
+                        
+                    }
+                    
+                }
+                data->at(x).at(y).clear();
+            }
+            data->at(x).clear();
+        }
+        
+        data->clear();
+        data = NULL;
+        
+    }
+    
     if (nim!=NULL)              nifti_image_free(nim);
-	if (xyz2ijk!=NULL)			delete[] xyz2ijk;
+	
+    if (dims!=NULL)			    delete[] dims;
+    if (pixDims!=NULL)			delete[] pixDims;
+    
+    if (xyz2ijk!=NULL) {
+        delete[] xyz2ijk[0];
+        delete[] xyz2ijk[1];
+        delete[] xyz2ijk[2];
+        delete[] xyz2ijk;
+    }
+    
 	if (voxels!=NULL)			delete[] voxels;
     if (zero!=NULL)			    free(zero);
+    
+    if (cor_ijk!=NULL)			delete[] cor_ijk;
+    if (volFrac!=NULL)			delete[] volFrac;
+    if (iwa!=NULL)			    delete[] iwa;
+    if (iwb!=NULL)			    delete[] iwb;
     
 }
 
@@ -50,9 +104,15 @@ void Image::destroyCopy(){
 	filePath.erase();
 	data 			= NULL;
 	nim 			= NULL;
+    dims            = NULL;
+    pixDims         = NULL;
 	xyz2ijk 		= NULL;
 	voxels 			= NULL;
     zero            = NULL;
+    cor_ijk         = NULL;
+    volFrac         = NULL;
+    iwa             = NULL;
+    iwb             = NULL;
 }
 
 bool Image::readHeader(char* _filePath) {
@@ -87,8 +147,29 @@ bool Image::readHeader(char* _filePath) {
 
 	voxelVolume = nim->pixdim[1]*nim->pixdim[2]*nim->pixdim[3];
 
+    // Get dims and pixDims
+    dims    = new float[3];
+    dims[0] = nim->dim[1]; // nx
+    dims[1] = nim->dim[2]; // ny
+    dims[2] = nim->dim[3]; // nz
+    
+    pixDims    = new float[3];
+    pixDims[0] = nim->pixdim[1]; // dx
+    pixDims[1] = nim->pixdim[2]; // dy
+    pixDims[2] = nim->pixdim[3]; // dz
+    
 	// TODO: Enable option to choose between sform or qform
-	if (nim->sform_code>0) {
+    xyz2ijk     = new float*[3];
+    xyz2ijk[0]  = new float[4];
+    xyz2ijk[1]  = new float[4];
+    xyz2ijk[2]  = new float[4];
+	
+    // Use only sform for now
+    for (int i=0; i<3; i++)
+        for (int j=0; j<4; j++)
+            xyz2ijk[i][j] = nim->sto_ijk.m[i][j];
+    
+    if (nim->sform_code>0) {        
 		// Then xyz2ijk=sform
 	}
 	else {
@@ -182,7 +263,6 @@ bool Image::indexVoxels() {
 
 	// voxels are indexed on a zero padded image in order to avoid boundary checking
 	voxels = new Voxel[zp_sxyz];
-    zero   = (float*)calloc(nim->nt,sizeof(float));
     
 	size_t index = 0;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
@@ -191,14 +271,14 @@ bool Image::indexVoxels() {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
                 
-                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z-1)*sxy )*size_t(nim->nt);
-                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y-1)*sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x-1) + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
-                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data + ( size_t(x)   + size_t(y)  *sx + size_t(z)  *sxy )*size_t(nim->nt);
+                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y-1).at(z-1);
+                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y-1).at(z-1);
+                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y  ).at(z-1);
+                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y  ).at(z-1);
+                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y-1).at(z  );
+                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y-1).at(z  );
+                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y  ).at(z  );
+                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y  ).at(z  );
                 
 				index++;
 			}
@@ -210,32 +290,6 @@ bool Image::indexVoxels() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
 
 	return true;
-}
-
-
-void Image::getVal(float *p, float* out) {
-
-	int   cor_ijk[3];
-	float volFrac[8];
-
-	if ( prepInterp(p,cor_ijk,volFrac) == false ) {
-		memset(out,0,nim->nt*sizeof(float));
-		return;
-	}
-	
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
-    
-	for (int c=0; c<nim->nt; c++) {
-		out[c] =volFrac[0]*vals[0][c] +
-				volFrac[1]*vals[1][c] +
-				volFrac[2]*vals[2][c] +
-				volFrac[3]*vals[3][c] +
-				volFrac[4]*vals[4][c] +
-				volFrac[5]*vals[5][c] +
-				volFrac[6]*vals[6][c] +
-				volFrac[7]*vals[7][c];
-	}
-    
 }
 
 // Checked on the non-zero padded image
@@ -277,34 +331,53 @@ unsigned char Image::checkWorldBounds(float x, float y, float z) {
 	return 1;
 }
 
+void Image::getVal(float *p, float* out) {
 
+	if ( prepInterp(p) == false ) {
+		memset(out,0,nim->nt*sizeof(float));
+		return;
+	}
+	
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
+    
+	for (int c=0; c<nim->nt; c++) {
+		out[c] =volFrac[0]*vals[0][c] +
+				volFrac[1]*vals[1][c] +
+				volFrac[2]*vals[2][c] +
+				volFrac[3]*vals[3][c] +
+				volFrac[4]*vals[4][c] +
+				volFrac[5]*vals[5][c] +
+				volFrac[6]*vals[6][c] +
+				volFrac[7]*vals[7][c];
+	}
+    
+}
 
 // Converts physical coordinates to index on the zero-padded image that is voxel indexed for interpolation
-bool Image::prepInterp(float *p, int *cor_ijk, float *volFrac) {
-
-	float ijk[3];
-	float   a[3];
-	float   b[3];
-
-	for (int i=0; i<3; i++) {
-		ijk[i] 		= nim->sto_ijk.m[i][0]*p[0] + nim->sto_ijk.m[i][1]*p[1] + nim->sto_ijk.m[i][2]*p[2] + nim->sto_ijk.m[i][3]+1; //+1 because the image is zero padded
-		cor_ijk[i] 	= std::floor(ijk[i]);
-		a[i] 		= (ijk[i]-cor_ijk[i])*nim->pixdim[i+1];
-		b[i] 		= nim->pixdim[i+1]-a[i];
+bool Image::prepInterp(float *p) {    
+    
+    for (int i=0; i<3; i++) {
+        
+		ijk 	    = xyz2ijk[i][0]*p[0] + xyz2ijk[i][1]*p[1] + xyz2ijk[i][2]*p[2] + xyz2ijk[i][3] + 1; //+1 because the image is zero padded
+		cor_ijk[i] 	= int(ijk);
+        
+        if ( (cor_ijk[i] < 0) || (cor_ijk[i] > dims[i]) ) return false;
+		
+        iwa[i] 		= (ijk-cor_ijk[i])*pixDims[i];
+		iwb[i] 		= pixDims[i]-iwa[i];
+        
 	}
-
-	if ( (cor_ijk[0] < 0) || (cor_ijk[1] < 0) || (cor_ijk[2] < 0) || (cor_ijk[0] > nim->nx) || (cor_ijk[1] > nim->ny) || (cor_ijk[2] > nim->nz) )
-		return false;
+    
 
 	// Volume fractions
-	volFrac[7]  = a[0]*a[1]*a[2]; // front low left
-	volFrac[6]  = b[0]*a[1]*a[2]; // front low right
-	volFrac[5]  = a[0]*b[1]*a[2]; // front up  left
-	volFrac[4]  = b[0]*b[1]*a[2]; // front up  right
-	volFrac[3]  = a[0]*a[1]*b[2]; // back  low left
-	volFrac[2]  = b[0]*a[1]*b[2]; // back  low right
-	volFrac[1]  = a[0]*b[1]*b[2]; // back  up  left
-	volFrac[0]  = b[0]*b[1]*b[2]; // back  up  right
+	volFrac[7]  = iwa[0]*iwa[1]*iwa[2]; // front low left
+	volFrac[6]  = iwb[0]*iwa[1]*iwa[2]; // front low right
+	volFrac[5]  = iwa[0]*iwb[1]*iwa[2]; // front up  left
+	volFrac[4]  = iwb[0]*iwb[1]*iwa[2]; // front up  right
+	volFrac[3]  = iwa[0]*iwa[1]*iwb[2]; // back  low left
+	volFrac[2]  = iwb[0]*iwa[1]*iwb[2]; // back  low right
+	volFrac[1]  = iwa[0]*iwb[1]*iwb[2]; // back  up  left
+	volFrac[0]  = iwb[0]*iwb[1]*iwb[2]; // back  up  right
 
 	return true;
 

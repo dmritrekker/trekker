@@ -1,11 +1,5 @@
 #include "algorithm_ptt.h"
 
-void TrackWith_PTT::get_a_candidate_curve() {
-    
-    curve->getACandidatek1k2();
-	calcDataSupport();
-}
-
 void TrackWith_PTT::rejectionSample() {
 
 	int tries;
@@ -13,7 +7,7 @@ void TrackWith_PTT::rejectionSample() {
 
 	for (tries=0; tries<TRACKER::triesPerRejectionSampling; tries++) {
 
-		get_a_candidate_curve();
+		curve->getCandidate();
 
 		if (curve->likelihood < modMinFodAmp ) {
 			reject++;

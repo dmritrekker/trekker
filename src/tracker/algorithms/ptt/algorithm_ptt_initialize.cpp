@@ -8,8 +8,7 @@ void TrackWith_PTT::get_initial_curve() {
 	else
 		curve->getARandomFrame();
     
-    curve->getInitCandidatek1k2();
-	calcInitDataSupport();
+	curve->getInitCandidate();
     
 }
 

@@ -68,9 +68,11 @@ void readSeedImage() {
 	if (!img_SEED->readImage())
 		exit(EXIT_FAILURE);
     
-	for(size_t i=0; i<img_SEED->getNim()->nvox; i++)
-		if (img_SEED->data[i])
-			seed_indices.push_back(i);
+// 	for(size_t i=0; i<img_SEED->getNim()->nvox; i++)
+// 		if (img_SEED->data[i])
+// 			seed_indices.push_back(i);
+        
+    seed_indices = img_SEED->nnzVoxelInds;
         
 	if (seed_indices.empty()) {
 		std::cout << "Seed image ";
@@ -117,7 +119,9 @@ void readSeedImage() {
 
 							size_t index = img_SEED->sub2ind(i+x,j+y,k+z);
 
-							if ((img_SEED->data[index]==0) && (dilated_img_SEED[index]==false)) {
+							// if ((img_SEED->data[index]==0) && (dilated_img_SEED[index]==false)) {
+                                
+                            if ((*(img_SEED->data->at(i+x).at(j+y).at(k+z))==0) && (dilated_img_SEED[index]==false)) {
 								dilated_img_SEED[index] = true;
 								dilated_seed_indices.push_back(index);
 							}

@@ -36,9 +36,7 @@ Installation
 
 **Stand-alone executables:**
 
-For Linux: https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5
-
-For Windows: https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe
+Latest binaries are under: https://github.com/baranaydogan/trekker/tree/master/binaries
 
 
 **Building from source:**

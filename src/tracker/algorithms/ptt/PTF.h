@@ -4,6 +4,7 @@
 #include "../../../config/config_tracker.h"
 #include "../../../math/math_aux.h"
 #include "../../../math/doRandomThings.h"
+#include "../../../math/sphericalHarmonics.h"
 
 #define SMALL 0.0001
 #define BIG   10000
@@ -18,8 +19,6 @@ public:
 	void  swap(PTF *ptf);
 
 	void  setPosition(Coordinate _p) {p[0] = _p.x;p[1] = _p.y;p[2] = _p.z;};
-    void  getACandidatek1k2();
-    void  getInitCandidatek1k2();
     void  initkT(PTF *ptf);    
     
     void  prepInitProbePropagator();
@@ -60,6 +59,11 @@ public:
 	bool    initialized;
     
     int     probeStepCount;
+    
+    void    getInitCandidate();
+    void    getCandidate();
+    void    calcDataSupport();
+    
 
 private:
 	
@@ -94,19 +98,30 @@ private:
     
     
 	RandomDoer *rndmr;
+    
+    
+    FOD_Image  *ptf_FOD;
+    float  getFODamp(float *pv, float *Tv);
+    float  *FOD;
+    
+    
+    float _p[3];
+    float _F[3][3];
+    float _T[3];
+    float _N1[3];
+    float _N2[3];
 
 };
 
 
-
-inline void PTF::getACandidatek1k2() {
-    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
-}
-
-inline void PTF::getInitCandidatek1k2() {
-    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
-    k1 = k1_cand;
-    k2 = k2_cand;
+inline float PTF::getFODamp(float *pv, float *Tv) {
+    
+    if (TRACKER::fodDiscretization==FODDISC_OFF) {
+        ptf_FOD->getVal(pv,FOD);
+        return SH::SH_amplitude(FOD,Tv);
+    } else
+        return ptf_FOD->getFODval(pv,Tv);
+    
 }
 
 

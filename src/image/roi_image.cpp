@@ -56,31 +56,50 @@ bool ROI_Image::readImage() {
 	case 1536: accessor = new NiftiDataAccessor_ForType<long double>; break;
 	}
 
-
-    data = (float*) malloc(sizeof(float)*nim->nvox);
-    if (data==NULL) {
-        std::cout << "OUT OF MEMORY" << std::endl << std::flush;
-        assert(0);
-    }
+    data    = new std::vector< std::vector < std::vector<float*> > >;
+    zero    = (float*)calloc(1,sizeof(float));
     
-    float binVal   = 1.0/voxelVolume;
+    float binVal = 1.0/voxelVolume;
+    
+    size_t ind   = 0;
+    for (int x=0; x<(nim->nx); x++) {
+        
+        std::vector< std::vector<float*> > YZ;
+        
+        for (int y=0; y<(nim->ny); y++) {
+            
+            std::vector<float*> Z;
+            
+            for (int z=0; z<(nim->nz); z++) {
+                
+                ind = (x+y*sx+z*sxy);
+                
+                float *T = zero;
+                
+                if (labelFlag) {
+                    if (accessor->get(nim->data,ind)==label) {
+                        nnzVoxelInds.push_back(ind);
+                        T    = new float[1];
+                        T[0] = binVal;
+                    }
+                } else {
+                    if (accessor->get(nim->data,ind)>0) {
+                        nnzVoxelInds.push_back(ind);
+                        T    = new float[1];
+                        T[0] = binVal;
+                    }
+                }
+                
+                Z.push_back(T);
+            }
+            
+            YZ.push_back(Z);
+        }
 
-	if (labelFlag) {
-		for(size_t i=0; i<nim->nvox; i++) {
-			if (accessor->get(nim->data,i)==label)
-				data[i] = binVal;
-			else
-				data[i] = 0;
-		}
-	} else {
-		for(size_t i=0; i<nim->nvox; i++) {
-			if (accessor->get(nim->data,i)>0)
-				data[i] = binVal;
-			else
-				data[i] = 0;
-		}
-	}
+        data->push_back(YZ);
+    }
 
+    
 	nifti_image_unload(nim);
 	delete accessor;
 
