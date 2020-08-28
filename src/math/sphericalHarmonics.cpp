@@ -170,7 +170,7 @@ void precomputeExpansionCoefficients() {
         Ylm[i] = new float[numberOfSphericalHarmonicCoefficients];
     }
     
-    double saop = (4*PI)/TRACKER::img_FOD->inpSphCoords.size(); // surface area of a point
+    double saop = (4.0*PI)/TRACKER::img_FOD->inpSphCoords.size(); // surface area of a point
     double *plm = new double[numberOfSphericalHarmonicCoefficients];
        
     for (size_t i=0; i<TRACKER::img_FOD->inpSphCoords.size(); i++) {

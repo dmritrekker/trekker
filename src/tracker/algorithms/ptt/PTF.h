@@ -18,7 +18,7 @@ public:
 	void  init_Frame();
 	void  swap(PTF *ptf);
 
-	void  setPosition(Coordinate _p) {p[0] = _p.x;p[1] = _p.y;p[2] = _p.z;};
+	void  setPosition(Coordinate in) {p[0] = in.x;p[1] = in.y;p[2] = in.z;};
     void  initkT(PTF *ptf);    
     
     void  prepInitProbePropagator();
@@ -34,7 +34,7 @@ public:
     
     void  walk();
 
-    void  getCurrentCurve(float* p, float **F);
+    void  getCurrentCurve(float* inp, float **inF);
 	void  getARandomFrame();
 	void  getARandomFrame(Coordinate _seed_init_direction);
 	void  flip();
@@ -125,12 +125,12 @@ inline float PTF::getFODamp(float *pv, float *Tv) {
 }
 
 
-inline void PTF::getCurrentCurve(float* _p, float **_F) {
+inline void PTF::getCurrentCurve(float* inp, float **inF) {
     
     for (int i=0; i<3; i++) {
-        _p[i] 	= p[i];
+        inp[i] 	= p[i];
         for (int j=0; j<3; j++) {
-            _F[i][j] = F[i][j];
+            inF[i][j] = F[i][j];
         }
         
 	}
@@ -170,7 +170,23 @@ inline void PTF::prepProbePropagator_C1() {
         PP[6] = -k2_cand*t;
         PP[7] = -k1_cand*k2_cand*tto2;
         PP[8] = 1-k2_cand*k2_cand*tto2;
-    
+        
+        /*
+        float k     = std::sqrt(k1_cand*k1_cand+k2_cand*k2_cand);
+        float kk    = k*k;
+        float sinkt = std::sin(k*t);
+        float coskt = std::cos(k*t);
+        
+        PP[0] = sinkt/k;
+        PP[1] = k1_cand*(1-coskt)/kk;
+        PP[2] = k2_cand*(1-coskt)/kk;
+        PP[3] = coskt;
+        PP[4] = k1_cand*sinkt/k;
+        PP[5] = k2_cand*sinkt/k;
+        PP[6] = -PP[5];
+        PP[7] = k1_cand*k2_cand*(coskt-1)/kk;
+        PP[8] = k1_cand*k1_cand+k2_cand*k2_cand*coskt/kk;
+        */
     }
     
 }
@@ -253,6 +269,7 @@ inline void PTF::prepCandStepPropagator_C1() {
         if (std::fabs(k1_cand)<SMALL) k1_cand = SMALL;
         if (std::fabs(k2_cand)<SMALL) k2_cand = SMALL;
         
+        
         float tto2  = t*t/float(2);
         
         sPP[0] = t;
@@ -264,6 +281,24 @@ inline void PTF::prepCandStepPropagator_C1() {
         sPP[6] = -k2_cand*t;
         sPP[7] = -k1_cand*k2_cand*tto2;
         sPP[8] = 1-k2_cand*k2_cand*tto2;
+        
+        /*
+        float k     = std::sqrt(k1_cand*k1_cand+k2_cand*k2_cand);
+        float kk    = k*k;
+        float sinkt = std::sin(k*t);
+        float coskt = std::cos(k*t);
+        
+        sPP[0] = sinkt/k;
+        sPP[1] = k1_cand*(1-coskt)/kk;
+        sPP[2] = k2_cand*(1-coskt)/kk;
+        sPP[3] = coskt;
+        sPP[4] = k1_cand*sinkt/k;
+        sPP[5] = k2_cand*sinkt/k;
+        sPP[6] = -sPP[5];
+        sPP[7] = k1_cand*k2_cand*(coskt-1)/kk;
+        sPP[8] = k1_cand*k1_cand+k2_cand*k2_cand*coskt/kk;
+        */
+        
     
     }
     

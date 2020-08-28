@@ -46,8 +46,12 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
-		if (curve->likelihood < modMinFodAmp )
+		if (curve->likelihood < modMinFodAmp ) {
 			curve->likelihood = -2;
+            reject++;
+        } else {
+            curve->swap(initial_curve);
+        }
 
 	} else {
 
@@ -72,26 +76,24 @@ Initialization_Decision TrackWith_PTT::initialize() {
 			}
 
 		}
+		
+        if (tries==TRACKER::triesPerRejectionSampling)
+            return INIT_STOP;
 
 	}
-
-
-	if (tries==TRACKER::triesPerRejectionSampling) {
-		return INIT_STOP;
-	} else {
-		// Update information for streamline ONLY when it is a valid initialization
-		// This just makes sure that the displayed report is not dominated by tons of
-		// trials made when streamlines does not initialize properly due to low data support
-		// Otherwise, it does not change the tracking algorithm
-		streamline->sampling_init_generated  		+= 1;
-		streamline->sampling_init_tries  			+= tries;
-		streamline->sampling_init_reject 			+= reject;
-		if (curve->likelihood==-2) {
-			streamline->sampling_init_fail 			 = 1;
-			return INIT_FAIL;
-		}
-		return INIT_CONTINUE;
-	}
+	
+	// Update information for streamline ONLY when it is a valid initialization
+    // This just makes sure that the displayed report is not dominated by tons of
+    // trials made when streamlines does not initialize properly due to low data support
+    // Otherwise, it does not change the tracking algorithm
+    streamline->sampling_init_generated  		+= 1;
+    streamline->sampling_init_tries  			+= tries;
+    streamline->sampling_init_reject 			+= reject;
+    if (curve->likelihood==-2) {
+        streamline->sampling_init_fail 			 = 1;
+        return INIT_FAIL;
+    }
+    return INIT_CONTINUE;
 
 
 }
