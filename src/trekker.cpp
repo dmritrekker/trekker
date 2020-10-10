@@ -407,6 +407,8 @@ std::vector< std::vector< std::vector<double> > > Trekker::get_tractogram_coordi
 	std::vector<Streamline*> streamlines = TRACKER::tractogram->streamlines;
 
 	std::vector< std::vector< std::vector<double> > > coordinates;
+    
+    // TRACKER::tractogram->printSummary();
 
 	for (size_t i=0; i<TRACKER::tractogram->streamlineCount; i++)
 		if (streamlines[i]->status == STREAMLINE_GOOD) {

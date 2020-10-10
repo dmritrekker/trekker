@@ -17,13 +17,14 @@ Where to get trekker?
 Stand-alone executables
 -----------------------
 
-You can download precompiled stand-alone executables for:
+You can download precompiled stand-alone executables from `here <https://github.com/dmritrekker/trekker/tree/master/binaries>`__ for:
 
-- *Linux*: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_linux_x64_v0.5>`__ to download.
+- *Linux*: Tested on Debian (versions 9 and 10) and Red Hat Enterprise Linux 6.
 
-- *Windows*: Tested on Windows 10. Click `here <https://github.com/dmritrekker/trekker/tree/v0.5/binaries/trekker_win_x64_v0.5.exe>`__ to download.
+- *Windows*: Tested on Windows 10.
 
 - *Mac OS*: A stand-alone executable does not exist.
+
 
 
 Source code
@@ -42,7 +43,7 @@ Source code
   - For Linux -> <TrekkerFolder>/build/Linux/install
   - For Windows -> <TrekkerFolder>/build/Windows/install
 
-Under the install folder, the following will be generated:
+Under the <TrekkerFolder>/install folder, the following will be generated:
   1. :code:`trekker` executable under :code:`/bin`
   2. Static and shared libraries under :code:`/lib` with library header under :code:`/include`
   3. If specified, a python built distribution (.whl) under :code:`/python/dist`
@@ -51,7 +52,7 @@ Under the install folder, the following will be generated:
 Python package
 --------------
 
-A python package can be built from source. You can also download a built distributions (.whl) from the `/binaries <https://github.com/dmritrekker/trekker/tree/v0.5/binaries>`__ folder.
+A python package can be built from source. You can also download a built distributions (.whl) from `here <https://github.com/dmritrekker/trekker/tree/master/binaries>`__.
 
 To install the python package use:
 
@@ -62,7 +63,7 @@ To install the python package use:
 Test your installation
 ======================
 
-You can use the demo scripts in `here <https://github.com/dmritrekker/trekker/tree/v0.5/demo>`__ for testing your installation.
+You can use the demo scripts in `here <https://github.com/dmritrekker/trekker/tree/master/demo>`__ for testing your installation.
 
 
 

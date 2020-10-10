@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial 1: The short trek &mdash; trekker 0.5 documentation</title>
+  <title>Tutorial 1: The short trek &mdash; trekker 0.7 documentation</title>
   
 
   
@@ -54,7 +54,7 @@
 
           
             
-            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.5
+                0.7
               </div>
             
           
@@ -128,6 +128,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#other-options">Other options</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tips</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tips/tip1.html">How to set parameters?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#basic-parameter-setting-tips">Basic parameter setting tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#advanced-parameter-setting-tips">Advanced parameter setting tips</a></li>
 </ul>
 </li>
 </ul>
@@ -219,42 +227,42 @@
 </div>
 <p>Trekker options start with a “-” sign. All parameters and constraints are set using the corresponding option defined in the <a class="reference external" href="../manual/trekker.html">manual</a>. The order of the options does not matter.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Trekker does not require input nifti files to be in the same image space, i.e., spatial dimensions of the FOD image can be 100x100x100 and the seed image can be 128x128x60. As long as images are in the same physical space (based on nifti sform), trekker will handle nifti files with different headers. This is valid also for images used to specify pathway rules.</p>
+<p class="admonition-title">Note</p>
+<p>Trekker does not require input nifti files to be in the same image space, i.e., spatial dimensions of the FOD image can be 100x100x100 and the seed image can be 128x128x60. As long as images are in the same physical space (based on nifti sform), trekker will handle nifti files with different headers. This is valid also for images used to specify pathway rules.</p>
 </div>
 <p>Trekker sets all unspecified parameters to default values which are indicated in the <a class="reference external" href="../manual/trekker.html">manual</a>; however the user must provide the following:</p>
 <ul class="simple">
-<li><strong>an FOD image</strong>: specified with option <strong>-fod</strong>,</li>
-<li><strong>a seed image</strong> or <strong>a list of coordinates</strong>: specified with either <strong>-seed_image</strong> or <strong>-seed_coordinates</strong>,</li>
-<li><strong>a seed count</strong>, <strong>seed count per voxel</strong> or <strong>-timeLimit</strong>: if a seed image is specified, <strong>-seed_count</strong> or <strong>-seed_countPerVoxel</strong> options specify the number of streamlines to compute. Trekker generates 1 streamline per seed. If none of the two parameters were specified then <strong>-timeLimit</strong> option must be used to limit the duration of tracking. Tracking stops either when the required number of streamlines are reconstructed or the time limit is reached, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.</li>
+<li><p><strong>an FOD image</strong>: specified with option <strong>-fod</strong>,</p></li>
+<li><p><strong>a seed image</strong> or <strong>a list of coordinates</strong>: specified with either <strong>-seed_image</strong> or <strong>-seed_coordinates</strong>,</p></li>
+<li><p><strong>a seed count</strong>, <strong>seed count per voxel</strong> or <strong>-timeLimit</strong>: if a seed image is specified, <strong>-seed_count</strong> or <strong>-seed_countPerVoxel</strong> options specify the number of streamlines to compute. Trekker generates 1 streamline per seed. If none of the two parameters were specified then <strong>-timeLimit</strong> option must be used to limit the duration of tracking. Tracking stops either when the required number of streamlines are reconstructed or the time limit is reached, whichever comes first. When tracking stops due to time limit, all the streamlines that are computed so far are written to the disk.</p></li>
 </ul>
 <p>During tracking, trekker displays information on the terminal screen showing the parameters as well as the progress. At the end, an additional output with the same file name as output but with .json ending is saved. This file contains meta-information about the parameters and also the outcome of tracking process. The .json file can be opened using a web browser.</p>
 </div>
 <div class="section" id="visualizing-results">
 <h2>Visualizing results<a class="headerlink" href="#visualizing-results" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Trekker saves tractograms in binary formatted <strong>.vtk</strong> files.</li>
-<li>All streamlines are saved in the physical coordinate space (based on sform fetched from the header of input FOD nifti).</li>
-<li>Trekker <strong>.vtk</strong> output can be read using Matlab with the function provided under <code class="code docutils literal notranslate"><span class="pre">extensions/matlab</span></code>.</li>
-<li><strong>.vtk</strong> files can be visualized using several third party software including <a class="reference external" href="https://www.paraview.org/">Paraview</a>, <a class="reference external" href="https://www.slicer.org/">3DSlicer</a> and <a class="reference external" href="http://cabeen.io/qitwiki">Qit</a>.</li>
+<li><p>Trekker saves tractograms in binary formatted <strong>.vtk</strong> files.</p></li>
+<li><p>All streamlines are saved in the physical coordinate space (based on sform fetched from the header of input FOD nifti).</p></li>
+<li><p>Trekker <strong>.vtk</strong> output can be read using Matlab with the function provided under <code class="code docutils literal notranslate"><span class="pre">extensions/matlab</span></code>.</p></li>
+<li><p><strong>.vtk</strong> files can be visualized using several third party software including <a class="reference external" href="https://www.paraview.org/">Paraview</a>, <a class="reference external" href="https://www.slicer.org/">3DSlicer</a> and <a class="reference external" href="http://cabeen.io/qitwiki">Qit</a>.</p></li>
 </ul>
 <p>Paraview interface is very simple to use and it provides professional 3D rendering capability. Trekker output can be visualized simply by dragging and dropping the <strong>.vtk</strong> file into Paraview window.</p>
 <p>Below are examples drawn by Paraview using the trekker command shown in this tutorial applied on the Human Connectome Project subject 100307.</p>
-<div class="figure" id="id1">
+<div class="figure align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/tut1_0.jpg"><img alt="Paraview rendering 1" src="../_images/tut1_0.jpg" style="width: 555.0px; height: 411.5px;" /></a>
-<p class="caption"><span class="caption-text">Paraview by default renders streamlines using a solid (single) color.</span></p>
+<p class="caption"><span class="caption-text">Paraview by default renders streamlines using a solid (single) color.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
-<div class="figure" id="id2">
+<div class="figure align-default" id="id2">
 <a class="reference internal image-reference" href="../_images/tut1_1.jpg"><img alt="Paraview rendering 2" src="../_images/tut1_1.jpg" style="width: 555.0px; height: 411.5px;" /></a>
-<p class="caption"><span class="caption-text">It is possible to display tractograms in the familiar direction coded RGB scheme as shown here. With trekker you write the segment colors using the <strong>-writeColors</strong> option. Notice that by default colors are not written in order to save hard drive space. To show the segment colors, please select <em>colors</em> as the coloring option in Paraview and make sure that <strong>Map Scalars</strong> option is <strong>NOT</strong> selected.</span></p>
+<p class="caption"><span class="caption-text">It is possible to display tractograms in the familiar direction coded RGB scheme as shown here. With trekker you write the segment colors using the <strong>-writeColors</strong> option. Notice that by default colors are not written in order to save hard drive space. To show the segment colors, please select <em>colors</em> as the coloring option in Paraview and make sure that <strong>Map Scalars</strong> option is <strong>NOT</strong> selected.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last">Trekker can save many other information in the output that can be visualized in Paraview, such as the FOD amplitude along the direction of the segment with <strong>-writeFODamp</strong> option. You can view the other output options by clicking <a class="reference external" href="../manual/trekker.html#output-options">here</a>.</p>
+<p class="admonition-title">See also</p>
+<p>Trekker can save many other information in the output that can be visualized in Paraview, such as the FOD amplitude along the direction of the segment with <strong>-writeFODamp</strong> option. You can view the other output options by clicking <a class="reference external" href="../manual/trekker.html#output-options">here</a>.</p>
 </div>
-<div class="figure" id="id3">
+<div class="figure align-default" id="id3">
 <a class="reference internal image-reference" href="../_images/tut1_2.jpg"><img alt="Paraview rendering 2" src="../_images/tut1_2.jpg" style="width: 555.0px; height: 411.5px;" /></a>
-<p class="caption"><span class="caption-text">Streamlines can also be rendered as tubes with Paraview. For this option go to Filters-&gt;Search-&gt; Write “tube” in the search box and click enter.</span></p>
+<p class="caption"><span class="caption-text">Streamlines can also be rendered as tubes with Paraview. For this option go to Filters-&gt;Search-&gt; Write “tube” in the search box and click enter.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
@@ -301,7 +309,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.5',
+            VERSION:'0.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -312,7 +320,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
   
 

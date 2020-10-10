@@ -70,6 +70,10 @@ void PTF::swap(PTF *ptf) {
     k2_cand  =  ptf->k2_cand;
     kT1      =  ptf->kT1;
     kT2      =  ptf->kT2;
+    kT1_cand =  ptf->kT1_cand;
+    kT2_cand =  ptf->kT2_cand;
+    probe_k1 =  ptf->probe_k1;
+    probe_k2 =  ptf->probe_k2;
     
 	for (int i=0; i<3; i++) {
         p[i] 	= ptf->p[i];
@@ -80,12 +84,15 @@ void PTF::swap(PTF *ptf) {
 	}
 	
 	for (int i=0; i<8; i++) {
+        PP[i]  = ptf->PP[i];
         sPP[i] = ptf->sPP[i];
     }
 	
-	likelihood 	 = ptf->likelihood;
-    initFirstVal = ptf->initFirstVal;
-    lastVal      = ptf->lastVal;
+	likelihood 	      = ptf->likelihood;
+    initFirstVal      = ptf->initFirstVal;
+    lastVal           = ptf->lastVal;
+    initFirstVal_cand = ptf->initFirstVal_cand;
+    lastVal_cand      = ptf->lastVal_cand;
 }
 
 void PTF::getARandomFrame() {

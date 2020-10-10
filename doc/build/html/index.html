@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Trekker &mdash; trekker 0.5 documentation</title>
+  <title>Trekker &mdash; trekker 0.7 documentation</title>
   
 
   
@@ -53,7 +53,7 @@
 
           
             
-            <img src="_static/logo.svg" class="logo" alt="Logo"/>
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.5
+                0.7
               </div>
             
           
@@ -127,6 +127,14 @@
 <li class="toctree-l3"><a class="reference internal" href="manual/trekker.html#other-options">Other options</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tips</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tips/tip1.html">How to set parameters?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tips/tip1.html#basic-parameter-setting-tips">Basic parameter setting tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips/tip1.html#advanced-parameter-setting-tips">Advanced parameter setting tips</a></li>
 </ul>
 </li>
 </ul>
@@ -208,15 +216,22 @@
 <p>Trekker implements a state-of-the-art tractography algorithm, parallel transport tractography (PTT). PTT is capable of reconstructing geometrically smooth and topographically organized fiber bundles. Click <a class="reference external" href="./publications/publications.html">here</a> to learn how cite PTT in your publications.</p>
 <p>Trekker software has the following features:</p>
 <ul class="simple">
-<li><strong>Clean probabilistic tractography</strong> with PTT.</li>
-<li><strong>Pathway rules</strong> that offer flexible options to reconstruct intricate connections.</li>
-<li><strong>Time limiting</strong> enables tracking for a given length of duration, specification of streamline count is optional.</li>
-<li><strong>Multithreading</strong> reconstructs streamlines using multiple cores of a CPU.</li>
-<li><strong>Support for asymmetric FODs</strong> provides a more flexible option for fiber tracking.</li>
-<li><strong>Command line interface</strong>, an essential requirement to write scripts for processing <em>big data</em> in computer grids.</li>
-<li><strong>Python package</strong>, wrapped using Cython from Trekker’s C/C++ code which provides easy access to PTT algorithm for python lovers.</li>
-<li><strong>.vtk</strong> output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.</li>
+<li><p><strong>Clean probabilistic tractography</strong> with PTT.</p></li>
+<li><p><strong>Pathway rules</strong> that offer flexible options to reconstruct intricate connections.</p></li>
+<li><p><strong>Time limiting</strong> enables tracking for a given length of duration, specification of streamline count is optional.</p></li>
+<li><p><strong>Multithreading</strong> reconstructs streamlines using multiple cores of a CPU.</p></li>
+<li><p><strong>Support for asymmetric FODs</strong> provides a more flexible option for fiber tracking.</p></li>
+<li><p><strong>Command line interface</strong>, an essential requirement to write scripts for processing <em>big data</em> in computer grids.</p></li>
+<li><p><strong>Python package</strong>, wrapped using Cython from Trekker’s C/C++ code which provides easy access to PTT algorithm for python lovers.</p></li>
+<li><p><strong>.vtk</strong> output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.</p></li>
 </ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul class="simple">
+<li><p>For latest stand-alone executables, click <a class="reference external" href="https://github.com/dmritrekker/trekker/tree/master/binaries">here</a>.</p></li>
+<li><p><a class="reference internal" href="_images/GitHub-Mark-32px.png"><img alt="githublogo" src="_images/GitHub-Mark-32px.png" style="width: 24.0px; height: 24.0px;" /></a> Go to Trekker’s source code by clicking <a class="reference external" href="https://github.com/dmritrekker/trekker">here</a>.</p></li>
+</ul>
+</div>
 <p><strong>A quick example</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clean whole brain tractography with intuitive options</span>
 <span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
@@ -230,6 +245,8 @@
 </pre></div>
 </div>
 <hr class="docutils" />
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -282,7 +299,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5',
+            VERSION:'0.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -293,7 +310,7 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="_static/language_data.js"></script>
 
   
 

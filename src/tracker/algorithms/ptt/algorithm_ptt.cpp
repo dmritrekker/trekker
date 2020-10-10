@@ -59,7 +59,82 @@ void TrackWith_PTT::flip() {
 
 
 void TrackWith_PTT::append() {
-	this->streamline->push((void*)curve);
+	
+    this->streamline->push((void*)curve);
+    
+    
+    /*
+    if (this->streamline->coordinates.size()==1) {
+        
+    curve->prepInitProbePropagator();
+    
+    for (int i=0; i<3; i++) {
+        curve->_p[i] 	= curve->p[i];
+        for (int j=0; j<3; j++) {
+            curve->_F[i][j] = curve->F[i][j];
+        }
+	}
+    
+    for (int q=0; q<(TRACKER::probeQuality-1); q++) {
+            
+            
+        for (int i=0; i<3; i++) {
+            curve->_p[i]  += curve->PP[0]*curve->_F[0][i] +  curve->PP[1]*curve->_F[1][i]  +  curve->PP[2]*curve->_F[2][i];
+            curve->_T[i]   = curve->PP[3]*curve->_F[0][i] +  curve->PP[4]*curve->_F[1][i]  +  curve->PP[5]*curve->_F[2][i];
+        }
+        normalize(curve->_T);
+        
+        for (int i=0; i<3; i++) {
+            curve->_N2[i]  = curve->PP[6]*curve->_F[0][i] +  curve->PP[7]*curve->_F[1][i]  +  curve->PP[8]*curve->_F[2][i];
+        }
+        
+        cross(curve->_N1,curve->_N2,curve->_T);
+        for (int i=0; i<3; i++) {
+            curve->_F[0][i] = curve->_T[i];
+            curve->_F[1][i] = curve->_N1[i];
+            curve->_F[2][i] = curve->_N2[i];
+        }
+            
+        
+        
+        
+        if (TRACKER::probeCount>1) {
+            
+            if (q==(TRACKER::probeQuality-1)) {
+                for (int i=0; i<3; i++) {
+                    curve->_N2[i]  = curve->PP[6]*curve->_F[0][i] +  curve->PP[7]*curve->_F[1][i]  +  curve->PP[8]*curve->_F[2][i];
+                }
+                cross(curve->_N1,curve->_N2,curve->_T);
+            }
+            
+            
+            for (float c=0; c<TRACKER::probeCount; c++) {
+                
+                float pp[3];
+                
+                for (int i=0; i<3; i++) {
+                    pp[i] = curve->_p[i] + curve->_N1[i]*TRACKER::probeRadius*std::cos(c*TRACKER::angularSeparation) + curve->_N2[i]*TRACKER::probeRadius*std::sin(c*TRACKER::angularSeparation);
+                }
+
+                PTF *tmp = new PTF(new RandomDoer());
+                tmp->swap(curve);
+                tmp->p[0] = pp[0];
+                tmp->p[1] = pp[1];
+                tmp->p[2] = pp[2];
+                this->streamline->push((void*)tmp);
+                delete tmp;
+                
+
+            } 
+            
+        }
+        
+        curve->prepProbePropagator();
+    }
+    
+    }
+    */
+    
 }
 
 
