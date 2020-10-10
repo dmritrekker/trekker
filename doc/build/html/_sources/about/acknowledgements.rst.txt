@@ -11,4 +11,3 @@ Acknowledgements
 
 .. figure:: acknowledgements_C2B.png
 	:scale: 40 %
-

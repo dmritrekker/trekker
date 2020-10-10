@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>trekker &mdash; trekker 0.5 documentation</title>
+  <title>trekker &mdash; trekker 0.7 documentation</title>
   
 
   
@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="How to cite?" href="../publications/publications.html" />
+    <link rel="next" title="How to set parameters?" href="../tips/tip1.html" />
     <link rel="prev" title="Tutorial 3: Python package usage" href="../tutorials/tutorial_3.html" /> 
 
   
@@ -54,7 +54,7 @@
 
           
             
-            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.5
+                0.7
               </div>
             
           
@@ -128,6 +128,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#other-options">Other options</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tips</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tips/tip1.html">How to set parameters?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#basic-parameter-setting-tips">Basic parameter setting tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#advanced-parameter-setting-tips">Advanced parameter setting tips</a></li>
 </ul>
 </li>
 </ul>
@@ -220,11 +228,11 @@
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p>Trekker expects at least the following options to be specified:</p>
 <ul class="simple">
-<li><strong>-fod</strong>: Trekker generates streamlines from a fiber orientation distribution (FOD) image provided by the user with this option.</li>
-<li><strong>-seed_image</strong> or <strong>-seed_coordinates</strong>: Trekker expects the user to provide seeds using either of these options.</li>
-<li><strong>-seed_count</strong> or <strong>-seed_countPerVoxel</strong> or <strong>-timeLimit</strong>: If a seed image is provided, the user can provide the number of streamlines to be generated either with the option <em>-seed_count</em> or <em>-seed_countPerVoxel</em>. If <em>-seed_coordinates</em> options is used, trekker will generate one streamline for each specified coordinate. Alternatively the <em>-timeLimit</em> option can be used to stop tracking after a certain amount of time.</li>
-<li><strong>-output</strong>: Lastly the user has to provide the output path with <em>-output</em> followed by the path and name of the output file. trekker’s output file format is *.vtk. An additional .json formatted metadata is also saved.</li>
-<li>All unspecified parameters will be set to trekker’s default values.</li>
+<li><p><strong>-fod</strong>: Trekker generates streamlines from a fiber orientation distribution (FOD) image provided by the user with this option.</p></li>
+<li><p><strong>-seed_image</strong> or <strong>-seed_coordinates</strong>: Trekker expects the user to provide seeds using either of these options.</p></li>
+<li><p><strong>-seed_count</strong> or <strong>-seed_countPerVoxel</strong> or <strong>-timeLimit</strong>: If a seed image is provided, the user can provide the number of streamlines to be generated either with the option <em>-seed_count</em> or <em>-seed_countPerVoxel</em>. If <em>-seed_coordinates</em> options is used, trekker will generate one streamline for each specified coordinate. Alternatively the <em>-timeLimit</em> option can be used to stop tracking after a certain amount of time.</p></li>
+<li><p><strong>-output</strong>: Lastly the user has to provide the output path with <em>-output</em> followed by the path and name of the output file. trekker’s output file format is *.vtk. An additional .json formatted metadata is also saved.</p></li>
+<li><p>All unspecified parameters will be set to trekker’s default values.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example 1</span>
 <span class="o">./</span><span class="n">trekker</span> <span class="o">-</span><span class="n">fod</span> <span class="n">FOD</span><span class="o">.</span><span class="n">nii</span><span class="o">.</span><span class="n">gz</span> \
@@ -255,111 +263,111 @@
 <p>There are two ways to provide the input FOD image:</p>
 <p><strong>1.</strong> as spherical harmonic coefficients</p>
 <p>The FOD image stores each coefficient as a separate volume with respect to spherical harmonic degree, l and m, as shown in the tables below. Based on the number of volumes in the image, trekker automatically identifies if the FOD is symmetric or asymmetric.</p>
-<table border="1" class="docutils" id="id1">
+<table class="docutils align-default" id="id1">
 <caption><span class="caption-text">For symmetric FOD</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="5%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="8%" />
+<col style="width: 5%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 8%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>&#160;</td>
-<td>vol1</td>
-<td>vol2</td>
-<td>vol3</td>
-<td>vol4</td>
-<td>vol5</td>
-<td>vol6</td>
-<td>vol7</td>
-<td>vol8</td>
-<td>vol9</td>
-<td>…</td>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>vol1</p></td>
+<td><p>vol2</p></td>
+<td><p>vol3</p></td>
+<td><p>vol4</p></td>
+<td><p>vol5</p></td>
+<td><p>vol6</p></td>
+<td><p>vol7</p></td>
+<td><p>vol8</p></td>
+<td><p>vol9</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-even"><td>l</td>
-<td>0</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>4</td>
-<td>4</td>
-<td>4</td>
-<td>…</td>
+<tr class="row-even"><td><p>l</p></td>
+<td><p>0</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>4</p></td>
+<td><p>4</p></td>
+<td><p>4</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-odd"><td>m</td>
-<td>0</td>
-<td>-2</td>
-<td>-1</td>
-<td>0</td>
-<td>1</td>
-<td>2</td>
-<td>-4</td>
-<td>-3</td>
-<td>-2</td>
-<td>…</td>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>0</p></td>
+<td><p>-2</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>-4</p></td>
+<td><p>-3</p></td>
+<td><p>-2</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils" id="id2">
+<table class="docutils align-default" id="id2">
 <caption><span class="caption-text">For asymmetric FOD</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="5%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="8%" />
+<col style="width: 5%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 8%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>&#160;</td>
-<td>vol1</td>
-<td>vol2</td>
-<td>vol3</td>
-<td>vol4</td>
-<td>vol5</td>
-<td>vol6</td>
-<td>vol7</td>
-<td>vol8</td>
-<td>vol9</td>
-<td>…</td>
+<tbody>
+<tr class="row-odd"><td></td>
+<td><p>vol1</p></td>
+<td><p>vol2</p></td>
+<td><p>vol3</p></td>
+<td><p>vol4</p></td>
+<td><p>vol5</p></td>
+<td><p>vol6</p></td>
+<td><p>vol7</p></td>
+<td><p>vol8</p></td>
+<td><p>vol9</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-even"><td>l</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>…</td>
+<tr class="row-even"><td><p>l</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>…</p></td>
 </tr>
-<tr class="row-odd"><td>m</td>
-<td>0</td>
-<td>-1</td>
-<td>0</td>
-<td>1</td>
-<td>-2</td>
-<td>-1</td>
-<td>0</td>
-<td>1</td>
-<td>2</td>
-<td>…</td>
+<tr class="row-odd"><td><p>m</p></td>
+<td><p>0</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>-2</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>…</p></td>
 </tr>
 </tbody>
 </table>
@@ -459,24 +467,24 @@
 <p>Starting from the seed point, trekker first propagates along one direction to find one end of the connection. Propagation is then done towards the opposition direction from the seed to find the other end of the connection. (This “two_sided” tracking is the default option in trekker and can be changed to “one_sided” using the <strong>-directionality</strong> option.) The two different sides of propagation are named as <strong>A</strong> and <strong>B</strong> in trekker.</p>
 <p>Trekker allows two options to define rules for pathways:</p>
 <ol class="arabic simple">
-<li>Rules can be defined for each propagation direction separately, using options <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong>.</li>
-<li>Rules can be defined for either propagation direction, using options starting with <strong>-pathway=</strong>. These options define rules for “A or B” not for “A and B”.</li>
+<li><p>Rules can be defined for each propagation direction separately, using options <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong>.</p></li>
+<li><p>Rules can be defined for either propagation direction, using options starting with <strong>-pathway=</strong>. These options define rules for “A or B” not for “A and B”.</p></li>
 </ol>
 <p>Notes:</p>
 <ul class="simple">
-<li>Trekker accepts multiple pathway rules which are either defined using option 1 or 2, i.e.: if a pathway rule is defined using <strong>-pathway=</strong>, all other rules have to start with <strong>-pathway=</strong>. Or, if a pathway rule is defined using <strong>-pathway_A=</strong>, all other rules have to start either with <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</li>
-<li>Rules for <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong> are considered separate. Therefore they are treated independent of each other. Rules can be defined using only <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</li>
-<li>Users do not need to think about which side trekker considers to be side A or B. The decision is done automatically based on the first rule that is satisfied. For example, consider the case <strong>-seed_image THAL -pathway_A=require_entry GRAYMATTER -pathway_B=stop_at_exit THAL</strong>. Here, starting from the seed point, trekker propagates towards one direction which will soon exit THAL. But because this is a stopping condition for side B, propagation will stop here and this part will be considered as side B. Trekker then will return back to seed point and start propagating towards the other side which is from now on considered as side A.</li>
+<li><p>Trekker accepts multiple pathway rules which are either defined using option 1 or 2, i.e.: if a pathway rule is defined using <strong>-pathway=</strong>, all other rules have to start with <strong>-pathway=</strong>. Or, if a pathway rule is defined using <strong>-pathway_A=</strong>, all other rules have to start either with <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</p></li>
+<li><p>Rules for <strong>-pathway_A=</strong> and <strong>-pathway_B=</strong> are considered separate. Therefore they are treated independent of each other. Rules can be defined using only <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</p></li>
+<li><p>Users do not need to think about which side trekker considers to be side A or B. The decision is done automatically based on the first rule that is satisfied. For example, consider the case <strong>-seed_image THAL -pathway_A=require_entry GRAYMATTER -pathway_B=stop_at_exit THAL</strong>. Here, starting from the seed point, trekker propagates towards one direction which will soon exit THAL. But because this is a stopping condition for side B, propagation will stop here and this part will be considered as side B. Trekker then will return back to seed point and start propagating towards the other side which is from now on considered as side A.</p></li>
 </ul>
 <p>Trekker allows the specification of the following pathway rules:</p>
 <ul class="simple">
-<li><em>=require_entry</em></li>
-<li><em>=stop_at_entry</em></li>
-<li><em>=require_exit</em></li>
-<li><em>=stop_at_exit</em></li>
-<li><em>=discard_if_enters</em></li>
-<li><em>=discard_if_exits</em></li>
-<li><em>=discard_if_ends_inside</em></li>
+<li><p><em>=require_entry</em></p></li>
+<li><p><em>=stop_at_entry</em></p></li>
+<li><p><em>=require_exit</em></p></li>
+<li><p><em>=stop_at_exit</em></p></li>
+<li><p><em>=discard_if_enters</em></p></li>
+<li><p><em>=discard_if_exits</em></p></li>
+<li><p><em>=discard_if_ends_inside</em></p></li>
 </ul>
 <p><strong>-pathway=require_entry &lt;nifti image&gt; {optional:labelNo}</strong> All tracks are required to enter the ROI present in the specified image.</p>
 <p><strong>-pathway_A=require_entry &lt;nifti image&gt; {optional:labelNo}</strong> One side of all tracks are required to enter the ROI present in the specified image.</p>
@@ -614,7 +622,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../publications/publications.html" class="btn btn-neutral float-right" title="How to cite?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../tips/tip1.html" class="btn btn-neutral float-right" title="How to set parameters?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../tutorials/tutorial_3.html" class="btn btn-neutral" title="Tutorial 3: Python package usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -648,7 +656,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.5',
+            VERSION:'0.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -659,7 +667,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
   
 

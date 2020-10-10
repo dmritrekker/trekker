@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorial 2: Trekker’s pathways &mdash; trekker 0.5 documentation</title>
+  <title>Tutorial 2: Trekker’s pathways &mdash; trekker 0.7 documentation</title>
   
 
   
@@ -54,7 +54,7 @@
 
           
             
-            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.5
+                0.7
               </div>
             
           
@@ -128,6 +128,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#other-options">Other options</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tips</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tips/tip1.html">How to set parameters?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#basic-parameter-setting-tips">Basic parameter setting tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tips/tip1.html#advanced-parameter-setting-tips">Advanced parameter setting tips</a></li>
 </ul>
 </li>
 </ul>
@@ -207,38 +215,37 @@
   <div class="section" id="tutorial-2-trekker-s-pathways">
 <h1>Tutorial 2: Trekker’s pathways<a class="headerlink" href="#tutorial-2-trekker-s-pathways" title="Permalink to this headline">¶</a></h1>
 <p>This tutorial shows how to specify pathway rules in Trekker. Before describing the rules in detail, please check the illustration below for definitions that Trekker use.</p>
-<div class="figure" id="id1">
-<a class="reference internal image-reference" href="../_images/tut2_0.svg"><img alt="Trekker's pathways" src="../_images/tut2_0.svg" /></a>
-<p class="caption"><span class="caption-text">Trekker regards each streamline to be composed of two sides which are called <strong>pathway_A</strong> and <strong>pathway_B</strong>. Pathway rules can be specified for each side separately or the complete <strong>pathway</strong> as a whole.</span></p>
+<div class="figure align-default" id="id1">
+<img alt="Trekker's pathways" src="../_images/tut2_0.svg" /><p class="caption"><span class="caption-text">Trekker regards each streamline to be composed of two sides which are called <strong>pathway_A</strong> and <strong>pathway_B</strong>. Pathway rules can be specified for each side separately or the complete <strong>pathway</strong> as a whole.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 <p>Trekker automatically determines the sides as <strong>pathway_A</strong> or <strong>pathway_B</strong> based on how they meet the user defined pathway constraints, i.e., if the first side meets the criteria for <strong>B</strong> then trekker assigns it as pathway <strong>B</strong>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You can also disable the default “two-sided” tracking by setting <strong>-directionality=one_sided</strong> . In this case, you can only specify rules using the <strong>-pathway=</strong> option.</p>
+<p class="admonition-title">Note</p>
+<p>You can also disable the default “two-sided” tracking by setting <strong>-directionality=one_sided</strong> . In this case, you can only specify rules using the <strong>-pathway=</strong> option.</p>
 </div>
 <div class="section" id="defining-pathway-rules">
 <h2>Defining pathway rules<a class="headerlink" href="#defining-pathway-rules" title="Permalink to this headline">¶</a></h2>
 <p>Trekker provides powerful options for specifying pathways. Rules can be defined using one of:</p>
 <ul class="simple">
-<li><strong>-pathway=</strong></li>
-<li><strong>-pathway_A=</strong></li>
-<li><strong>-pathway_B=</strong></li>
+<li><p><strong>-pathway=</strong></p></li>
+<li><p><strong>-pathway_A=</strong></p></li>
+<li><p><strong>-pathway_B=</strong></p></li>
 </ul>
 <p>followed by one of:</p>
 <ul class="simple">
-<li><strong>require_entry</strong></li>
-<li><strong>stop_at_entry</strong></li>
-<li><strong>require_exit</strong></li>
-<li><strong>stop_at_exit</strong></li>
-<li><strong>discard_if_enters</strong></li>
-<li><strong>discard_if_exits</strong></li>
-<li><strong>discard_if_ends_inside</strong></li>
+<li><p><strong>require_entry</strong></p></li>
+<li><p><strong>stop_at_entry</strong></p></li>
+<li><p><strong>require_exit</strong></p></li>
+<li><p><strong>stop_at_exit</strong></p></li>
+<li><p><strong>discard_if_enters</strong></p></li>
+<li><p><strong>discard_if_exits</strong></p></li>
+<li><p><strong>discard_if_ends_inside</strong></p></li>
 </ul>
 <p>Pathway rules specify clear instructions for how streamlines in the output tractogram should be.</p>
 <ol class="arabic simple">
-<li>If a rule starts with <strong>require</strong>, all streamlines in the tractogram will satisfy this condition.</li>
-<li>If a rule starts with <strong>discard_if</strong>, no streamline meeting this specification will be included in the tractogram.</li>
-<li>If a rule starts with <strong>stop_at_</strong>, streamlines will terminate with respect to this specification.</li>
+<li><p>If a rule starts with <strong>require</strong>, all streamlines in the tractogram will satisfy this condition.</p></li>
+<li><p>If a rule starts with <strong>discard_if</strong>, no streamline meeting this specification will be included in the tractogram.</p></li>
+<li><p>If a rule starts with <strong>stop_at_</strong>, streamlines will terminate with respect to this specification.</p></li>
 </ol>
 <p>The <strong>-pathway=</strong> option specifies rules for the whole connection. Following examples will generate similar tractograms where one end of streamlines will reach the gray matter while the other end may or may not terminate at the gray matter:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tutorial 2 - Example 1</span>
@@ -266,9 +273,9 @@
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>If you choose to specify a rule using <strong>-pathway=</strong>, no other rule can start with <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>. (pathway=satisfy_requirements_in_order is an exception to this.)</li>
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If you choose to specify a rule using <strong>-pathway=</strong>, no other rule can start with <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>. (pathway=satisfy_requirements_in_order is an exception to this.)</p></li>
 </ul>
 </div>
 </div>
@@ -337,8 +344,8 @@
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you use the <strong>-pathway=satisfy_requirements_in_order</strong> option, you can define pathway rules only using <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</p>
+<p class="admonition-title">Note</p>
+<p>If you use the <strong>-pathway=satisfy_requirements_in_order</strong> option, you can define pathway rules only using <strong>-pathway_A=</strong> or <strong>-pathway_B=</strong>.</p>
 </div>
 </div>
 </div>
@@ -385,7 +392,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.5',
+            VERSION:'0.7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -396,7 +403,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
 
   
 

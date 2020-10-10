@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>How to set parameters? &mdash; trekker 0.7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to cite?" href="../publications/publications.html" />
+    <link rel="prev" title="trekker" href="../manual/trekker.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Download and install</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html">Where to get trekker?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#stand-alone-executables">Stand-alone executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#source-code">Source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/howToGetAndCite.html#python-package">Python package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html#test-your-installation">Test your installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation/howToGetAndCite.html#extensions">Extensions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Get started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial_1.html">Tutorial 1: The short trek</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_1.html#tracking-with-trekker">Tracking with trekker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_1.html#visualizing-results">Visualizing results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial_2.html">Tutorial 2: Trekker’s pathways</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#defining-pathway-rules">Defining pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#whole-brain-tractography">Whole brain tractography</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#using-atlases-or-labeled-images-in-pathway-rules">Using atlases or labeled images in pathway rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/tutorial_2.html#tracking-in-order">Tracking in order</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial_3.html">Tutorial 3: Python package usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../manual/trekker.html">trekker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#synopsis">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/trekker.html#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#tracking-options">Tracking options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#probe-options">Probe options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#seeding-options">Seeding options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#output-options">Output options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#pathway-options">Pathway options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/trekker.html#other-options">Other options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tips</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to set parameters?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-parameter-setting-tips">Basic parameter setting tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-parameter-setting-tips">Advanced parameter setting tips</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Publications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../publications/publications.html">How to cite?</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/licenseAndWarranty.html">License and warranty</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/acknowledgements.html">Acknowledgements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/contact.html">Contact</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">trekker</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>How to set parameters?</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tips/tip1.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="how-to-set-parameters">
+<h1>How to set parameters?<a class="headerlink" href="#how-to-set-parameters" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Parallel transport tractography (PTT) works different than other probabilistic techniques</strong></p>
+<p>This implies that your experience with other algorithms do not directly translate to Trekker’s approach. Read below for more information.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><strong>Default streamline maxLength in Trekker is infinite</strong></p>
+<p>Before telling about PTT related parameters, it is important to note that in Trekker we set <strong>maxLength</strong> to infinite by default. This was done simply because it is not possible to estimate the maximum streamline length from input images. So please always adjust this parameter according to your application.</p>
+</div>
+<div class="section" id="basic-parameter-setting-tips">
+<h2>Basic parameter setting tips<a class="headerlink" href="#basic-parameter-setting-tips" title="Permalink to this headline">¶</a></h2>
+<p>To save time, start with tracking a small number of streamlines with default parameters. You can see the default values for your dataset on your terminal screen or in the .json file saved in the output.</p>
+<p>Trekker’s default parameter combinations generally result with good coverage of fiber bundles with well organized streamlines. However by adjusting the parameters you can improve the results. Basically you can go towards two directions:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><strong>A.</strong> make the streamlines more organized, this could come with loss of bundle coverage</div>
+<div class="line"><strong>B.</strong> cover more of the bundle, then you could lose the organization of streamlines</div>
+</div>
+</div></blockquote>
+<p>To go towards direction A:</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><strong>1.</strong> decrease <em>stepSize</em></div>
+<div class="line"><strong>2.</strong> increase <em>probeLength</em></div>
+<div class="line"><strong>3.</strong> increase <em>minRadiusOfCurvature</em></div>
+<div class="line"><strong>4.</strong> increase <em>minFODamp</em></div>
+</div>
+</div></blockquote>
+<p>Doing the opposite will go towards direction <strong>B</strong>. Try small adjustments for all the parameters rather than making a large modification for a single parameter.</p>
+</div>
+<div class="section" id="advanced-parameter-setting-tips">
+<h2>Advanced parameter setting tips<a class="headerlink" href="#advanced-parameter-setting-tips" title="Permalink to this headline">¶</a></h2>
+<p>Below are some tips for tracking connections in healthy adult human brains that are typically acquired with voxel dimensions around 1.25-2 mm isotropic. (The values mentioned below might not apply to other types of brains but the relationships between parameters still hold.)</p>
+<ul class="simple">
+<li><p>Try to use small a <strong>stepSize</strong>. This value can be 0.05 or below. With higher values, bundle organization will be compromised.</p></li>
+<li><p><strong>minRadiusOfCurvature</strong> values between 0.5-1 mm are generally sufficient for tracking connections in the adult human brain. While the default <em>minRadiusOfCurvature</em> is half the voxel size, you might want to go lower than this if you are after bundles which have sharp turns.</p></li>
+<li><p>In PTT algorithm, <strong>probeLength</strong> is a very important parameter. Try to make sure that this value does not exceed <em>minRadiusOfCurvature</em>. Notice that 2*pi*minRadiusOfCurvature is the smallest circle one can track and <em>probeLength</em> shouldn’t trace a long part of it. A very long <em>probeLength</em> could lead the tracker to make loops or take sharp, incorrect turns at crossing fiber arrangements. A <em>probeLength</em> value about half of <em>minRadiusOfCurvature</em> is adequate.</p></li>
+<li><p>We designed PTT to preserve topographic organization of connections. So one can use pretty low <strong>minFODamp</strong> values such as 0.025 or even 0.01 without losing much from streamline organization. This allows to get better coverage of the fiber bundles or help track intricate and challenging connections. You may however need to provide good anatomical constraints to reduce false positives.</p></li>
+<li><p>If you have problems with data quality, set the <strong>probeRadius</strong> to the value used for <em>minRadiusOfCurvature</em>. Using a topographically organized cylindrical probe model is particularly effective to mitigate noise in FOD. However, this will slow down the tracking.</p></li>
+<li><p>If you have luxurious computational resources, you can increase <strong>probeQuality</strong> and <strong>probeCount</strong> to improve the probe model and fiber tracking results.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../publications/publications.html" class="btn btn-neutral float-right" title="How to cite?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../manual/trekker.html" class="btn btn-neutral" title="trekker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Dogu Baran Aydogan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.7',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

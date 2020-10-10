@@ -14,6 +14,14 @@ Trekker software has the following features:
 - **Python package**, wrapped using Cython from Trekker's C/C++ code which provides easy access to PTT algorithm for python lovers.
 - **.vtk** output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.
 
+.. tip::
+
+  - For latest stand-alone executables, click `here <https://github.com/dmritrekker/trekker/tree/master/binaries>`__.
+  - |githublogo| Go to Trekker's source code by clicking `here <https://github.com/dmritrekker/trekker>`__.
+
+
+.. |githublogo| image:: GitHub-Mark-32px.png
+  :scale: 75 %
 
 **A quick example**
 
@@ -48,13 +56,21 @@ Trekker software has the following features:
    tutorials/tutorial_2
    tutorials/tutorial_3
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Manual
    :hidden:
 
    manual/trekker
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tips
+   :hidden:
+
+   tips/tip1
+
 
 .. toctree::
    :maxdepth: 2
