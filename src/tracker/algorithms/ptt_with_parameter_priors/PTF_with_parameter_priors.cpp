@@ -400,6 +400,6 @@ void PTF_with_parameter_priors::getInitCandidate() {
 void PTF_with_parameter_priors::updateTrackingParameters() {
 
      ptf_dispersion->getVal(p,&param_maxCurvature);
-     param_maxCurvature *= 10;
+     param_maxCurvature = 20*param_maxCurvature*param_maxCurvature;
 }
 
