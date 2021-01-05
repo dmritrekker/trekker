@@ -68,6 +68,7 @@ public:
 	std::string   filePath;
 	float         voxelVolume;
 	float**       xyz2ijk;
+    float**       ijk2xyz;
 
 	// The following are useful for trilinear interpolation
 	bool  		  indexVoxels();

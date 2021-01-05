@@ -8,6 +8,8 @@
 #include "../tracker/algorithms/ptt/tractogram_ptt.h"
 #include "../tracker/algorithms/local_probabilistic/algorithm_local_probabilistic.h"
 #include "../tracker/algorithms/local_probabilistic/tractogram_local_probabilistic.h"
+#include "../tracker/algorithms/ptt_with_parameter_priors/algorithm_ptt_with_parameter_priors.h"
+#include "../tracker/algorithms/ptt_with_parameter_priors/tractogram_ptt_with_parameter_priors.h"
 
 using namespace GENERAL;
 using namespace SH;
@@ -43,6 +45,8 @@ float probeStepSize                     = NOTSET;
 float probeNormalizer                   = NOTSET;
 float angularSeparation                 = NOTSET;
 
+// Parameter priors
+SCALAR_Image* img_dispersion            = new SCALAR_Image;
 
 // Derived parameters
 float maxCurvature   					= NOTSET;
@@ -109,6 +113,10 @@ void setDefaultParametersWhenNecessary() {
 		if (tractogram==NULL) { tractogram = new Tractogram_Local_Probabilistic(); }
 		if (method    ==NULL) { method     = new  TrackWith_Local_Probabilistic(); }
 		break;
+    case PTT_WITH_PARAMETER_PRIORS:
+		if (tractogram==NULL) { tractogram = new Tractogram_PTT_with_parameter_priors(); }
+		if (method    ==NULL) { method     = new  TrackWith_PTT_with_parameter_priors(); }
+		break;
 	default :
 		break;
 	}
@@ -130,6 +138,11 @@ void setMethodsDefaultParametersWhenNecessary() {
 void readFODImage() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading FOD image                  : " << img_FOD->getFilePath() << std::endl;
 	if(!img_FOD->readImage()) exit(EXIT_FAILURE);
+}
+
+void readDispersionImage() {
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading dispersion image           : " << img_dispersion->getFilePath() << std::endl;
+	if(!img_dispersion->readImage()) exit(EXIT_FAILURE);
 }
 
 

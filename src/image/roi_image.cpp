@@ -16,9 +16,9 @@ Coordinate ROI_Image::ind2phy(size_t index) {
 	int i,j,k;
 	ind2sub(index,i,j,k);
 
-	float x = nim->sto_xyz.m[0][0]*i + nim->sto_xyz.m[0][1]*j + nim->sto_xyz.m[0][2]*k + nim->sto_xyz.m[0][3];
-	float y = nim->sto_xyz.m[1][0]*i + nim->sto_xyz.m[1][1]*j + nim->sto_xyz.m[1][2]*k + nim->sto_xyz.m[1][3];
-	float z = nim->sto_xyz.m[2][0]*i + nim->sto_xyz.m[2][1]*j + nim->sto_xyz.m[2][2]*k + nim->sto_xyz.m[2][3];
+	float x = ijk2xyz[0][0]*i + ijk2xyz[0][1]*j + ijk2xyz[0][2]*k + ijk2xyz[0][3];
+	float y = ijk2xyz[1][0]*i + ijk2xyz[1][1]*j + ijk2xyz[1][2]*k + ijk2xyz[1][3];
+	float z = ijk2xyz[2][0]*i + ijk2xyz[2][1]*j + ijk2xyz[2][2]*k + ijk2xyz[2][3];
 
 	return Coordinate(x,y,z);
 }

@@ -82,6 +82,8 @@ void InputParser::parse() {
 		else if (Option("-probeCount"))     		parse_probeCount();
 		else if (Option("-probeQuality"))     		parse_probeQuality();
         else if (Option("-ignoreWeakLinks"))        parse_ignoreWeakLinks();
+        
+        else if (Option("-dispersionImage"))        parse_dispersionImage();
 
 		// Seed config
 		else if (Option("-seed_image"))     			parse_seed_image();
@@ -173,6 +175,13 @@ void InputParser::checkCompulsaryInputs() {
 			std::cout << "Use -output <OUTPUT_FILE_NAME.vtk> to specify output" << std::endl;
 			exit(EXIT_FAILURE);
 		}
+		
+		if (TRACKER::algorithm==PTT_WITH_PARAMETER_PRIORS) {
+            if (img_dispersion->getFilePath()=="") {
+                std::cout << "Use -dispersionImage <DISPERSION_FNAME.NII.GZ> to specify the input dispersion image" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
 	}
 
 	PATHWAY::checkROIorderConsistency();
@@ -209,6 +218,9 @@ void InputParser::readAllImageInputs() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading input images" << std::endl;
 	TRACKER::readFODImage();
 	PATHWAY::readROIImages();
+    if (TRACKER::algorithm==PTT_WITH_PARAMETER_PRIORS) {
+        TRACKER::readDispersionImage();
+    }
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "--------------------" << std::endl << std::endl;
 }
 
@@ -535,8 +547,29 @@ void InputParser::parse_ignoreWeakLinks() {
 		argv_index++;
 	}
     
-    
+}
 
+
+void InputParser::parse_dispersionImage() {
+
+	if (img_dispersion->getFilePath()!="") {
+		std::cout << "Cannot use -dispersionImage option more than once" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	argv_index++;
+
+	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
+		std::cout << "Input nifti file after -dispersionImage" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if(!img_dispersion->readHeader(argv[argv_index])) {
+		std::cout << "Cannot read dispersion image: " << argv[argv_index] << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	argv_index++;
+    
 }
 
 void InputParser::parse_orderOfDirections() {
@@ -969,10 +1002,11 @@ void InputParser::parse_algorithm() {
 		exit(EXIT_FAILURE);
 	}
 
-	if      (Option("ptt"))    					TRACKER::algorithm = PTT_C1;
-	else if (Option("local_probabilistic"))  	TRACKER::algorithm = LOCAL_PROBABILISTIC;
+	if      (Option("ptt"))    					     TRACKER::algorithm = PTT_C1;
+	else if (Option("local_probabilistic"))  	     TRACKER::algorithm = LOCAL_PROBABILISTIC;
+    else if (Option("ptt_with_parameter_priors"))  	 TRACKER::algorithm = PTT_WITH_PARAMETER_PRIORS;
 	else {
-		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\" and \"local_probabilistic\" "<< std::endl;
+		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\", \"local_probabilistic\" and \"ptt_with_parameter_priors\" "<< std::endl;
 		exit(EXIT_FAILURE);
 	}
 	argv_index++;
@@ -988,8 +1022,15 @@ void InputParser::parse_algorithm() {
                 std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\" and \"C2\" "<< std::endl;
                 exit(EXIT_FAILURE);
             }
-        } else {
+        } 
+        
+        if (TRACKER::algorithm == LOCAL_PROBABILISTIC){
             std::cout << "Invalid option for local_probabilistic tracking type: " << argv[argv_index] << ", this algorithm does not support any options "<< std::endl;
+            exit(EXIT_FAILURE);
+        }
+        
+        if (TRACKER::algorithm == PTT_WITH_PARAMETER_PRIORS){
+            std::cout << "Invalid option for ptt_with_parameter_priors tracking type: " << argv[argv_index] << ", this algorithm does not support any options "<< std::endl;
             exit(EXIT_FAILURE);
         }
         

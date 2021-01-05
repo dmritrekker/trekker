@@ -9,6 +9,7 @@ Image::Image() {
     dims            = NULL;
     pixDims         = NULL;
 	xyz2ijk 		= NULL;
+    ijk2xyz         = NULL;
 	voxelVolume 	= 0.0;
 
 	sx 				= 0;
@@ -34,6 +35,7 @@ Image::Image(const Image& obj) {
     dims 			= obj.dims;
     pixDims 		= obj.pixDims;
 	xyz2ijk 		= obj.xyz2ijk;
+    ijk2xyz 		= obj.ijk2xyz;
 	voxelVolume 	= obj.voxelVolume;
 
 	sx 				= obj.sx;
@@ -90,6 +92,14 @@ Image::~Image() {
         delete[] xyz2ijk;
     }
     
+    
+    if (ijk2xyz!=NULL) {
+        delete[] ijk2xyz[0];
+        delete[] ijk2xyz[1];
+        delete[] ijk2xyz[2];
+        delete[] ijk2xyz;
+    }
+    
 	if (voxels!=NULL)			delete[] voxels;
     if (zero!=NULL)			    free(zero);
     
@@ -107,6 +117,7 @@ void Image::destroyCopy(){
     dims            = NULL;
     pixDims         = NULL;
 	xyz2ijk 		= NULL;
+    ijk2xyz         = NULL;
 	voxels 			= NULL;
     zero            = NULL;
     cor_ijk         = NULL;
@@ -158,24 +169,34 @@ bool Image::readHeader(char* _filePath) {
     pixDims[1] = nim->pixdim[2]; // dy
     pixDims[2] = nim->pixdim[3]; // dz
     
-	// TODO: Enable option to choose between sform or qform
+	// Choose between sform or qform
     xyz2ijk     = new float*[3];
     xyz2ijk[0]  = new float[4];
     xyz2ijk[1]  = new float[4];
     xyz2ijk[2]  = new float[4];
-	
-    // Use only sform for now
-    for (int i=0; i<3; i++)
-        for (int j=0; j<4; j++)
-            xyz2ijk[i][j] = nim->sto_ijk.m[i][j];
     
+    ijk2xyz     = new float*[3];
+    ijk2xyz[0]  = new float[4];
+    ijk2xyz[1]  = new float[4];
+    ijk2xyz[2]  = new float[4];
+    
+    
+    // Use sform if possible otherwise use qform
     if (nim->sform_code>0) {        
-		// Then xyz2ijk=sform
+        for (int i=0; i<3; i++)
+            for (int j=0; j<4; j++) {
+                xyz2ijk[i][j] = nim->sto_ijk.m[i][j];
+                ijk2xyz[i][j] = nim->sto_xyz.m[i][j];
+            }
 	}
 	else {
-		// Then xyz2ijk=qform
+        for (int i=0; i<3; i++)
+            for (int j=0; j<4; j++) {
+                xyz2ijk[i][j] = nim->qto_ijk.m[i][j];
+                ijk2xyz[i][j] = nim->qto_xyz.m[i][j];
+            }
 	}
-
+    
 	this->readHeader_detail();
 
 	return true;
@@ -319,13 +340,13 @@ unsigned char Image::checkImageBounds(float i, float j, float k) {
 // Returns 0 if outside image
 unsigned char Image::checkWorldBounds(float x, float y, float z) {
 
-	float i = nim->sto_ijk.m[0][0]*x + nim->sto_ijk.m[0][1]*y + nim->sto_ijk.m[0][2]*z + nim->sto_ijk.m[0][3];
+	float i = xyz2ijk[0][0]*x + xyz2ijk[0][1]*y + xyz2ijk[0][2]*z + xyz2ijk[0][3];
 	if ( (i<-0.5) || (i>nim->nx-0.5)) return 0;
 
-	float j = nim->sto_ijk.m[1][0]*x + nim->sto_ijk.m[1][1]*y + nim->sto_ijk.m[1][2]*z + nim->sto_ijk.m[1][3];
+	float j = xyz2ijk[1][0]*x + xyz2ijk[1][1]*y + xyz2ijk[1][2]*z + xyz2ijk[1][3];
 	if ( (j<-0.5) || (j>nim->ny-0.5)) return 0;
 
-	float k = nim->sto_ijk.m[2][0]*x + nim->sto_ijk.m[2][1]*y + nim->sto_ijk.m[2][2]*z + nim->sto_ijk.m[2][3];
+	float k = xyz2ijk[2][0]*x + xyz2ijk[2][1]*y + xyz2ijk[2][2]*z + xyz2ijk[2][3];
 	if ( (k<-0.5) || (k>nim->nz-0.5)) return 0;
 
 	return 1;

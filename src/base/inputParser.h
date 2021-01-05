@@ -69,6 +69,8 @@ private:
 	void parse_probeCount();
 	void parse_probeQuality();
     void parse_ignoreWeakLinks();
+    
+    void parse_dispersionImage();
 
 
 	// Seed config
