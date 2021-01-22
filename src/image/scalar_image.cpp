@@ -38,7 +38,7 @@ bool SCALAR_Image::readImage() {
                 
                 ind = (x+y*sx+z*sxy);
                 float *T = new float[1];
-                T[0]     = accessor->get(nim->data,ind);
+                T[0]     = accessor->get(nim->data,ind)/this->voxelVolume;
                 Z.push_back(T);
             }
             

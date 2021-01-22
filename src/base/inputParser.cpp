@@ -30,7 +30,7 @@ void InputParser::printHelp() {
 #ifdef BUILD_FOR_WINDOWS
 	std::cout << "Opening help in web browser" << std::endl;
 #endif
-
+    
 #ifdef SHOWMANUAL
 	system(SHOWMANUAL);
 #endif
