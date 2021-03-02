@@ -17,8 +17,8 @@ void getStreamline(TrackingThread* tracker) {
     tracker->updateTractogram();
     if (GENERAL::verboseLevel!=QUITE) TRACKER::tractogram->printSummary();
     
-    std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
-    GENERAL::exit_cv.notify_all();
+    std::lock_guard<std::mutex> lk(MT::exit_mx);
+    MT::exit_cv.notify_all();
 }
 
 TrackingThread::TrackingThread() {

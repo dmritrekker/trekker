@@ -10,8 +10,9 @@ using namespace OUTPUT;
 bool isInitialized() { return GENERAL::initialized; }
 
 Trekker::Trekker(int argc, char **argv) {
+    
 	InputParser input(argc, argv);
-
+    
 	timeUp = false;
 
 	run();
@@ -335,7 +336,7 @@ void Trekker::execute() {
     
 	int                 finalThreads = 0;
     
-    std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
+    std::unique_lock<std::mutex> lk(MT::exit_mx);
     
 	for(seedNo=0; seedNo<numberOfThreadsToUse; seedNo++) {
 		int threadNo = seedNo;
@@ -349,7 +350,7 @@ void Trekker::execute() {
     
 	while(seedNo<SEED::count) {
     
-        GENERAL::exit_cv.wait(lk);
+        MT::exit_cv.wait(lk);
         int tread_id = GENERAL::ready_thread_id;
         
 		// timeUp case
@@ -375,7 +376,7 @@ void Trekker::execute() {
 	
 	while (finalThreads<numberOfThreadsToUse) {
         
-        GENERAL::exit_cv.wait(lk);
+        MT::exit_cv.wait(lk);
         int tread_id = GENERAL::ready_thread_id;
 
 		// timeUp case

@@ -23,30 +23,22 @@ bool SCALAR_Image::readImage() {
 	case 1536: accessor = new NiftiDataAccessor_ForType<long double>; break;
 	}
 
-    data    = new std::vector< std::vector < std::vector<float*> > >;
+    // all zero valued voxels are pointed to here
+    zero     = new float[1];
+    zero[0]  = 0;
     
-    size_t ind   = 0;
-    for (int x=0; x<(nim->nx); x++) {
-        
-        std::vector< std::vector<float*> > YZ;
-        
-        for (int y=0; y<(nim->ny); y++) {
-            
-            std::vector<float*> Z;
-            
-            for (int z=0; z<(nim->nz); z++) {
-                
-                ind = (x+y*sx+z*sxy);
-                float *T = new float[1];
-                T[0]     = accessor->get(nim->data,ind)/this->voxelVolume;
-                Z.push_back(T);
-            }
-            
-            YZ.push_back(Z);
+    // Copy everything in a float array with dimension 1
+    data    = new float*[sxyz];
+    MT::MTRUN(sxyz, sxyz/16, MT::maxNumberOfThreads,[&](MTTASK task)->void {
+        float val = accessor->get(nim->data,task.no);
+        if (val==0) {
+            data[task.no] = zero;
         }
-
-        data->push_back(YZ);
-    }
+        else {
+            data[task.no]    = new float[1];
+            data[task.no][0] = val;
+        }
+    });
 
     
 	nifti_image_unload(nim);

@@ -11,8 +11,6 @@ int 									timeLimit           = NOTSET;
 bool 									usingAPI 			= false;
 
 
-std::condition_variable     exit_cv;
-std::mutex                  exit_mx;
 std::mutex                  tracker_lock;
 size_t                      ready_thread_id;
 int                         lineCountToFlush;
@@ -26,6 +24,8 @@ int runTime() {
 
 
 void setDefaultParametersWhenNecessary() {
+    
+    MT::MTINIT();
 
 	// Handle verboseLevel
 	if (verboseLevel==VERBOSELEVEL_NOTSET) 	verboseLevel 	= MINIMAL;
@@ -33,16 +33,10 @@ void setDefaultParametersWhenNecessary() {
 	// Handle numberOfThreads
 	if ( (verboseLevel>ON) && (numberOfThreads != 1) ) {
 		if (verboseLevel!=QUITE) std::cout << std::endl << "-numberOfThreads option is ignored and forced to be 1 since verbose level is bigger than 1." << std::endl;
-		numberOfThreads = 1;
+		numberOfThreads = MT::maxNumberOfThreads = 1;
 	} else {
 		if (numberOfThreads==NOTSET) {
-#ifdef BUILD_FOR_WINDOWS
-			SYSTEM_INFO sysinfo;
-			GetSystemInfo(&sysinfo);
-			numberOfThreads = sysinfo.dwNumberOfProcessors;
-#else
-			numberOfThreads = sysconf(_SC_NPROCESSORS_ONLN);
-#endif
+            numberOfThreads = MT::maxNumberOfThreads;
 		}
 	}
 

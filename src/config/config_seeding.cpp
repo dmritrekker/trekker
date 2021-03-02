@@ -121,7 +121,7 @@ void readSeedImage() {
 
 							// if ((img_SEED->data[index]==0) && (dilated_img_SEED[index]==false)) {
                                 
-                            if ((*(img_SEED->data->at(i+x).at(j+y).at(k+z))==0) && (dilated_img_SEED[index]==false)) {
+                            if ((img_SEED->data[index][0]==0) && (dilated_img_SEED[index]==false)) {
 								dilated_img_SEED[index] = true;
 								dilated_seed_indices.push_back(index);
 							}

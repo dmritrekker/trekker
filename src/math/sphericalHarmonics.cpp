@@ -86,11 +86,11 @@ void precompute(size_t num) {
 	precomputedPhiComponent 				= new float[numberOfSphericalHarmonicCoefficients*numberOfSamples_phi*numberOfSamples_phi];
 	precomputedThetaComponent         		= new float[numberOfSphericalHarmonicCoefficients*numberOfSamples_theta];
     
-	size_t c = 0;
-	for (size_t i=0; i<numberOfSamples_phi; i++) {
+    auto preComputePhi = [&](MTTASK task)->void {
 
-		double x 		= (double)i*delta_phi-1;
-
+        size_t c        = task.no*numberOfSamples_phi*numberOfSphericalHarmonicCoefficients;
+		double x 		= (double)(task.no)*delta_phi-1;
+        
 		for (size_t j=0; j<numberOfSamples_phi; j++) {
 
 			double y 		= (double)j*delta_phi-1;
@@ -98,7 +98,7 @@ void precompute(size_t num) {
 
 			precomputedPhiComponent[c++] = 1;
 
-			if (TRACKER::img_FOD->iseven) {
+			if (img_FOD->iseven) {
 				for(double l = 2; l <= sphericalHarmonicOrder; l+=2) {
 					for(double m = -l; m <= l; m++) {
 						double ang = (fabs((double)m))*phi;
@@ -120,40 +120,44 @@ void precompute(size_t num) {
 			}
 
 		}
-	}
+	};
+	MT::MTRUN(numberOfSamples_phi,numberOfSamples_phi/16,MT::maxNumberOfThreads,preComputePhi);
 	
-	double *plm = new double[numberOfSphericalHarmonicCoefficients];
+	
 
     
-	c = 0;
-	for (size_t k=0; k<numberOfSamples_theta; k++) {
+	auto preComputeTheta = [&](MTTASK task)->void {
 
-		double theta = (double)k*delta_theta-1;
+        size_t c        = task.no*numberOfSphericalHarmonicCoefficients;
+        
+        double *plm     = new double[numberOfSphericalHarmonicCoefficients];
+		double theta    = (double)(task.no)*delta_theta-1;
 		computeLegendrePolynomials(plm, theta, sphericalHarmonicOrder);
 
 		precomputedThetaComponent[c++] = plm[sphPlmInd(0,0)];
 
-		if (TRACKER::img_FOD->iseven) {
+		if (img_FOD->iseven) {
 			for(float l = 2; l <= sphericalHarmonicOrder; l+=2) {
 				for(float m = -l; m <= l; m++) {
-					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
-					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
-					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
+					if (m<0)  		precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =         plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l, m)];
 				}
 			}
 		} else {
 			for(float l = 1; l <= sphericalHarmonicOrder; l+=1) {
 				for(float m = -l; m <= l; m++) {
-					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
-					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
-					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
+					if (m<0)  		precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =         plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l, m)];
 				}
 			}
 		}
+		
+		delete[] plm;
         
-	}
-	
-	delete[] plm;
+	};
+	MT::MTRUN(numberOfSamples_theta,numberOfSamples_theta/16,MT::maxNumberOfThreads,preComputeTheta);
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
 
