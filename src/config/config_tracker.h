@@ -2,6 +2,7 @@
 #define SRC_CONFIG_CONFIG_TRACKER_H_
 
 #include "../image/fod_image.h"
+#include "../image/scalar_image.h"
 #include "config_general.h"
 
 #define SHPRECOMPUTEDIM 1024
@@ -15,7 +16,8 @@ typedef enum {
 	PTT_C1,
     PTT_C2,
     PTT_C3,
-	LOCAL_PROBABILISTIC
+	LOCAL_PROBABILISTIC,
+    PTT_WITH_PARAMETER_PRIORS
 } Algorithm;
 
 typedef enum {
@@ -89,6 +91,9 @@ extern float           probeStepSize;
 extern float           probeNormalizer;
 extern float           angularSeparation;
 
+
+extern SCALAR_Image   *img_dispersion; // Parameter priors
+
 // Derived parameters
 extern float		   maxCurvature;
 extern float		   smallestPixDim;
@@ -109,9 +114,12 @@ extern float                 weakLinkThresh;
 // Functions
 void cleanConfigTracker();
 void readFODImage();
+void readDispersionImage();
 void setDefaultParametersWhenNecessary();
 void setMethodsDefaultParametersWhenNecessary();
 void print();
+
+
 
 }
 

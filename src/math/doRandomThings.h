@@ -27,6 +27,7 @@ public:
 	void 		 getAUnitRandomVector(float* out);
 	void 		 getAUnitRandomPerpVector(float* out, float* inp);
     void         getARandomPointWithinDisk(float* x, float *y, float r);
+    void         getARandomPointWithinSphere(float* x, float *y, float *z, float r);
 
 private:
 	std::mt19937 gen;
@@ -72,6 +73,18 @@ inline void RandomDoer::getARandomPointWithinDisk(float* x, float *y, float r) {
 	} while ((*x**x+*y**y)>1);
 	*x *= r;  
     *y *= r;
+}
+
+inline void RandomDoer::getARandomPointWithinSphere(float* x, float *y, float *z, float r) {
+
+	do {
+		*x = (*unidis_m1_p1)(gen);
+		*y = (*unidis_m1_p1)(gen);
+        *z = (*unidis_m1_p1)(gen);
+	} while ((*x**x+*y**y+*z**z)>1);
+	*x *= r;  
+    *y *= r;
+    *z *= r;
 }
 
 inline void RandomDoer::getAUnitRandomPerpVector(float* out, float* inp) {

@@ -16,9 +16,9 @@ Coordinate ROI_Image::ind2phy(size_t index) {
 	int i,j,k;
 	ind2sub(index,i,j,k);
 
-	float x = nim->sto_xyz.m[0][0]*i + nim->sto_xyz.m[0][1]*j + nim->sto_xyz.m[0][2]*k + nim->sto_xyz.m[0][3];
-	float y = nim->sto_xyz.m[1][0]*i + nim->sto_xyz.m[1][1]*j + nim->sto_xyz.m[1][2]*k + nim->sto_xyz.m[1][3];
-	float z = nim->sto_xyz.m[2][0]*i + nim->sto_xyz.m[2][1]*j + nim->sto_xyz.m[2][2]*k + nim->sto_xyz.m[2][3];
+	float x = ijk2xyz[0][0]*i + ijk2xyz[0][1]*j + ijk2xyz[0][2]*k + ijk2xyz[0][3];
+	float y = ijk2xyz[1][0]*i + ijk2xyz[1][1]*j + ijk2xyz[1][2]*k + ijk2xyz[1][3];
+	float z = ijk2xyz[2][0]*i + ijk2xyz[2][1]*j + ijk2xyz[2][2]*k + ijk2xyz[2][3];
 
 	return Coordinate(x,y,z);
 }
@@ -56,48 +56,41 @@ bool ROI_Image::readImage() {
 	case 1536: accessor = new NiftiDataAccessor_ForType<long double>; break;
 	}
 
-    data    = new std::vector< std::vector < std::vector<float*> > >;
-    zero    = (float*)calloc(1,sizeof(float));
+    // all zero valued voxels are pointed to here
+    zero     = new float[1];
+    zero[0]  = 0;
     
-    float binVal = 1.0/voxelVolume;
-    
-    size_t ind   = 0;
-    for (int x=0; x<(nim->nx); x++) {
-        
-        std::vector< std::vector<float*> > YZ;
-        
-        for (int y=0; y<(nim->ny); y++) {
-            
-            std::vector<float*> Z;
-            
-            for (int z=0; z<(nim->nz); z++) {
-                
-                ind = (x+y*sx+z*sxy);
-                
-                float *T = zero;
-                
-                if (labelFlag) {
-                    if (accessor->get(nim->data,ind)==label) {
-                        nnzVoxelInds.push_back(ind);
-                        T    = new float[1];
-                        T[0] = binVal;
-                    }
-                } else {
-                    if (accessor->get(nim->data,ind)>0) {
-                        nnzVoxelInds.push_back(ind);
-                        T    = new float[1];
-                        T[0] = binVal;
-                    }
-                }
-                
-                Z.push_back(T);
-            }
-            
-            YZ.push_back(Z);
+    // Copy everything in a float array with dimension 1
+    data    = new float*[sxyz];
+    MT::MTRUN(sxyz, sxyz/16, MT::maxNumberOfThreads,[&](MTTASK task)->void {
+        float val = accessor->get(nim->data,task.no);
+        if (val==0) {
+            data[task.no] = zero;
         }
-
-        data->push_back(YZ);
-    }
+        else {
+        
+            if (labelFlag) {
+                if (val==label) {
+                    data[task.no]    = new float[1];
+                    data[task.no][0] = 1;
+                    MT::proc_mx.lock();
+                    nnzVoxelInds.push_back(task.no);
+                    MT::proc_mx.unlock();
+                } else 
+                    data[task.no] = zero;
+            } 
+            else if (val>0) {
+                data[task.no]    = new float[1];
+                data[task.no][0] = 1;
+                MT::proc_mx.lock();
+                nnzVoxelInds.push_back(task.no);
+                MT::proc_mx.unlock();
+            } else 
+                data[task.no] = zero;
+            
+        }
+        
+    });
 
     
 	nifti_image_unload(nim);

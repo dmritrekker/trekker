@@ -20,8 +20,8 @@ void FOD_Image::cleanFODImage() {
 }
 
 float FOD_Image::getSmallestPixdim() {
-	float smallestPixelDim = 1e10;
-	for (int i=1; i<4; i++) {
+	float smallestPixelDim = nim->pixdim[1];
+	for (int i=2; i<4; i++) {
 		if (nim->pixdim[i]<smallestPixelDim)
 			smallestPixelDim = nim->pixdim[i];
 	}
@@ -55,62 +55,6 @@ int FOD_Image::getSHorder() {
     }
 
 }
-
-void loadingTask(FOD_Image* FODImg, size_t begin_ind, size_t end_ind, NiftiDataAccessor *accessor, size_t nnt) {
-    
-    float* FOD;
-    if (FODImg->isspheresliced==false) {
-        FOD = new float[FODImg->nim->nt];
-    } else {
-        FOD = new float[SH::numberOfSphericalHarmonicCoefficients];
-    }
-    
-    for (size_t n=begin_ind; n<end_ind; n++) {
-        
-        size_t ind  = FODImg->nnzVoxelInds[n];
-        size_t x    = ind % FODImg->nim->nx;
-        size_t y    = (ind - x)/FODImg->nim->nx % FODImg->nim->ny;
-        size_t z    = ((ind - x)/FODImg->nim->nx-y)/FODImg->nim->ny;
-        
-        float *vals = new float[nnt];
-        
-        if (FODImg->isspheresliced==false) {
-            for (int t=0; t<FODImg->nim->nt; t++)
-                FOD[t] = accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz);
-        } else {
-            for (int i=0; i<SH::numberOfSphericalHarmonicCoefficients; i++) {
-                FOD[i] = 0;
-                for (int t=0; t<FODImg->nim->nt; t++)
-                    FOD[i] += SH::Ylm[t][i]*accessor->get(FODImg->nim->data,ind+t*FODImg->sxyz); // Ylm is already scaled by the surface area of a point
-            }
-        }
-    
-        if (FODImg->discretizationFlag==true) {
-            for (size_t t=0; t<FODImg->discVolSphCoords.size(); t++) {
-                float dir[3] = {FODImg->discVolSphCoords[t].x,FODImg->discVolSphCoords[t].y,FODImg->discVolSphCoords[t].z};
-                vals[t]      = SH::SH_amplitude(FOD,dir)/FODImg->voxelVolume;
-            }
-        } else {
-            for (int t=0; t<SH::numberOfSphericalHarmonicCoefficients; t++) {
-                vals[t]      = FOD[t]/FODImg->voxelVolume;
-            }
-        }
-        
-        FODImg->data->at(x).at(y).at(z) = vals;
-        
-    }
-    
-    delete[] FOD;
-    
-    GENERAL::tracker_lock.lock();
-    
-    if ((GENERAL::verboseLevel!=QUITE) && (FODImg->discretizationFlag == true)) std::cout << "Discretizing FOD: " << (int)((end_ind/(float)(FODImg->nnzVoxelInds.size()-1))*100) << "%" << '\r' << std::flush;
-    if ((GENERAL::verboseLevel!=QUITE) && (FODImg->discretizationFlag == false)) std::cout << "Loading FOD: " << (int)((end_ind/(float)(FODImg->nnzVoxelInds.size()-1))*100) << "%" << '\r' << std::flush;
-    std::lock_guard<std::mutex> lk(GENERAL::exit_mx);
-    GENERAL::exit_cv.notify_all();
-}
-
-
 
 
 bool FOD_Image::readImage() {
@@ -146,91 +90,78 @@ bool FOD_Image::readImage() {
     discVolSphShift     = discVolSphRadius + 0.5;
             
 	
-    // Load data
-    std::unique_lock<std::mutex> lk(GENERAL::exit_mx);
-    
+    // Load data 
     size_t nnt = SH::numberOfSphericalHarmonicCoefficients;
     if (discretizationFlag==true) {
         fillDiscVolSph();
         nnt = discVolSphCoords.size();
     }
     
-    data    = new std::vector< std::vector < std::vector<float*> > >;
+    // Copy everything in a float array with dimension nnt
+    zero     = new float[nnt];
+    memset(zero,0,nnt*sizeof(float));
     
-    // Mark non-zero voxels and allocate pointers for data
-    size_t ind   = 0;
-    for (int x=0; x<(nim->nx); x++) {
-        for (int y=0; y<(nim->ny); y++) {
-            for (int z=0; z<(nim->nz); z++) {
-                
-                ind = (x+y*sx+z*sxy);
-                
-                for (int t=0; t<(nim->nt); t++) {
-                    
-                    if (accessor->get(nim->data,ind+t*sxyz)!=0) {
-                        nnzVoxelInds.push_back(ind);
-                        break;
-                    }
-                    
-                }
+    data    = new float*[sxyz];
+    for (size_t i=0; i<sxyz; i++)
+        data[i] = zero;
+    
+
+    // Mark non-zero voxels
+    auto findNonZeroVoxels = [&](MTTASK task)->void {
+        for (int t=0; t<nim->nt; t++) {
+            if (accessor->get(nim->data,task.no+t*sxyz)!=0) {
+                MT::proc_mx.lock();
+                nnzVoxelInds.push_back(task.no);
+                MT::proc_mx.unlock();
+                return;
             }
         }
+    };
+    MT::MTRUN(sxyz,MT::maxNumberOfThreads,findNonZeroVoxels);
+    
+    std::vector<float*> FOD;
+    if (isspheresliced==false) {
+        for (int i=0; i<MT::maxNumberOfThreads; i++)
+            FOD.push_back(new float[nim->nt]);
+    } else {
+        for (int i=0; i<MT::maxNumberOfThreads; i++)
+            FOD.push_back(new float[SH::numberOfSphericalHarmonicCoefficients]);
     }
     
-    zero = (float*)calloc(nnt,sizeof(float));
-    std::vector<float*> Z;
-    std::vector< std::vector<float*> > YZ;
-    
-    for (int z=0; z<(nim->nz); z++) {     Z.push_back(zero); }
-    for (int y=0; y<(nim->ny); y++) {    YZ.push_back(Z);    }
-    for (int x=0; x<(nim->nx); x++) { data->push_back(YZ);   }
-    
-    size_t nnz = nnzVoxelInds.size();
-    
-    // Prepare data
-    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == true) ) std::cout << "Discretizing FOD: 0%" << '\r' << std::flush;
-    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == false)) std::cout << "Loading FOD: 0%" << '\r' << std::flush;
-    
-    size_t chunkSize = 128;
-    size_t bind      = 0;
-    size_t eind      = 0;
-    size_t taskCount = 0;
-    
-    for (int i=0; i<GENERAL::numberOfThreads; i++) {
-        if (eind < nnz) {
-            bind = eind;
-            eind = bind + chunkSize;
-            if (eind>nnz) eind=nnz;
+    auto loadingTask = [&](MTTASK task)->void {
+        
+        int index   = nnzVoxelInds[task.no];
+        float *vals = new float[nnt];
+        
+        if (isspheresliced==false) {
+            for (int t=0; t<nim->nt; t++)
+                FOD[task.threadId][t] = accessor->get(nim->data,index+t*sxyz);
         } else {
-            break;
+            for (int i=0; i<SH::numberOfSphericalHarmonicCoefficients; i++) {
+                FOD[i] = 0;
+                for (int t=0; t<nim->nt; t++)
+                    FOD[task.threadId][i] += SH::Ylm[t][i]*accessor->get(nim->data,index+t*sxyz); // Ylm is already scaled by the surface area of a point
+            }
         }
-        std::thread task = std::thread(loadingTask, this, bind, eind, accessor, nnt);
-        task.detach();
-        taskCount++;
-    }
     
-    while(eind < nnz) {
+        if (discretizationFlag==true) {
+            for (size_t t=0; t<discVolSphCoords.size(); t++) {
+                float dir[3] = {discVolSphCoords[t].x,discVolSphCoords[t].y,discVolSphCoords[t].z};
+                vals[t]      = SH::SH_amplitude(FOD[task.threadId],dir);
+            }
+        } else {
+            for (int t=0; t<SH::numberOfSphericalHarmonicCoefficients; t++)
+                vals[t] = FOD[task.threadId][t];
+        }
         
-        GENERAL::exit_cv.wait(lk);
-        
-        bind = eind;
-        eind = bind + chunkSize;
-        if (eind>nnz) eind=nnz;
-        
-        std::thread task = std::thread(loadingTask, this, bind, eind, accessor, nnt);
-        task.detach();
-        GENERAL::tracker_lock.unlock();
-    }
+        data[index] = vals;
+    };    
+    if (discretizationFlag == true)  
+        MT::MTRUN(nnzVoxelInds.size(),MT::maxNumberOfThreads,"Discretizing FOD",loadingTask);
+    else 
+        MT::MTRUN(nnzVoxelInds.size(),MT::maxNumberOfThreads,loadingTask);    
     
-    while (taskCount) {
-        GENERAL::exit_cv.wait(lk);
-        taskCount--;
-        GENERAL::tracker_lock.unlock();
-    }
-    
-    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == true) ) std::cout << "Discretizing FOD: 100%" << '\r' << std::flush;
-    if ((GENERAL::verboseLevel!=QUITE) && (discretizationFlag == false)) std::cout << "Loading FOD: 100%" << '\r' << std::flush;
-    if (GENERAL::verboseLevel!=QUITE) std::cout << std::endl;
+    for (int i=0; i<MT::maxNumberOfThreads; i++) delete[] FOD[i];
     
     nim->nt     = nnt;
     nim->nvox   = nim->nx * nim->ny * nim->nz * nim->nt;
@@ -373,21 +304,23 @@ int FOD_Image::vertexCoord2volInd(float* vertexCoord) {
     return volInd;
 }
 
-
-
 float FOD_Image::getFODval(float *p, float* vertexCoord) {
+    
+    float ijk;
+    int cor_ijk[3];
+    float iwa[3], iwb[3];
 
 	for (int i=0; i<3; i++) {
 		ijk 	    = xyz2ijk[i][0]*p[0] + xyz2ijk[i][1]*p[1] + xyz2ijk[i][2]*p[2] + xyz2ijk[i][3] + 1; //+1 because the image is zero padded
 		cor_ijk[i] 	= int(ijk);
         if ( (cor_ijk[i] < 0) || (cor_ijk[i] > dims[i]) ) return 0;
-        iwa[i] 		= (ijk-cor_ijk[i])*pixDims[i];
-		iwb[i] 		= pixDims[i]-iwa[i];
+        iwa[i] 		= (ijk-cor_ijk[i])*normalizedPixDims[i];
+		iwb[i] 		= normalizedPixDims[i]-iwa[i];
 	}
 
     int volInd   = vertexCoord2volInd(vertexCoord);
     
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zs2i[0] + cor_ijk[2]*zs2i[1]];
     
     return  iwb[0]*iwb[1]*iwb[2]*vals[0][volInd] +
 			iwa[0]*iwb[1]*iwb[2]*vals[1][volInd] +

@@ -24,6 +24,7 @@ extern std::vector<size_t>   	   seed_indices;
 
 extern std::vector<Coordinate>     seed_coordinates;
 extern std::vector<Coordinate>     seed_init_directions;
+extern float                       seed_radius;
 
 extern std::string     			   seed_coordinate_fname;
 extern std::string     			   seed_init_directions_fname;

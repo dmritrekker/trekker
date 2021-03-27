@@ -8,23 +8,16 @@ Image::Image() {
  	data 			= NULL;
     dims            = NULL;
     pixDims         = NULL;
+    normalizedPixDims = NULL;
 	xyz2ijk 		= NULL;
-	voxelVolume 	= 0.0;
+    ijk2xyz         = NULL;
+    zs2i            = NULL;
 
 	sx 				= 0;
 	sxy 			= 0;
 	sxyz 			= 0;
 	voxels 			= NULL;
-	zp_sx			= 0;
-	zp_sxy 			= 0;
-	zp_sxyz			= 0;
     zero            = NULL;
-    
-    ijk             = 0;
-    cor_ijk         = new int[3];
-    volFrac         = new float[8];
-    iwa             = new float[3];
-    iwb             = new float[3];
 }
 
 Image::Image(const Image& obj) {
@@ -33,55 +26,33 @@ Image::Image(const Image& obj) {
 	data 			= obj.data;
     dims 			= obj.dims;
     pixDims 		= obj.pixDims;
+    normalizedPixDims = obj.normalizedPixDims;
 	xyz2ijk 		= obj.xyz2ijk;
-	voxelVolume 	= obj.voxelVolume;
+    ijk2xyz 		= obj.ijk2xyz;
 
 	sx 				= obj.sx;
 	sxy 			= obj.sxy;
 	sxyz 			= obj.sxyz;
 	voxels 			= obj.voxels;
-	zp_sx 			= obj.zp_sx;
-	zp_sxy 			= obj.zp_sxy;
-	zp_sxyz 		= obj.zp_sxyz;
     zero            = obj.zero;
-    
-    ijk             = 0;
-    cor_ijk         = new int[3];
-    volFrac         = new float[8];
-    iwa             = new float[3];
-    iwb             = new float[3];
+    zs2i            = obj.zs2i;
 }
 
 Image::~Image() {
     
     if (data!=NULL) {
-        
-        for (size_t x=0; x < data->size(); x++) {
-            for (size_t y=0; y < data->at(x).size(); y++) {
-                for (size_t z=0; z < data->at(x).at(y).size(); z++) {
-                    
-                    if (data->at(x).at(y).at(z) != zero) {
-                        
-                        delete[] data->at(x).at(y).at(z);
-                        data->at(x).at(y).at(z) = NULL;
-                        
-                    }
-                    
-                }
-                data->at(x).at(y).clear();
-            }
-            data->at(x).clear();
-        }
-        
-        data->clear();
-        data = NULL;
-        
+        for (size_t i=0; i<sxyz; i++) 
+            if (data[i]!=zero)
+                delete[] data[i];
+        delete[] data;
     }
     
     if (nim!=NULL)              nifti_image_free(nim);
 	
     if (dims!=NULL)			    delete[] dims;
     if (pixDims!=NULL)			delete[] pixDims;
+    if (normalizedPixDims!=NULL)			delete[] normalizedPixDims;
+    if (zs2i!=NULL)			delete[] zs2i;
     
     if (xyz2ijk!=NULL) {
         delete[] xyz2ijk[0];
@@ -90,13 +61,20 @@ Image::~Image() {
         delete[] xyz2ijk;
     }
     
-	if (voxels!=NULL)			delete[] voxels;
-    if (zero!=NULL)			    free(zero);
     
-    if (cor_ijk!=NULL)			delete[] cor_ijk;
-    if (volFrac!=NULL)			delete[] volFrac;
-    if (iwa!=NULL)			    delete[] iwa;
-    if (iwb!=NULL)			    delete[] iwb;
+    if (ijk2xyz!=NULL) {
+        delete[] ijk2xyz[0];
+        delete[] ijk2xyz[1];
+        delete[] ijk2xyz[2];
+        delete[] ijk2xyz;
+    }
+    
+    if (voxels!=NULL) {
+        for (size_t i=0; i<zs2i[2]; i++) delete[] voxels[i];
+        delete[] voxels;
+    }
+    
+    if (zero!=NULL)			    free(zero);
     
 }
 
@@ -107,12 +85,11 @@ void Image::destroyCopy(){
     dims            = NULL;
     pixDims         = NULL;
 	xyz2ijk 		= NULL;
+    ijk2xyz         = NULL;
 	voxels 			= NULL;
     zero            = NULL;
-    cor_ijk         = NULL;
-    volFrac         = NULL;
-    iwa             = NULL;
-    iwb             = NULL;
+    normalizedPixDims = NULL;
+    zs2i            = NULL;
 }
 
 bool Image::readHeader(char* _filePath) {
@@ -145,8 +122,6 @@ bool Image::readHeader(char* _filePath) {
 	default:   std::cout<<"Nifti datatype: Not applicable "   << std::endl; std::cout << "is not an accepted datatype" << std::endl; return false; break;
 	}
 
-	voxelVolume = nim->pixdim[1]*nim->pixdim[2]*nim->pixdim[3];
-
     // Get dims and pixDims
     dims    = new float[3];
     dims[0] = nim->dim[1]; // nx
@@ -158,24 +133,40 @@ bool Image::readHeader(char* _filePath) {
     pixDims[1] = nim->pixdim[2]; // dy
     pixDims[2] = nim->pixdim[3]; // dz
     
-	// TODO: Enable option to choose between sform or qform
+    normalizedPixDims    = new float[3];
+    float voxelVolumeNormalizer = 1.0/std::pow(pixDims[0]*pixDims[1]*pixDims[2],1.0f/3.0f);
+    normalizedPixDims[0] = pixDims[0]*voxelVolumeNormalizer;
+    normalizedPixDims[1] = pixDims[1]*voxelVolumeNormalizer;
+    normalizedPixDims[2] = pixDims[2]*voxelVolumeNormalizer;
+    
+	// Choose between sform or qform
     xyz2ijk     = new float*[3];
     xyz2ijk[0]  = new float[4];
     xyz2ijk[1]  = new float[4];
     xyz2ijk[2]  = new float[4];
-	
-    // Use only sform for now
-    for (int i=0; i<3; i++)
-        for (int j=0; j<4; j++)
-            xyz2ijk[i][j] = nim->sto_ijk.m[i][j];
     
+    ijk2xyz     = new float*[3];
+    ijk2xyz[0]  = new float[4];
+    ijk2xyz[1]  = new float[4];
+    ijk2xyz[2]  = new float[4];
+    
+    
+    // Use sform if possible otherwise use qform
     if (nim->sform_code>0) {        
-		// Then xyz2ijk=sform
+        for (int i=0; i<3; i++)
+            for (int j=0; j<4; j++) {
+                xyz2ijk[i][j] = nim->sto_ijk.m[i][j];
+                ijk2xyz[i][j] = nim->sto_xyz.m[i][j];
+            }
 	}
 	else {
-		// Then xyz2ijk=qform
+        for (int i=0; i<3; i++)
+            for (int j=0; j<4; j++) {
+                xyz2ijk[i][j] = nim->qto_ijk.m[i][j];
+                ijk2xyz[i][j] = nim->qto_xyz.m[i][j];
+            }
 	}
-
+    
 	this->readHeader_detail();
 
 	return true;
@@ -189,9 +180,10 @@ void Image::readHeader_detail() {
 	sxy 		= nim->nx*nim->ny;
 	sxyz 		= nim->nx*nim->ny*nim->nz;
 
-	zp_sx 		= (nim->nx+2);
-	zp_sxy 		= (nim->nx+2)*(nim->ny+2);
-	zp_sxyz 	= (nim->nx+2)*(nim->ny+2)*(nim->nz+2);
+    zs2i        = new size_t[3];
+	zs2i[0] 	= (nim->nx+2);
+	zs2i[1] 	= (nim->nx+2)*(nim->ny+2);
+	zs2i[2] 	= (nim->nx+2)*(nim->ny+2)*(nim->nz+2);
 
 }
 
@@ -258,11 +250,10 @@ void Image::printInfo() {
 
 }
 
-// Notice that the data has 1/voxelVolume fraction included to speed up interpolation
 bool Image::indexVoxels() {
 
 	// voxels are indexed on a zero padded image in order to avoid boundary checking
-	voxels = new Voxel[zp_sxyz];
+	voxels = new float**[zs2i[2]];
     
 	size_t index = 0;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 0%" << '\r' << std::flush;
@@ -271,19 +262,20 @@ bool Image::indexVoxels() {
 		for (int y=0; y<(nim->ny+2); y++) {
 			for (int x=0; x<(nim->nx+2); x++) {
                 
-                voxels[index].box[0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y-1).at(z-1);
-                voxels[index].box[1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y-1).at(z-1);
-                voxels[index].box[2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x-1).at(y  ).at(z-1);
-                voxels[index].box[3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data->at(x  ).at(y  ).at(z-1);
-                voxels[index].box[4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y-1).at(z  );
-                voxels[index].box[5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y-1).at(z  );
-                voxels[index].box[6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x-1).at(y  ).at(z  );
-                voxels[index].box[7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data->at(x  ).at(y  ).at(z  );
+                voxels[index] = new float*[8];
+                voxels[index][0]=((x<1)||(y<1)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data[(x-1)+(y-1)*sx+(z-1)*sxy];
+                voxels[index][1]=((x<0)||(y<1)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz))  ) ? zero : data[(x)  +(y-1)*sx+(z-1)*sxy];
+                voxels[index][2]=((x<1)||(y<0)||(z<1)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data[(x-1)+(y)*sx  +(z-1)*sxy];
+                voxels[index][3]=((x<0)||(y<0)||(z<1)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz))  ) ? zero : data[(x)  +(y)*sx  +(z-1)*sxy];
+                voxels[index][4]=((x<1)||(y<1)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data[(x-1)+(y-1)*sx+(z)*sxy  ];
+                voxels[index][5]=((x<0)||(y<1)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)  )||(z>(nim->nz)-1)) ? zero : data[(x)  +(y-1)*sx+(z)*sxy  ];
+                voxels[index][6]=((x<1)||(y<0)||(z<0)||(x>(nim->nx)  )||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data[(x-1)+(y)*sx  +(z)*sxy  ];
+                voxels[index][7]=((x<0)||(y<0)||(z<0)||(x>(nim->nx)-1)||(y>(nim->ny)-1)||(z>(nim->nz)-1)) ? zero : data[(x)  +(y)*sx  +(z)*sxy  ];
                 
 				index++;
 			}
 		}
-		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (size_t)((index/(float)(zp_sxyz-1))*100) << "%" << '\r' << std::flush;
+		if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: " << (size_t)((index/(float)(zs2i[2]-1))*100) << "%" << '\r' << std::flush;
 	}
 
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Indexing voxels: 100%" << '\r' << std::flush;
@@ -319,66 +311,50 @@ unsigned char Image::checkImageBounds(float i, float j, float k) {
 // Returns 0 if outside image
 unsigned char Image::checkWorldBounds(float x, float y, float z) {
 
-	float i = nim->sto_ijk.m[0][0]*x + nim->sto_ijk.m[0][1]*y + nim->sto_ijk.m[0][2]*z + nim->sto_ijk.m[0][3];
+	float i = xyz2ijk[0][0]*x + xyz2ijk[0][1]*y + xyz2ijk[0][2]*z + xyz2ijk[0][3];
 	if ( (i<-0.5) || (i>nim->nx-0.5)) return 0;
 
-	float j = nim->sto_ijk.m[1][0]*x + nim->sto_ijk.m[1][1]*y + nim->sto_ijk.m[1][2]*z + nim->sto_ijk.m[1][3];
+	float j = xyz2ijk[1][0]*x + xyz2ijk[1][1]*y + xyz2ijk[1][2]*z + xyz2ijk[1][3];
 	if ( (j<-0.5) || (j>nim->ny-0.5)) return 0;
 
-	float k = nim->sto_ijk.m[2][0]*x + nim->sto_ijk.m[2][1]*y + nim->sto_ijk.m[2][2]*z + nim->sto_ijk.m[2][3];
+	float k = xyz2ijk[2][0]*x + xyz2ijk[2][1]*y + xyz2ijk[2][2]*z + xyz2ijk[2][3];
 	if ( (k<-0.5) || (k>nim->nz-0.5)) return 0;
 
 	return 1;
 }
 
 void Image::getVal(float *p, float* out) {
-
-	if ( prepInterp(p) == false ) {
-		memset(out,0,nim->nt*sizeof(float));
-		return;
-	}
-	
-	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zp_sx + cor_ijk[2]*zp_sxy].box;
     
-	for (int c=0; c<nim->nt; c++) {
-		out[c] =volFrac[0]*vals[0][c] +
-				volFrac[1]*vals[1][c] +
-				volFrac[2]*vals[2][c] +
-				volFrac[3]*vals[3][c] +
-				volFrac[4]*vals[4][c] +
-				volFrac[5]*vals[5][c] +
-				volFrac[6]*vals[6][c] +
-				volFrac[7]*vals[7][c];
-	}
-    
-}
-
-// Converts physical coordinates to index on the zero-padded image that is voxel indexed for interpolation
-bool Image::prepInterp(float *p) {    
+    float ijk;
+    int cor_ijk[3];
+    float iwa[3], iwb[3];
     
     for (int i=0; i<3; i++) {
         
-		ijk 	    = xyz2ijk[i][0]*p[0] + xyz2ijk[i][1]*p[1] + xyz2ijk[i][2]*p[2] + xyz2ijk[i][3] + 1; //+1 because the image is zero padded
+		ijk 	    = xyz2ijk[i][0]*p[0] + xyz2ijk[i][1]*p[1] + xyz2ijk[i][2]*p[2] + xyz2ijk[i][3] + 1;
 		cor_ijk[i] 	= int(ijk);
         
-        if ( (cor_ijk[i] < 0) || (cor_ijk[i] > dims[i]) ) return false;
+        if ( (cor_ijk[i] < 0) || (cor_ijk[i] > dims[i]) ) {
+            memset(out,0,(nim->nt)*sizeof(float));
+            return;
+        }
 		
-        iwa[i] 		= (ijk-cor_ijk[i])*pixDims[i];
-		iwb[i] 		= pixDims[i]-iwa[i];
+        iwa[i] 		= (ijk-cor_ijk[i])*normalizedPixDims[i];
+		iwb[i] 		= normalizedPixDims[i]-iwa[i];
         
 	}
     
-
-	// Volume fractions
-	volFrac[7]  = iwa[0]*iwa[1]*iwa[2]; // front low left
-	volFrac[6]  = iwb[0]*iwa[1]*iwa[2]; // front low right
-	volFrac[5]  = iwa[0]*iwb[1]*iwa[2]; // front up  left
-	volFrac[4]  = iwb[0]*iwb[1]*iwa[2]; // front up  right
-	volFrac[3]  = iwa[0]*iwa[1]*iwb[2]; // back  low left
-	volFrac[2]  = iwb[0]*iwa[1]*iwb[2]; // back  low right
-	volFrac[1]  = iwa[0]*iwb[1]*iwb[2]; // back  up  left
-	volFrac[0]  = iwb[0]*iwb[1]*iwb[2]; // back  up  right
-
-	return true;
-
+	float **vals = voxels[cor_ijk[0] + cor_ijk[1]*zs2i[0] + cor_ijk[2]*zs2i[1]];
+    
+	for (int c=0; c<(nim->nt); c++) {
+		out[c] =iwb[0]*iwb[1]*iwb[2]*vals[0][c] +
+				iwa[0]*iwb[1]*iwb[2]*vals[1][c] +
+				iwb[0]*iwa[1]*iwb[2]*vals[2][c] +
+				iwa[0]*iwa[1]*iwb[2]*vals[3][c] +
+				iwb[0]*iwb[1]*iwa[2]*vals[4][c] +
+				iwa[0]*iwb[1]*iwa[2]*vals[5][c] +
+				iwb[0]*iwa[1]*iwa[2]*vals[6][c] +
+				iwa[0]*iwa[1]*iwa[2]*vals[7][c];
+	}
+    
 }

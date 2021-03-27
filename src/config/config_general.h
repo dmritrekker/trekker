@@ -18,6 +18,9 @@
 #include <chrono>
 #include <ctime>
 #include "notset.h"
+#include "multithreader.h"
+
+#define VERSION "v0.8"
 
 #define MAXTIMELIMIT std::numeric_limits<int>::max()
 
@@ -39,8 +42,6 @@ extern std::chrono::steady_clock::time_point  	startTime;
 extern int 									    timeLimit;
 extern bool 									usingAPI;
 
-extern std::condition_variable 	exit_cv;
-extern std::mutex               exit_mx;
 extern std::mutex               tracker_lock;
 extern size_t                   ready_thread_id;
 extern int                      lineCountToFlush;

@@ -1,12 +1,12 @@
-#include "PTF.h"
+#include "PTF_with_parameter_priors.h"
 
-PTF::PTF(RandomDoer *_rndmr) {
+PTF_with_parameter_priors::PTF_with_parameter_priors(RandomDoer *_rndmr) {
 	init_Frame();
 	rndmr          = _rndmr;
     initialized    = false;
 }
 
-void PTF::init_Frame() {
+void PTF_with_parameter_priors::init_Frame() {
 	p 			= new float[3];
     
     k1          = 0;
@@ -28,9 +28,15 @@ void PTF::init_Frame() {
     ptf_FOD     = new FOD_Image(*TRACKER::img_FOD);
     FOD         = new float[SH::numberOfSphericalHarmonicCoefficients];
     
+    ptf_dispersion = new SCALAR_Image(*TRACKER::img_dispersion);
+    
+    // Initialize thread specific fiber tracking parameters
+    param_maxCurvature        = TRACKER::maxCurvature;
+    param_dataSupportExponent = TRACKER::dataSupportExponent;
+    
 }
 
-PTF::~PTF() {
+PTF_with_parameter_priors::~PTF_with_parameter_priors() {
 	delete[] p;
     
     delete[] F[0];
@@ -42,12 +48,14 @@ PTF::~PTF() {
     delete[] sPP;
     
     ptf_FOD->destroyCopy();
+    ptf_dispersion->destroyCopy();
+    
 	delete   ptf_FOD;
     delete[] FOD;
     
 }
 
-void PTF::initkT(PTF *ptf) {
+void PTF_with_parameter_priors::initkT(PTF_with_parameter_priors *ptf) {
     kT1 = k1 - ptf->k1; // Sets the kT of the curve
     kT2 = k2 - ptf->k2;
     
@@ -62,7 +70,7 @@ void PTF::initkT(PTF *ptf) {
     
 }
 
-void PTF::swap(PTF *ptf) {
+void PTF_with_parameter_priors::swap(PTF_with_parameter_priors *ptf) {
 
     k1       =  ptf->k1;
     k2       =  ptf->k2;
@@ -83,7 +91,7 @@ void PTF::swap(PTF *ptf) {
         
 	}
 	
-	for (int i=0; i<9; i++) {
+	for (int i=0; i<8; i++) {
         PP[i]  = ptf->PP[i];
         sPP[i] = ptf->sPP[i];
     }
@@ -95,13 +103,13 @@ void PTF::swap(PTF *ptf) {
     lastVal_cand      = ptf->lastVal_cand;
 }
 
-void PTF::getARandomFrame() {
+void PTF_with_parameter_priors::getARandomFrame() {
 	rndmr->getAUnitRandomVector(F[0]);
 	rndmr->getAUnitRandomPerpVector(F[2],F[0]);
 	cross(F[1],F[2],F[0]);
 }
 
-void PTF::getARandomFrame(Coordinate _seed_init_direction) {
+void PTF_with_parameter_priors::getARandomFrame(Coordinate _seed_init_direction) {
 	F[0][0] = _seed_init_direction.x;
 	F[0][1] = _seed_init_direction.y;
 	F[0][2] = _seed_init_direction.z;
@@ -109,10 +117,10 @@ void PTF::getARandomFrame(Coordinate _seed_init_direction) {
 	cross(F[1],F[2],F[0]);
 }
 
-// To flip PTF parameterized curve
+// To flip PTF_with_parameter_priors parameterized curve
 // flip signs of T, K1 and k1
 // keep K2 and k2 as they are
-void PTF::flip() {
+void PTF_with_parameter_priors::flip() {
 	walk();
 
 	for (int i=0; i<3; i++) {
@@ -130,9 +138,9 @@ void PTF::flip() {
 }
 
 
-void PTF::print() {
+void PTF_with_parameter_priors::print() {
 	std::cout << "p:  " << p[0] << " " << p[1] << " " << p[2] << std::endl;
-	std::cout << "k:  " << getk() << std::endl;
+	std::cout << "k:  " << getk()  << std::endl;
 	std::cout << "k1: " << getk1() << std::endl;
 	std::cout << "k2: " << getk2() << std::endl;
 	std::cout << "T: "  << F[0][0] << " " <<  F[0][1] << " " <<  F[0][2] << std::endl;
@@ -149,13 +157,13 @@ void PTF::print() {
 
 
 
-void PTF::getCandidate() {
-    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
+void PTF_with_parameter_priors::getCandidate() {
+    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, param_maxCurvature);
     calcDataSupport();
 }
 
 
-void PTF::calcDataSupport() {
+void PTF_with_parameter_priors::calcDataSupport() {
     
     
     prepInitProbePropagator();
@@ -247,7 +255,6 @@ void PTF::calcDataSupport() {
                 
             }
             
-            prepProbePropagator();
         }
         
     } else {
@@ -327,7 +334,6 @@ void PTF::calcDataSupport() {
                 }
             }
             
-            prepProbePropagator();
         }
         
         
@@ -344,9 +350,9 @@ void PTF::calcDataSupport() {
 
 
 
-void PTF::getInitCandidate() {
+void PTF_with_parameter_priors::getInitCandidate() {
     
-    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
+    rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, param_maxCurvature);
     k1 = k1_cand;
     k2 = k2_cand;
     
@@ -390,3 +396,10 @@ void PTF::getInitCandidate() {
     calcDataSupport();
 
 }
+
+void PTF_with_parameter_priors::updateTrackingParameters() {
+
+     ptf_dispersion->getVal(p,&param_maxCurvature);
+     param_maxCurvature = 20*param_maxCurvature*param_maxCurvature;
+}
+

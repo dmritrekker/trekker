@@ -14,6 +14,7 @@ SeedingMode seedingMode    	= SEED_NOTSET;
 int count 					= NOTSET;
 int countPerVoxel 			= NOTSET;
 int maxTrialsPerSeed 		= NOTSET;
+float seed_radius           = 0;
 
 
 void cleanConfigSeeding() {
@@ -52,6 +53,11 @@ void setDefaultParametersWhenNecessary() {
             if (GENERAL::usingAPI)
                 std::cout << "TREKKER::count or countPerVoxel is not set. 1 million streamlines will be tracked." << std::endl;
 		}
+		if (seed_radius<0) {
+            if (GENERAL::verboseLevel!=QUITE) std::cout << "Seed radius cannot be negative" << std::endl;
+			exit(EXIT_FAILURE);
+        }
+		
 	}
 
 	if (maxTrialsPerSeed==NOTSET)
@@ -121,7 +127,7 @@ void readSeedImage() {
 
 							// if ((img_SEED->data[index]==0) && (dilated_img_SEED[index]==false)) {
                                 
-                            if ((*(img_SEED->data->at(i+x).at(j+y).at(k+z))==0) && (dilated_img_SEED[index]==false)) {
+                            if ((img_SEED->data[index][0]==0) && (dilated_img_SEED[index]==false)) {
 								dilated_img_SEED[index] = true;
 								dilated_seed_indices.push_back(index);
 							}
