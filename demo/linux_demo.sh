@@ -7,7 +7,7 @@ SEEDcoor=data/seedCoordinates.txt
 echo "================================="
 echo "DEMO 1: Seed image based tracking"
 echo "================================="
-../binaries/trekker_linux_x64_v0.7 \
+../binaries/trekker_linux_x64_v0.8 \
 -fod ${FOD} \
 -seed_image ${SEEDimag} \
 -seed_count 100 \
@@ -18,7 +18,7 @@ echo "================================="
 echo "\n\n======================================"
 echo "DEMO 2: Seed coordinate based tracking"
 echo "======================================"
-../binaries/trekker_linux_x64_v0.7 \
+../binaries/trekker_linux_x64_v0.8 \
 -fod ${FOD} \
 -seed_coordinates ${SEEDcoor} \
 -seed_count 100 \
