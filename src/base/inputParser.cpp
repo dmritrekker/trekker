@@ -1103,6 +1103,7 @@ void InputParser::parse_seed_coordinates() {
 			if (xyz.good()) xyz >> y; else { readError = true; break; }
 			if (xyz.good()) xyz >> z; else { readError = true; break; }
 			SEED::seed_coordinates.push_back(Coordinate(x,y,z));
+            if (xyz.good()) xyz >> SEED::seed_radius;
 		}
 		lineNo++;
 	}

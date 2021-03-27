@@ -33,6 +33,13 @@ void TrackingThread::getSeed() {
 	case SEED_COORDINATES: {
 		seed_coordinates 			= SEED::seed_coordinates.at(seedNo);
 		seed_init_direction 		= tracker_randomThings->getAUnitRandomVector();
+        if (seed_radius>0) {
+            float x,y,z;
+            tracker_randomThings->getARandomPointWithinSphere(&x,&y,&z,seed_radius);
+            seed_coordinates.x += x;
+            seed_coordinates.y += y;
+            seed_coordinates.z += z;
+        }
 		break;
 	}
 
