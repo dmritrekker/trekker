@@ -139,17 +139,17 @@ void precompute(size_t num) {
 		if (img_FOD->iseven) {
 			for(float l = 2; l <= sphericalHarmonicOrder; l+=2) {
 				for(float m = -l; m <= l; m++) {
-					if (m<0)  		precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l,-m)];
-					else if (m==0) 	precomputedThetaComponent[c++] =         plm[sphPlmInd(l, 0)];
-					else  			precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l, m)];
+					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
 				}
 			}
 		} else {
 			for(float l = 1; l <= sphericalHarmonicOrder; l+=1) {
 				for(float m = -l; m <= l; m++) {
-					if (m<0)  		precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l,-m)];
-					else if (m==0) 	precomputedThetaComponent[c++] =         plm[sphPlmInd(l, 0)];
-					else  			precomputedThetaComponent[c++] = M_SQRT2*plm[sphPlmInd(l, m)];
+					if (m<0)  		precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l,-m)];
+					else if (m==0) 	precomputedThetaComponent[c++] =       plm[sphPlmInd(l, 0)];
+					else  			precomputedThetaComponent[c++] = SQRT2*plm[sphPlmInd(l, m)];
 				}
 			}
 		}

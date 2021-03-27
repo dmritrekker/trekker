@@ -5,7 +5,7 @@
 @echo =================================
 @echo DEMO 1: Seed image based tracking
 @echo =================================
-..\binaries\trekker_win_x64_v0.7.exe ^
+..\binaries\trekker_win_x64_v0.8.exe ^
 -fod %FOD% ^
 -seed_image %SEEDimag% ^
 -seed_count 100 ^
@@ -19,7 +19,7 @@
 @echo ======================================
 @echo DEMO 2: Seed coordinate based tracking
 @echo ======================================
-..\binaries\trekker_win_x64_v0.7.exe ^
+..\binaries\trekker_win_x64_v0.8.exe ^
 -fod %FOD% ^
 -seed_coordinates %SEEDcoor% ^
 -enableOutputOverwrite ^
