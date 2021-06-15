@@ -216,7 +216,6 @@ void precomputeExpansionCoefficients() {
     if (GENERAL::verboseLevel!=QUITE) std::cout << "Done" << std::endl;
 }
 
-
 size_t getPhiIndex(float* unit_dir) {
 	return  numberOfSphericalHarmonicCoefficients*((size_t)((unit_dir[0]+1)*scalingFactor_phi)*numberOfSamples_phi + (size_t)((unit_dir[1]+1)*scalingFactor_phi));
 }

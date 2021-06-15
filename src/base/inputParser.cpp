@@ -1061,9 +1061,12 @@ void InputParser::parse_seed_image() {
 	SEED::seedingMode = SEED_IMAGE;
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		SEED::img_SEED->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			SEED::img_SEED->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 }
@@ -1241,9 +1244,12 @@ void InputParser::parse_pathway_require_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_entry;
@@ -1268,9 +1274,12 @@ void InputParser::parse_pathwayA_require_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_entry;
@@ -1296,9 +1305,12 @@ void InputParser::parse_pathwayB_require_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_entry;
@@ -1324,9 +1336,12 @@ void InputParser::parse_pathway_require_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_exit;
@@ -1351,9 +1366,12 @@ void InputParser::parse_pathwayA_require_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_exit;
@@ -1379,9 +1397,12 @@ void InputParser::parse_pathwayB_require_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_req_exit;
@@ -1409,9 +1430,12 @@ void InputParser::parse_pathway_stop_at_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_entry;
@@ -1436,9 +1460,12 @@ void InputParser::parse_pathwayA_stop_at_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_entry;
@@ -1464,9 +1491,12 @@ void InputParser::parse_pathwayB_stop_at_entry() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_entry;
@@ -1494,9 +1524,12 @@ void InputParser::parse_pathway_stop_at_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_exit;
@@ -1521,9 +1554,12 @@ void InputParser::parse_pathwayA_stop_at_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_exit;
@@ -1549,9 +1585,12 @@ void InputParser::parse_pathwayB_stop_at_exit() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_stop_at_exit;
@@ -1577,9 +1616,12 @@ void InputParser::parse_pathway_discard_if_enters() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_discard_if_enters;
@@ -1604,9 +1646,12 @@ void InputParser::parse_pathwayA_discard_if_enters() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_A;
@@ -1631,9 +1676,12 @@ void InputParser::parse_pathwayB_discard_if_enters() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_B;
@@ -1659,9 +1707,12 @@ void InputParser::parse_pathway_discard_if_exits() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_discard_if_exits;
@@ -1686,9 +1737,12 @@ void InputParser::parse_pathwayA_discard_if_exits() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_A;
@@ -1713,9 +1767,12 @@ void InputParser::parse_pathwayB_discard_if_exits() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_B;
@@ -1740,9 +1797,12 @@ void InputParser::parse_pathway_discard_if_ends_inside() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->type = roi_type_discard_if_ends_inside;
@@ -1767,9 +1827,12 @@ void InputParser::parse_pathwayA_discard_if_ends_inside() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_A;
@@ -1794,9 +1857,12 @@ void InputParser::parse_pathwayB_discard_if_ends_inside() {
 	}
 	argv_index++;
 
-	if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-		tmp->setLabel(atoi(argv[argv_index]));
-		argv_index++;
+	if (argv_index<argc) {
+		try {
+			int label = std::stoi(argv[argv_index]);
+			tmp->setLabel(label);
+			argv_index++;
+		} catch (...) {}
 	}
 
 	tmp->side = side_B;
