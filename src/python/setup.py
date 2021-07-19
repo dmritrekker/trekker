@@ -36,7 +36,7 @@ setup(
     description='Python package for parallel transport tractography (PTT)',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    version='0.8',
+    version='0.9',
     setup_requires=[
         'setuptools>=18.0',
         'cython>=0.28.4',

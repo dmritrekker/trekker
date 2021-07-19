@@ -63,32 +63,28 @@ bool ROI_Image::readImage() {
     // Copy everything in a float array with dimension 1
     data    = new float*[sxyz];
     MT::MTRUN(sxyz, sxyz/16, MT::maxNumberOfThreads,[&](MTTASK task)->void {
+
         float val = accessor->get(nim->data,task.no);
-        if (val==0) {
-            data[task.no] = zero;
-        }
-        else {
         
-            if (labelFlag) {
-                if (val==label) {
-                    data[task.no]    = new float[1];
-                    data[task.no][0] = 1;
-                    MT::proc_mx.lock();
-                    nnzVoxelInds.push_back(task.no);
-                    MT::proc_mx.unlock();
-                } else 
-                    data[task.no] = zero;
-            } 
-            else if (val>0) {
-                data[task.no]    = new float[1];
-                data[task.no][0] = 1;
-                MT::proc_mx.lock();
-                nnzVoxelInds.push_back(task.no);
-                MT::proc_mx.unlock();
-            } else 
-                data[task.no] = zero;
+		if (labelFlag) {
+			if (val==label) {
+				data[task.no]    = new float[1];
+				data[task.no][0] = 1;
+				MT::proc_mx.lock();
+				nnzVoxelInds.push_back(task.no);
+				MT::proc_mx.unlock();
+			} else 
+				data[task.no] = zero;
+		} 
+		else if (val>0) {
+			data[task.no]    = new float[1];
+			data[task.no][0] = 1;
+			MT::proc_mx.lock();
+			nnzVoxelInds.push_back(task.no);
+			MT::proc_mx.unlock();
+		} else 
+			data[task.no] = zero;
             
-        }
         
     });
 
