@@ -149,14 +149,7 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 void TrackWith_PTT::print() {
     
     if (GENERAL::usingAPI==false) {
-        
-        if (TRACKER::algorithm == PTT_C1) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C1 version"   	<< std::endl;
-        } else if (TRACKER::algorithm == PTT_C2) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C2 version"   	<< std::endl;
-        } else if (TRACKER::algorithm) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C3 version"   	<< std::endl;
-        }
+        std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
     }
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;

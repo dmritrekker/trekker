@@ -41,7 +41,9 @@ elseif(MSVC)
 	add_definitions(-D BUILD_FOR_WINDOWS)
 
 	# Enable static compilation
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Release>:Release>")
+	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 
 	# Disable some compiler warnings for cl
 	add_compile_options(/wd4244) # conversion from 'double' to 'x', possible loss of data

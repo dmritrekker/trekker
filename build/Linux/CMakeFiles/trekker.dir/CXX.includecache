@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/baran/Work/code/dev/baranaydogan/trekker/src/cmd.cpp
+trekker.h
+/home/baran/Work/code/dev/baranaydogan/trekker/src/trekker.h
+cstdlib
+-
+
+/home/baran/Work/code/dev/baranaydogan/trekker/src/trekker.h
+string
+-
+vector
+-
+

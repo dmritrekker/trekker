@@ -13,11 +13,8 @@ class Tractogram;
 
 typedef enum {
 	ALGORITHM_NOTSET = -1,
-	PTT_C1,
-    PTT_C2,
-    PTT_C3,
-	LOCAL_PROBABILISTIC,
-    PTT_WITH_PARAMETER_PRIORS
+	PTT,
+	LOCAL_PROBABILISTIC
 } Algorithm;
 
 typedef enum {

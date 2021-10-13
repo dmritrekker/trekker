@@ -460,18 +460,6 @@ void Trekker::orderOfDirections(std::string ood) {
         std::cout << "TREKKER::Can't change order of directions since FOD is already discretized."<< std::endl;
 }
 
-
-
-void Trekker::algorithm(std::string alg) {
-    
-    if (alg=="ptt C1")      TRACKER::algorithm = PTT_C1;
-    else if (alg=="ptt C2") TRACKER::algorithm = PTT_C2;
-    else {
-		std::cout << "TREKKER::Unknown algorithm: " << alg << ", valid options are \"ptt C1\" and \"ptt C2\". "<< std::endl;
-	}
-    
-}
-
 void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}
 void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;}
 void Trekker::minFODamp(double x) { TRACKER::minFODamp = x; }

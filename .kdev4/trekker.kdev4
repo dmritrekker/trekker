@@ -1,0 +1,19 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0e\x00t\x00r\x00e\x00k\x00k\x00e\x00r)
+
+[CMake]
+Build Directory Count=1
+Current Build Directory Index-Host System=0
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=/home/baran/Work/code/dev/baranaydogan/trekker/build
+Build Type=Release
+CMake Binary=/home/baran/apps/cmake-3.15.0-Linux-x86_64/bin/cmake
+CMake Executable=/home/baran/apps/cmake-3.15.0-Linux-x86_64/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=
+Runtime=Host System
+
+[Project]
+VersionControlSupport=kdevgit

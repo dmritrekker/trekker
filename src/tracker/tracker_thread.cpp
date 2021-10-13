@@ -6,7 +6,6 @@
 
 #include "algorithms/ptt/algorithm_ptt.h"
 #include "algorithms/local_probabilistic/algorithm_local_probabilistic.h"
-#include "algorithms/ptt_with_parameter_priors/algorithm_ptt_with_parameter_priors.h"
 
 
 void getStreamline(TrackingThread* tracker) {
@@ -39,16 +38,11 @@ TrackingThread::TrackingThread() {
     }
     
 	switch (TRACKER::algorithm) {
-	case PTT_C1:
-    case PTT_C2:
-    case PTT_C3:
+	case PTT:
 		method 									= new TrackWith_PTT();
 		break;
 	case LOCAL_PROBABILISTIC:
 		method 									= new TrackWith_Local_Probabilistic();
-		break;
-    case PTT_WITH_PARAMETER_PRIORS:
-		method 									= new TrackWith_PTT_with_parameter_priors();
 		break;
 	default :
 		break;
@@ -129,16 +123,11 @@ void TrackingThread::track(Coordinate *point) {
 
 	if (streamline==NULL) {
 		switch (TRACKER::algorithm) {
-		case PTT_C1:
-        case PTT_C2:
-        case PTT_C3:
+		case PTT:
 			streamline 		= new Streamline_PTT();
 			break;
 		case LOCAL_PROBABILISTIC:
 			streamline 		= new Streamline_Local_Probabilistic();
-			break;
-        case PTT_WITH_PARAMETER_PRIORS:
-			streamline 		= new Streamline_PTT_with_parameter_priors();
 			break;
 		default :
 			break;

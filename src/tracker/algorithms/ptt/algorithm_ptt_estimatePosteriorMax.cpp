@@ -11,6 +11,6 @@ void TrackWith_PTT::estimatePosteriorMax() {
 			posteriorMax = curve->likelihood;
 	}
 
-    posteriorMax *= posteriorMaxScalingFactor;
+    posteriorMax = std::pow(posteriorMax*DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
 
 }

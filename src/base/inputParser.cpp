@@ -76,14 +76,11 @@ void InputParser::parse() {
 		else if (Option("-propMaxEstTrials"))       parse_propMaxEstTrials();
 		else if (Option("-useBestAtInit"))       	parse_useBestAtInit();
 
-        
 		else if (Option("-probeLength"))        	parse_probeLength();
 		else if (Option("-probeRadius"))        	parse_probeRadius();
 		else if (Option("-probeCount"))     		parse_probeCount();
 		else if (Option("-probeQuality"))     		parse_probeQuality();
         else if (Option("-ignoreWeakLinks"))        parse_ignoreWeakLinks();
-        
-        else if (Option("-dispersionImage"))        parse_dispersionImage();
 
 		// Seed config
 		else if (Option("-seed_image"))     			parse_seed_image();
@@ -176,12 +173,6 @@ void InputParser::checkCompulsaryInputs() {
 			exit(EXIT_FAILURE);
 		}
 		
-		if (TRACKER::algorithm==PTT_WITH_PARAMETER_PRIORS) {
-            if (img_dispersion->getFilePath()=="") {
-                std::cout << "Use -dispersionImage <DISPERSION_FNAME.NII.GZ> to specify the input dispersion image" << std::endl;
-                exit(EXIT_FAILURE);
-            }
-        }
 	}
 
 	PATHWAY::checkROIorderConsistency();
@@ -218,9 +209,6 @@ void InputParser::readAllImageInputs() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading input images" << std::endl;
 	TRACKER::readFODImage();
 	PATHWAY::readROIImages();
-    if (TRACKER::algorithm==PTT_WITH_PARAMETER_PRIORS) {
-        TRACKER::readDispersionImage();
-    }
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "--------------------" << std::endl << std::endl;
 }
 
@@ -546,29 +534,6 @@ void InputParser::parse_ignoreWeakLinks() {
         TRACKER::weakLinkThresh = (atof(argv[argv_index]));
 		argv_index++;
 	}
-    
-}
-
-
-void InputParser::parse_dispersionImage() {
-
-	if (img_dispersion->getFilePath()!="") {
-		std::cout << "Cannot use -dispersionImage option more than once" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	argv_index++;
-
-	if ( (argv_index==argc) || (*argv[argv_index]=='-') ) {
-		std::cout << "Input nifti file after -dispersionImage" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	if(!img_dispersion->readHeader(argv[argv_index])) {
-		std::cout << "Cannot read dispersion image: " << argv[argv_index] << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	argv_index++;
     
 }
 
@@ -1002,43 +967,13 @@ void InputParser::parse_algorithm() {
 		exit(EXIT_FAILURE);
 	}
 
-	if      (Option("ptt"))    					     TRACKER::algorithm = PTT_C1;
+	if      (Option("ptt"))    					     TRACKER::algorithm = PTT;
 	else if (Option("local_probabilistic"))  	     TRACKER::algorithm = LOCAL_PROBABILISTIC;
-    else if (Option("ptt_with_parameter_priors"))  	 TRACKER::algorithm = PTT_WITH_PARAMETER_PRIORS;
 	else {
-		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\", \"local_probabilistic\" and \"ptt_with_parameter_priors\" "<< std::endl;
+		std::cout << "Unknown algorithm: " << argv[argv_index] << ", valid options are \"ptt\" and \"local_probabilistic\" "<< std::endl;
 		exit(EXIT_FAILURE);
 	}
 	argv_index++;
-    
-    if ( (argv_index<argc) && (*argv[argv_index]!='-') ) {
-        
-        if (TRACKER::algorithm == PTT_C1) {
-            if      (Option("C1"))    					TRACKER::algorithm = PTT_C1;
-            else if (Option("C2"))    					TRACKER::algorithm = PTT_C2;
-            // else if (Option("C3"))    					TRACKER::algorithm = PTT_C3;
-            else {
-                // std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\", \"C2\" and \"C3\""<< std::endl;
-                std::cout << "Invalid option for ptt tracking type: " << argv[argv_index] << ", valid options are \"C1\" and \"C2\" "<< std::endl;
-                exit(EXIT_FAILURE);
-            }
-        } 
-        
-        if (TRACKER::algorithm == LOCAL_PROBABILISTIC){
-            std::cout << "Invalid option for local_probabilistic tracking type: " << argv[argv_index] << ", this algorithm does not support any options "<< std::endl;
-            exit(EXIT_FAILURE);
-        }
-        
-        if (TRACKER::algorithm == PTT_WITH_PARAMETER_PRIORS){
-            std::cout << "Invalid option for ptt_with_parameter_priors tracking type: " << argv[argv_index] << ", this algorithm does not support any options "<< std::endl;
-            exit(EXIT_FAILURE);
-        }
-        
-		argv_index++;
-	}
-    
-    
-
 }
 
 void InputParser::parse_seed_image() {
