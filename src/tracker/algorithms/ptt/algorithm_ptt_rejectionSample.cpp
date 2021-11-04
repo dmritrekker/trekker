@@ -5,6 +5,8 @@ void TrackWith_PTT::rejectionSample() {
 	int tries;
 	int reject 	= 0;
 
+	if (GENERAL::verboseLevel > DETAILED) std::cout << "posteriorMax: " << posteriorMax << std::endl;
+
 	for (tries=0; tries<TRACKER::triesPerRejectionSampling; tries++) {
 
 		curve->getCandidate();
@@ -14,13 +16,15 @@ void TrackWith_PTT::rejectionSample() {
 		} else if (curve->likelihood > posteriorMax) {
 			curve->likelihood = -2;
 			break;
-		} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
+		} else if (doRandomThings->uniform_01()*posteriorMax <= curve->likelihood ) { // Equal helps to sample extrema
             // This candidate is now selected and it will be propagated
             curve->lastVal = curve->lastVal_cand;
 			break;
 		}
 
 	}
+
+	if (GENERAL::verboseLevel > DETAILED) std::cout << "curve->likelihood: " << curve->likelihood << std::endl;
 	
 	if (tries==TRACKER::triesPerRejectionSampling) {
 		curve->likelihood = -1;

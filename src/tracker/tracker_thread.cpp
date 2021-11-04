@@ -223,9 +223,11 @@ void TrackingThread::track(Coordinate *point) {
 
 			// Track first side
 			streamline->status 				= run(true);
+			if (GENERAL::verboseLevel > ON) std::cout << "Tracking of first side was ";
 
 			// Check if ROI rules are OK on this side
 			if (streamline->status == STREAMLINE_GOOD) {
+				if (GENERAL::verboseLevel > ON) std::cout << "successful, with " << streamline->coordinates.size()-1 << " steps taken." << std::endl;
 				if (tracker_side==side_A) {
 					std::vector<bool>::iterator lbit = tracker_ROI_ready_status.begin();
 					for (std::vector<ROI_Image*>::iterator it = tracker_ROI.begin(); it != tracker_ROI.end(); ++it) {
@@ -252,6 +254,8 @@ void TrackingThread::track(Coordinate *point) {
 						(*it)->exit_status 		= exit_status_undefined;
 					}
 				}
+			} else {
+				if (GENERAL::verboseLevel > ON) std::cout << "not successful" << std::endl;
 			}
 
 

@@ -36,8 +36,9 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	}
     
 	// initial compensation for underestimation
-	posteriorMax        = std::pow(posteriorMax*DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);    
-    
+	posteriorMax        = std::pow(posteriorMax*DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
+	if (GENERAL::verboseLevel > DETAILED) std::cout << "posteriorMax: " << posteriorMax << std::endl;
+
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
@@ -45,8 +46,8 @@ Initialization_Decision TrackWith_PTT::initialize() {
 			curve->likelihood = -2;
             reject++;
         } else {
-            curve->swap(initial_curve);
-        }
+			if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
+		}
 
 	} else {
 
@@ -61,7 +62,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 				fail++;
 				curve->likelihood = -2;
 				break;
-			} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
+			} else if (doRandomThings->uniform_01()*posteriorMax <= curve->likelihood ) { // Equal helps to sample extrema
                 // This candidate is now selected and it will be propagated
 				initial_curve->swap(curve);
 				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;

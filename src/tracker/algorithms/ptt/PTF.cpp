@@ -76,6 +76,7 @@ void PTF::getARandomFrame(Coordinate _seed_init_direction) {
 	F[0][0] = _seed_init_direction.x;
 	F[0][1] = _seed_init_direction.y;
 	F[0][2] = _seed_init_direction.z;
+    normalize(F[0]);
 	rndmr->getAUnitRandomPerpVector(F[2],F[0]);
 	cross(F[1],F[2],F[0]);
 }
