@@ -1,7 +1,0 @@
-README.md
-setup.py
-Trekker.egg-info/PKG-INFO
-Trekker.egg-info/SOURCES.txt
-Trekker.egg-info/dependency_links.txt
-Trekker.egg-info/top_level.txt
-cython/Trekker.pxd

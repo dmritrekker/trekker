@@ -1,1 +1,0 @@
-/usr/bin/g++-9  -O3 -DNDEBUG -W -Wall -Wextra -pedantic -pedantic-errors -Wno-long-long   -static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive CMakeFiles/trekker.dir/src/cmd.cpp.o  -o trekker libTrekker.a /usr/lib/x86_64-linux-gnu/libz.a 
