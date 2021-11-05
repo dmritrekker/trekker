@@ -22,9 +22,9 @@ Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 
 	posteriorMax 	= 0;
 
-  if (TRACKER::fodDiscretization==FODDISC_OFF) {
-      thread->tracker_FOD->getVal(current_point,FOD);
-  }
+	if (TRACKER::fodDiscretization==FODDISC_OFF) {
+		thread->tracker_FOD->getVal(current_point,FOD);
+	}
 
 	int   tries;
 	int   fail   	= 0;
@@ -49,7 +49,7 @@ Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
-		if (curAmp < minFODamp)
+		if (curAmp < currMinFODamp)
 			curAmp = -2;
 
 	} else {
@@ -59,13 +59,13 @@ Initialization_Decision TrackWith_Local_Probabilistic::initialize() {
 
 			curAmp = get_initial_curve();
 
-			if (curAmp < minFODamp) {
+			if (curAmp < currMinFODamp) {
 				reject++;
 			} else if (curAmp > posteriorMax) {
 				fail++;
 				curAmp = -2;
 				break;
-			} else if (doRandomThings->uniform_01()*posteriorMax < curAmp ) {
+			} else if (doRandomThings->uniform_01()*posteriorMax <= curAmp ) {
 
 				initial_direction[0] = previous_direction[0] = candidate_direction[0];
 				initial_direction[1] = previous_direction[1] = candidate_direction[1];

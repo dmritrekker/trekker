@@ -76,8 +76,8 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
     
-    // Update modMinFodAmp
-    TRACKER::modMinFodAmp = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
+    // Update currMinFODamp
+    currMinFODamp = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
     
     // Handle maxEstInterval
 	if (TRACKER::maxEstInterval<=0.0) {
@@ -160,7 +160,12 @@ void TrackWith_PTT::print() {
 	std::cout << "probeCount           : "  << TRACKER::probeCount	        	<< std::endl;
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
-	std::cout << "minFODamp            : "  << TRACKER::minFODamp               << std::endl;
+	if (TRACKER::useMinFODampImage) {
+		std::cout << "minFODamp            : "  << TRACKER::img_minFODamp->getFilePath() << std::endl;
+	} else {
+		std::cout << "minFODamp            : "  << TRACKER::minFODamp << std::endl;
+	}
+
     std::cout << "ignoreWeakLinks      : "  << TRACKER::weakLinkThresh 	        << std::endl;
     std::cout << "maxEstInterval       : "  << TRACKER::maxEstInterval 			<< std::endl;
     std::cout << "dataSupportExponent  : "  << TRACKER::dataSupportExponent 	<< std::endl;

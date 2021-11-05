@@ -11,7 +11,7 @@ void TrackWith_PTT::rejectionSample() {
 
 		curve->getCandidate();
 
-		if (curve->likelihood < modMinFodAmp ) {
+		if (curve->likelihood < currMinFODamp ) {
 			reject++;
 		} else if (curve->likelihood > posteriorMax) {
 			curve->likelihood = -2;

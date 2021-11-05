@@ -208,6 +208,7 @@ void InputParser::readAllImageInputs() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "--------------------" << std::endl;
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading input images" << std::endl;
 	TRACKER::readFODImage();
+	if (useMinFODampImage) TRACKER::readMinFODampImage();
 	PATHWAY::readROIImages();
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "--------------------" << std::endl << std::endl;
 }
@@ -726,7 +727,23 @@ void InputParser::parse_minFODamp() {
 		std::cout << "Input min FOD amplitude threshold for termination after -minFODamp" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	minFODamp = atof(argv[argv_index]);
+
+	try {
+
+		minFODamp = std::stof(argv[argv_index]);
+		TRACKER::useMinFODampImage = false;
+
+	} catch (...) {
+
+		if(!img_minFODamp->readHeader(argv[argv_index])) {
+			std::cout << "Cannot read minFODamp image: " << argv[argv_index] << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		TRACKER::useMinFODampImage = true;
+
+	}
+
 	argv_index++;
 
 }

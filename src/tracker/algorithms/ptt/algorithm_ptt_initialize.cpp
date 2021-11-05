@@ -34,7 +34,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 		}
 		
 	}
-    
+
 	// initial compensation for underestimation
 	posteriorMax        = std::pow(posteriorMax*DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
 	if (GENERAL::verboseLevel > DETAILED) std::cout << "posteriorMax: " << posteriorMax << std::endl;
@@ -42,7 +42,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
-		if (curve->likelihood < modMinFodAmp ) {
+		if (curve->likelihood < currMinFODamp ) {
 			curve->likelihood = -2;
             reject++;
         } else {
@@ -56,7 +56,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 			get_initial_curve();
 
-			if (curve->likelihood < modMinFodAmp) {
+			if (curve->likelihood < currMinFODamp) {
 				reject++;
 			} else if (curve->likelihood > posteriorMax) {
 				fail++;

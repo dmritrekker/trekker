@@ -63,6 +63,8 @@ void TrackWith_Local_Probabilistic::setSeed() {
 	streamline->sampling_init_postEstItCount = current_init_postEstItCount;
 	streamline->sampling_prop_postEstItCount = current_prop_postEstItCount;
 
+	if (TRACKER::useMinFODampImage) TRACKER::img_minFODamp->getVal(current_point,&currMinFODamp);
+
 }
 
 
@@ -73,6 +75,8 @@ void TrackWith_Local_Probabilistic::flip() {
 		current_point[i]  	  = initial_point[i];
 		previous_direction[i] = initial_direction[i];
 	}
+
+	if (TRACKER::useMinFODampImage) TRACKER::img_minFODamp->getVal(current_point,&currMinFODamp);
 
 }
 

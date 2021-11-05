@@ -12,13 +12,13 @@ float TrackWith_Local_Probabilistic::rejectionSample() {
 
 		curAmp = get_a_candidate_curve();
 
-		if (curAmp < minFODamp) {
+		if (curAmp < currMinFODamp) {
 			reject++;
 		} else if (curAmp > posteriorMax) {
 			fail++;
 			curAmp = -2;
 			break;
-		} else if ( doRandomThings->uniform_01()*posteriorMax < curAmp ) {
+		} else if ( doRandomThings->uniform_01()*posteriorMax <= curAmp ) {
 			previous_direction[0] = candidate_direction[0];
 			previous_direction[1] = candidate_direction[1];
 			previous_direction[2] = candidate_direction[2];

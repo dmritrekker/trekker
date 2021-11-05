@@ -24,6 +24,7 @@ Tractogram            *tractogram 		= NULL;
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
 float minFODamp      					= NOTSET;
+bool  useMinFODampImage                 = false;
 int   maxEstInterval                    = NOTSET;
 float dataSupportExponent      			= NOTSET;
 float minLength      					= NOTSET;
@@ -33,6 +34,7 @@ Directionality directionality 			= DIRECTIONALITY_NOTSET;
 int   writeInterval  					= NOTSET;
 int	  initMaxEstTrials 					= NOTSET;
 int   propMaxEstTrials    				= NOTSET;
+SCALAR_Image* img_minFODamp             = new SCALAR_Image;
 
 // PTT parameters
 float probeLength    					= NOTSET;
@@ -127,6 +129,11 @@ void setMethodsDefaultParametersWhenNecessary() {
 void readFODImage() {
 	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading FOD image                  : " << img_FOD->getFilePath() << std::endl;
 	if(!img_FOD->readImage()) exit(EXIT_FAILURE);
+}
+
+void readMinFODampImage() {
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading minFODamp image            : " << img_minFODamp->getFilePath() << std::endl;
+	if(!img_minFODamp->readImage()) exit(EXIT_FAILURE);
 }
 
 void print() {

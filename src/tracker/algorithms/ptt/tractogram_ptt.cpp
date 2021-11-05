@@ -317,7 +317,12 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,(",\n\"probeRadius\":" 			+ std::to_string(TRACKER::probeRadius)).c_str());
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());
 	fprintf(out,(",\n\"probeQuality\":" 		+ std::to_string(TRACKER::probeQuality)).c_str());
-	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(TRACKER::minFODamp)).c_str());
+	
+	if (TRACKER::useMinFODampImage)
+		fprintf(out,(",\n\"minFODamp\":\"" + TRACKER::img_minFODamp->getFilePath() + "\"").c_str());
+	else
+		fprintf(out,(",\n\"minFODamp\":"   + std::to_string(TRACKER::minFODamp)).c_str());
+
     fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
     fprintf(out,(",\n\"ignoreWeakLinks\":" 	    + std::to_string(TRACKER::weakLinkThresh)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());

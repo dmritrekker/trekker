@@ -25,6 +25,7 @@ void TrackWith_Local_Probabilistic::setDefaultParametersWhenNecessary() {
 	if ((TRACKER::minFODamp<0.0) && (GENERAL::verboseLevel>MINIMAL)) std::cout << "Using default minFODamp     : 0" << std::endl;
 	if (TRACKER::minFODamp<=0.0) TRACKER::minFODamp = DEFAULT_LOCAL_PROBABILISTIC_MINFODAMP; // so comparisons are faster
 
+	currMinFODamp = TRACKER::minFODamp;
 
 	// Handle writeStepSize
 	if (TRACKER::writeInterval<=0.0) {
@@ -78,7 +79,12 @@ void TrackWith_Local_Probabilistic::print() {
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 << TRACKER::img_FOD->getUnit() << std::endl;
 	std::cout << "minRadiusOfCurvature : "  << TRACKER::minRadiusOfCurvature << TRACKER::img_FOD->getUnit() << std::endl;
-	std::cout << "minFODamp            : "  << TRACKER::minFODamp 			 << std::endl;
+
+	if (TRACKER::useMinFODampImage) {
+		std::cout << "minFODamp            : "  << TRACKER::img_minFODamp->getFilePath() << std::endl;
+	} else {
+		std::cout << "minFODamp            : "  << TRACKER::minFODamp << std::endl;
+	}
 
 	std::cout << "minLength            : ";
 	if (TRACKER::minLength<(DEFAULT_LOCAL_PROBABILISTIC_MINLENGTH*1.01))	std::cout 		<< "0" 							<< std::endl;

@@ -338,17 +338,19 @@ void Trekker::execute() {
     
     std::unique_lock<std::mutex> lk(MT::exit_mx);
     
-	for(seedNo=0; seedNo<numberOfThreadsToUse; seedNo++) {
+	for(seedNo=0; seedNo<numberOfThreadsToUse; ++seedNo) {
 		int threadNo = seedNo;
         
         tracker[threadNo].setThreadID(threadNo);
-		tracker[threadNo].updateSeedNoAndTrialCount(seedNo,0);
+		tracker[threadNo].updateSeedNoAndTrialCount(seedNo,1);
         
         threads[threadNo] = std::thread(getStreamline, (tracker+threadNo));
         threads[threadNo].detach();
 	}
     
-	while(seedNo<SEED::count) {
+    seedNo--;
+    
+	while(seedNo<(SEED::count-1)) {
     
         MT::exit_cv.wait(lk);
         int tread_id = GENERAL::ready_thread_id;
@@ -360,9 +362,9 @@ void Trekker::execute() {
             GENERAL::tracker_lock.unlock();
 			break;
 		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD) {
-			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+			tracker[tread_id].updateSeedNoAndTrialCount(++seedNo,1);
         } else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
-			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+			tracker[tread_id].updateSeedNoAndTrialCount(++seedNo,1);
         } else {
             tracker[tread_id].updateSeedNoAndTrialCount(seedNo,tracker[tread_id].streamline->tracking_tries);
         }

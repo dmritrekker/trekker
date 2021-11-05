@@ -52,6 +52,7 @@ private:
 	RandomDoer  *doRandomThings;
 	Streamline_Local_Probabilistic *streamline;
 
+	float        currMinFODamp;
 	float 		 constant_asinterm;
 
 };

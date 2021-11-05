@@ -14,7 +14,7 @@ TrackWith_PTT::TrackWith_PTT() {
 		initial_curve				= new PTF(doRandomThings);
 		curve 						= new PTF(doRandomThings);
         
-		posteriorMax 				= 0.0;
+		posteriorMax 				= 0.0f;
 		current_init_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->init_postEstItCount;
 		current_prop_postEstItCount = static_cast<Tractogram_PTT*>(TRACKER::tractogram)->prop_postEstItCount;   
 	}
@@ -44,12 +44,26 @@ void TrackWith_PTT::setSeed() {
 	streamline->sampling_init_postEstItCount 	= current_init_postEstItCount;
 	streamline->sampling_prop_postEstItCount	= current_prop_postEstItCount;
 
+	// Update currMinFODamp
+	if (TRACKER::useMinFODampImage) {
+		float tmp;
+		TRACKER::img_minFODamp->getVal(curve->p,&tmp);
+		currMinFODamp = std::pow(tmp,TRACKER::dataSupportExponent);	
+	}
+
 }
 
 
 void TrackWith_PTT::flip() {
 	initial_curve->flip();
 	curve->swap(initial_curve);
+
+	// Update currMinFODamp
+	if (TRACKER::useMinFODampImage) {
+		float tmp;
+		TRACKER::img_minFODamp->getVal(curve->p,&tmp);
+		currMinFODamp = std::pow(tmp,TRACKER::dataSupportExponent);	
+	}
 }
 
 

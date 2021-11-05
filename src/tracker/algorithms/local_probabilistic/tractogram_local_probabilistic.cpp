@@ -203,7 +203,12 @@ void Tractogram_Local_Probabilistic::writeMetadataOutput() {
 	fprintf(out,"\n\"algorithm\": \"local probabilistic tracker (local_probabilistic) \" ");
 	fprintf(out,(",\n\"stepSize\":" 			+ std::to_string(TRACKER::stepSize)).c_str());
 	fprintf(out,(",\n\"minRadiusOfCurvature\":" + std::to_string(TRACKER::minRadiusOfCurvature)).c_str());
-	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(TRACKER::minFODamp)).c_str());
+	
+	if (TRACKER::useMinFODampImage)
+		fprintf(out,(",\n\"minFODamp\":\"" + TRACKER::img_minFODamp->getFilePath() + "\"").c_str());
+	else
+		fprintf(out,(",\n\"minFODamp\":"   + std::to_string(TRACKER::minFODamp)).c_str());
+
 	fprintf(out,(",\n\"minLength\":" 			+ std::to_string(TRACKER::minLength)).c_str());
 
 

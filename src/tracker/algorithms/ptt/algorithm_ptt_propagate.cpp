@@ -5,6 +5,13 @@ Propagation_Decision TrackWith_PTT::propagate(int stepCounter) {
     
     // Take a step forward
 	curve->walk();
+
+	// Update currMinFODamp
+	if (TRACKER::useMinFODampImage) {
+		float tmp;
+		TRACKER::img_minFODamp->getVal(curve->p,&tmp);
+		currMinFODamp = std::pow(tmp,TRACKER::dataSupportExponent);	
+	}
     
     // Estimate posterior
     if (stepCounter%maxEstInterval==0) {

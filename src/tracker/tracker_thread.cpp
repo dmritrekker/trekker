@@ -119,7 +119,7 @@ void TrackingThread::updateTractogram() {
 
 void TrackingThread::track(Coordinate *point) {
 
-	if (GENERAL::verboseLevel > ON) std::cout << "Seed no: " << seedNo << std::endl;
+	if (GENERAL::verboseLevel > ON) std::cout << "Seed no: " << seedNo << " - Try no: " << trialNo << std::endl;
 
 	if (streamline==NULL) {
 		switch (TRACKER::algorithm) {
@@ -303,14 +303,11 @@ void TrackingThread::track(Coordinate *point) {
 			}
 
 		}
-		
-		tries++;
         
         // At this point tracking of the streamline is complete and one of the following decisions is made:
         // - STREAMLINE_GOOD
         // - STREAMLINE_DISCARDED
         // - STREAMLINE_FAIL
-        
 
 		if (streamline->status == STREAMLINE_DISCARDED) {
 
@@ -379,6 +376,9 @@ void TrackingThread::track(Coordinate *point) {
 			if (GENERAL::verboseLevel > ON) std::cout << std::endl;
 		}
 
+		tries++;
+		if (tries>SEED::maxTrialsPerSeed)
+			break;
 
 		// The algorithm discards this streamline, this is considered as a fail case for the tracker
 		// Therefore it will be immediately reported to the tractogram in order to update settings for the algorithm
