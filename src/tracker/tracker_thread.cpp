@@ -223,7 +223,7 @@ void TrackingThread::track(Coordinate *point) {
 
 			// Track first side
 			streamline->status 				= run(true);
-			if (GENERAL::verboseLevel > ON) std::cout << "Tracking of first side was ";
+			if (GENERAL::verboseLevel > ON) std::cout << "Tracking of first side was " << std::flush;
 
 			// Check if ROI rules are OK on this side
 			if (streamline->status == STREAMLINE_GOOD) {
@@ -278,7 +278,15 @@ void TrackingThread::track(Coordinate *point) {
 				tracker_ROI_order = 0;
 
 				// Track other side
+				if (GENERAL::verboseLevel > ON) std::cout << "Tracking of other side was " << std::endl;
 				streamline->status = run(false);
+
+				if (GENERAL::verboseLevel > ON) {
+					if (streamline->status == STREAMLINE_GOOD)
+						std::cout << "successful. Total steps taken: " << streamline->coordinates.size()-1 << std::endl;
+					else
+						std::cout << "not successful" << std::endl;
+				}
 
 			}
 

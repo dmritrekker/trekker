@@ -28,10 +28,8 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 		get_initial_curve();
         
-		if (curve->likelihood > posteriorMax) {
+		if (curve->likelihood > posteriorMax)
 			posteriorMax = curve->likelihood;
-			initial_curve->swap(curve);
-		}
 		
 	}
 
@@ -46,6 +44,7 @@ Initialization_Decision TrackWith_PTT::initialize() {
 			curve->likelihood = -2;
             reject++;
         } else {
+			initial_curve->swap(curve);
 			if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
 		}
 

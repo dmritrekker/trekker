@@ -7,7 +7,7 @@ c_compiler=gcc-9
 cxx_compiler=g++-9
 
 buildPythonPackage=ON #ON or OFF
-pythonExe=/home/baran/apps/anaconda3/envs/trekkerWrapper/bin/python
+pythonExe=/home/baran/apps/anaconda3/envs/trekkerWrapper_py38/bin/python
 
 
 

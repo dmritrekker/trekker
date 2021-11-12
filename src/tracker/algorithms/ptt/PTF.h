@@ -140,7 +140,7 @@ inline void PTF::walk() {
     k2 = k2_cand;
     
     float T[3];
-    
+
 	for (int i=0; i<3; i++) {
 		p[i]   += PP[0]*F[0][i] + PP[1]*F[1][i] + PP[2]*F[2][i];
 		T[i]    = PP[3]*F[0][i] + PP[4]*F[1][i] + PP[5]*F[2][i];

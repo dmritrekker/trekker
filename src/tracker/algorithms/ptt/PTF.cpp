@@ -134,7 +134,6 @@ void PTF::calcDataSupport() {
         
         for (int q=1; q<TRACKER::probeQuality; q++) {
             
-            
             for (int i=0; i<3; i++) {
                 _p[i]  += PP[0]*_F[0][i] +  PP[1]*_F[1][i]  +  PP[2]*_F[2][i];
                 _T[i]   = PP[3]*_F[0][i] +  PP[4]*_F[1][i]  +  PP[5]*_F[2][i];
