@@ -20,12 +20,13 @@ print(line+"\nDEMO 2: Seed image based tracking with following parameters:")
 seed_path=b"data/seedImage.nii"
 tracker.seed_image(seed_path);
 tracker.seed_count(100);
+tracker.seed_maxTrials(100);
 tracker.printParameters()
 streamlines = tracker.run()
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-for i in range(100):
+for i in range(len(streamlines)):
     ax.plot(streamlines[i][0], streamlines[i][1], streamlines[i][2],'r')
 
 ax.auto_scale_xyz([0, -32], [0, -16], [0, 16])
@@ -46,7 +47,7 @@ streamlines = tracker.run()
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-for i in range(100):
+for i in range(len(streamlines)):
     ax.plot(streamlines[i][0], streamlines[i][1], streamlines[i][2],'r')
 
 ax.auto_scale_xyz([0, -32], [0, -16], [0, 16])
