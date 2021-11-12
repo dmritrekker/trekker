@@ -49,6 +49,8 @@ void TrackWith_PTT::setSeed() {
 		float tmp;
 		TRACKER::img_minFODamp->getVal(curve->p,&tmp);
 		currMinFODamp = std::pow(tmp,TRACKER::dataSupportExponent);	
+	} else {
+		currMinFODamp = std::pow(minFODamp,TRACKER::dataSupportExponent);	
 	}
 
 }
@@ -63,6 +65,8 @@ void TrackWith_PTT::flip() {
 		float tmp;
 		TRACKER::img_minFODamp->getVal(curve->p,&tmp);
 		currMinFODamp = std::pow(tmp,TRACKER::dataSupportExponent);	
+	} else {
+		currMinFODamp = std::pow(minFODamp,TRACKER::dataSupportExponent);	
 	}
 }
 

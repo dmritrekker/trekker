@@ -76,9 +76,6 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
     
-    // Update currMinFODamp
-    currMinFODamp = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
-    
     // Handle maxEstInterval
 	if (TRACKER::maxEstInterval<=0.0) {
 		TRACKER::maxEstInterval = DEFAULT_PTT_MAXESTINTERVAL;
