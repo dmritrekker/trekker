@@ -114,9 +114,7 @@ void print() {
 	std::cout << std::endl;
 
 	switch (TRACKER::algorithm) {
-	case PTT_C1:
-    case PTT_C2:
-    case PTT_C3:
+    case PTT:
     {
 		std::cout << "writeTangents              : ";
 		switch(tangentWriteMode){

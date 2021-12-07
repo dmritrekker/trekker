@@ -338,17 +338,19 @@ void Trekker::execute() {
     
     std::unique_lock<std::mutex> lk(MT::exit_mx);
     
-	for(seedNo=0; seedNo<numberOfThreadsToUse; seedNo++) {
+	for(seedNo=0; seedNo<numberOfThreadsToUse; ++seedNo) {
 		int threadNo = seedNo;
         
         tracker[threadNo].setThreadID(threadNo);
-		tracker[threadNo].updateSeedNoAndTrialCount(seedNo,0);
+		tracker[threadNo].updateSeedNoAndTrialCount(seedNo,1);
         
         threads[threadNo] = std::thread(getStreamline, (tracker+threadNo));
         threads[threadNo].detach();
 	}
     
-	while(seedNo<SEED::count) {
+    seedNo--;
+    
+	while(seedNo<(SEED::count-1)) {
     
         MT::exit_cv.wait(lk);
         int tread_id = GENERAL::ready_thread_id;
@@ -360,9 +362,9 @@ void Trekker::execute() {
             GENERAL::tracker_lock.unlock();
 			break;
 		} else if (tracker[tread_id].streamline->status==STREAMLINE_GOOD) {
-			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+			tracker[tread_id].updateSeedNoAndTrialCount(++seedNo,1);
         } else if (tracker[tread_id].streamline->tracking_tries>(unsigned int)SEED::maxTrialsPerSeed) {
-			tracker[tread_id].updateSeedNoAndTrialCount(seedNo++,0);
+			tracker[tread_id].updateSeedNoAndTrialCount(++seedNo,1);
         } else {
             tracker[tread_id].updateSeedNoAndTrialCount(seedNo,tracker[tread_id].streamline->tracking_tries);
         }
@@ -458,18 +460,6 @@ void Trekker::orderOfDirections(std::string ood) {
         changeOrderOfDirections(ood);
     else
         std::cout << "TREKKER::Can't change order of directions since FOD is already discretized."<< std::endl;
-}
-
-
-
-void Trekker::algorithm(std::string alg) {
-    
-    if (alg=="ptt C1")      TRACKER::algorithm = PTT_C1;
-    else if (alg=="ptt C2") TRACKER::algorithm = PTT_C2;
-    else {
-		std::cout << "TREKKER::Unknown algorithm: " << alg << ", valid options are \"ptt C1\" and \"ptt C2\". "<< std::endl;
-	}
-    
 }
 
 void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}

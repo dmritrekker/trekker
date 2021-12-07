@@ -13,11 +13,8 @@ class Tractogram;
 
 typedef enum {
 	ALGORITHM_NOTSET = -1,
-	PTT_C1,
-    PTT_C2,
-    PTT_C3,
-	LOCAL_PROBABILISTIC,
-    PTT_WITH_PARAMETER_PRIORS
+	PTT,
+	LOCAL_PROBABILISTIC
 } Algorithm;
 
 typedef enum {
@@ -73,6 +70,7 @@ extern FOD_Image 	  *img_FOD;
 extern float 		   stepSize;
 extern float 		   minRadiusOfCurvature;
 extern float		   minFODamp;
+extern bool            useMinFODampImage;
 extern int             maxEstInterval;
 extern float		   dataSupportExponent;
 extern float		   minLength;
@@ -92,7 +90,7 @@ extern float           probeNormalizer;
 extern float           angularSeparation;
 
 
-extern SCALAR_Image   *img_dispersion; // Parameter priors
+extern SCALAR_Image   *img_minFODamp;
 
 // Derived parameters
 extern float		   maxCurvature;
@@ -114,7 +112,7 @@ extern float                 weakLinkThresh;
 // Functions
 void cleanConfigTracker();
 void readFODImage();
-void readDispersionImage();
+void readMinFODampImage();
 void setDefaultParametersWhenNecessary();
 void setMethodsDefaultParametersWhenNecessary();
 void print();

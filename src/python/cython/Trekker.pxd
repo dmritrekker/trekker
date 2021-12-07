@@ -24,7 +24,6 @@ cdef extern from "trekker.h":
         
         # Tracker config
         void orderOfDirections(string);
-        void algorithm(string);
         void stepSize(double);
         void minRadiusOfCurvature(double);
         void minFODamp(double);

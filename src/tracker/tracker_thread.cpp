@@ -6,7 +6,6 @@
 
 #include "algorithms/ptt/algorithm_ptt.h"
 #include "algorithms/local_probabilistic/algorithm_local_probabilistic.h"
-#include "algorithms/ptt_with_parameter_priors/algorithm_ptt_with_parameter_priors.h"
 
 
 void getStreamline(TrackingThread* tracker) {
@@ -39,16 +38,11 @@ TrackingThread::TrackingThread() {
     }
     
 	switch (TRACKER::algorithm) {
-	case PTT_C1:
-    case PTT_C2:
-    case PTT_C3:
+	case PTT:
 		method 									= new TrackWith_PTT();
 		break;
 	case LOCAL_PROBABILISTIC:
 		method 									= new TrackWith_Local_Probabilistic();
-		break;
-    case PTT_WITH_PARAMETER_PRIORS:
-		method 									= new TrackWith_PTT_with_parameter_priors();
 		break;
 	default :
 		break;
@@ -125,20 +119,15 @@ void TrackingThread::updateTractogram() {
 
 void TrackingThread::track(Coordinate *point) {
 
-	if (GENERAL::verboseLevel > ON) std::cout << "Seed no: " << seedNo << std::endl;
+	if (GENERAL::verboseLevel > ON) std::cout << "Seed no: " << seedNo << " - Try no: " << trialNo << std::endl;
 
 	if (streamline==NULL) {
 		switch (TRACKER::algorithm) {
-		case PTT_C1:
-        case PTT_C2:
-        case PTT_C3:
+		case PTT:
 			streamline 		= new Streamline_PTT();
 			break;
 		case LOCAL_PROBABILISTIC:
 			streamline 		= new Streamline_Local_Probabilistic();
-			break;
-        case PTT_WITH_PARAMETER_PRIORS:
-			streamline 		= new Streamline_PTT_with_parameter_priors();
 			break;
 		default :
 			break;
@@ -234,9 +223,11 @@ void TrackingThread::track(Coordinate *point) {
 
 			// Track first side
 			streamline->status 				= run(true);
+			if (GENERAL::verboseLevel > ON) std::cout << "Tracking of first side was " << std::flush;
 
 			// Check if ROI rules are OK on this side
 			if (streamline->status == STREAMLINE_GOOD) {
+				if (GENERAL::verboseLevel > ON) std::cout << "successful, with " << streamline->coordinates.size()-1 << " steps taken." << std::endl;
 				if (tracker_side==side_A) {
 					std::vector<bool>::iterator lbit = tracker_ROI_ready_status.begin();
 					for (std::vector<ROI_Image*>::iterator it = tracker_ROI.begin(); it != tracker_ROI.end(); ++it) {
@@ -263,6 +254,8 @@ void TrackingThread::track(Coordinate *point) {
 						(*it)->exit_status 		= exit_status_undefined;
 					}
 				}
+			} else {
+				if (GENERAL::verboseLevel > ON) std::cout << "not successful" << std::endl;
 			}
 
 
@@ -285,7 +278,15 @@ void TrackingThread::track(Coordinate *point) {
 				tracker_ROI_order = 0;
 
 				// Track other side
+				if (GENERAL::verboseLevel > ON) std::cout << "Tracking of other side was " << std::endl;
 				streamline->status = run(false);
+
+				if (GENERAL::verboseLevel > ON) {
+					if (streamline->status == STREAMLINE_GOOD)
+						std::cout << "successful. Total steps taken: " << streamline->coordinates.size()-1 << std::endl;
+					else
+						std::cout << "not successful" << std::endl;
+				}
 
 			}
 
@@ -310,14 +311,11 @@ void TrackingThread::track(Coordinate *point) {
 			}
 
 		}
-		
-		tries++;
         
         // At this point tracking of the streamline is complete and one of the following decisions is made:
         // - STREAMLINE_GOOD
         // - STREAMLINE_DISCARDED
         // - STREAMLINE_FAIL
-        
 
 		if (streamline->status == STREAMLINE_DISCARDED) {
 
@@ -386,6 +384,9 @@ void TrackingThread::track(Coordinate *point) {
 			if (GENERAL::verboseLevel > ON) std::cout << std::endl;
 		}
 
+		tries++;
+		if (tries>SEED::maxTrialsPerSeed)
+			break;
 
 		// The algorithm discards this streamline, this is considered as a fail case for the tracker
 		// Therefore it will be immediately reported to the tractogram in order to update settings for the algorithm

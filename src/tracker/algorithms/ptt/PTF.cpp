@@ -3,7 +3,6 @@
 PTF::PTF(RandomDoer *_rndmr) {
 	init_Frame();
 	rndmr          = _rndmr;
-    initialized    = false;
 }
 
 void PTF::init_Frame() {
@@ -11,16 +10,12 @@ void PTF::init_Frame() {
     
     k1          = 0;
     k2          = 0;
-    kT1         = 1;
-    kT2         = 0;
     
     F           = new float*[3];
     F[0]        = new float[3];
     F[1]        = new float[3];
     F[2]        = new float[3];
-
     PP          = new float[9];
-    sPP         = new float[9];
     
 	likelihood 	= 0.0;
     lastVal     = 0.0;
@@ -37,28 +32,12 @@ PTF::~PTF() {
     delete[] F[1];
     delete[] F[2];
     delete[] F;
-    
+
     delete[] PP;
-    delete[] sPP;
     
     ptf_FOD->destroyCopy();
 	delete   ptf_FOD;
     delete[] FOD;
-    
-}
-
-void PTF::initkT(PTF *ptf) {
-    kT1 = k1 - ptf->k1; // Sets the kT of the curve
-    kT2 = k2 - ptf->k2;
-    
-    float norm = std::sqrt(kT1*kT1 + kT2*kT2);
-    kT1 /= norm;
-    kT2 /= norm;
-    
-    ptf->kT1 = kT1; // Sets the kT of the initial_curve
-    ptf->kT2 = kT2;
-    
-    initialized = true;
     
 }
 
@@ -68,12 +47,6 @@ void PTF::swap(PTF *ptf) {
     k2       =  ptf->k2;
     k1_cand  =  ptf->k1_cand;
     k2_cand  =  ptf->k2_cand;
-    kT1      =  ptf->kT1;
-    kT2      =  ptf->kT2;
-    kT1_cand =  ptf->kT1_cand;
-    kT2_cand =  ptf->kT2_cand;
-    probe_k1 =  ptf->probe_k1;
-    probe_k2 =  ptf->probe_k2;
     
 	for (int i=0; i<3; i++) {
         p[i] 	= ptf->p[i];
@@ -85,14 +58,12 @@ void PTF::swap(PTF *ptf) {
 	
 	for (int i=0; i<9; i++) {
         PP[i]  = ptf->PP[i];
-        sPP[i] = ptf->sPP[i];
     }
 	
 	likelihood 	      = ptf->likelihood;
-    initFirstVal      = ptf->initFirstVal;
     lastVal           = ptf->lastVal;
-    initFirstVal_cand = ptf->initFirstVal_cand;
     lastVal_cand      = ptf->lastVal_cand;
+    initVal           = ptf->initVal;
 }
 
 void PTF::getARandomFrame() {
@@ -105,6 +76,7 @@ void PTF::getARandomFrame(Coordinate _seed_init_direction) {
 	F[0][0] = _seed_init_direction.x;
 	F[0][1] = _seed_init_direction.y;
 	F[0][2] = _seed_init_direction.z;
+    normalize(F[0]);
 	rndmr->getAUnitRandomPerpVector(F[2],F[0]);
 	cross(F[1],F[2],F[0]);
 }
@@ -121,12 +93,9 @@ void PTF::flip() {
 	}
 	k1      *= -1;
     k1_cand *= -1;
-    
-    kT1 *= -1;
-    kT2 *= -1;
 
 	likelihood 	= 0.0;
-    lastVal     = initFirstVal;
+    lastVal     = initVal;
 }
 
 
@@ -141,28 +110,16 @@ void PTF::print() {
 	std::cout << "likelihood: " << likelihood << std::endl;
 }
 
-
-
-
-
-
-
-
-
 void PTF::getCandidate() {
     rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
     calcDataSupport();
 }
 
-
 void PTF::calcDataSupport() {
-    
-    
-    prepInitProbePropagator();
+        
+    prepPropagator(TRACKER::probeStepSize);
 
-    
     // Copy initial _p and _F
-    
     for (int i=0; i<3; i++) {
         _p[i] 	= p[i];
         for (int j=0; j<3; j++) {
@@ -175,8 +132,7 @@ void PTF::calcDataSupport() {
     
         likelihood = lastVal;
         
-        for (int q=0; q<(TRACKER::probeQuality-1); q++) {
-            
+        for (int q=1; q<TRACKER::probeQuality; q++) {
             
             for (int i=0; i<3; i++) {
                 _p[i]  += PP[0]*_F[0][i] +  PP[1]*_F[1][i]  +  PP[2]*_F[2][i];
@@ -247,7 +203,6 @@ void PTF::calcDataSupport() {
                 
             }
             
-            prepProbePropagator();
         }
         
     } else {
@@ -327,7 +282,6 @@ void PTF::calcDataSupport() {
                 }
             }
             
-            prepProbePropagator();
         }
         
         
@@ -340,10 +294,6 @@ void PTF::calcDataSupport() {
 
 }
 
-
-
-
-
 void PTF::getInitCandidate() {
     
     rndmr->getARandomPointWithinDisk(&k1_cand, &k2_cand, TRACKER::maxCurvature);
@@ -353,11 +303,10 @@ void PTF::getInitCandidate() {
     if (TRACKER::img_FOD->iseven) {
         
         // First part of the probe
-        likelihood        = 0.0;
-        getCurrentCurve(p,F);
+        lastVal = 0.0;
         
         if (TRACKER::probeCount==1) {
-            likelihood = getFODamp(p,F[0]);
+            lastVal = getFODamp(p,F[0]);
         } else {
             
             for (float c=0; c<TRACKER::probeCount; c++) {
@@ -371,21 +320,18 @@ void PTF::getInitCandidate() {
                 float val = getFODamp(pp,F[0]);
                 
                 if ((TRACKER::checkWeakLinks==CHECKWEAKLINKS_ON) && (val < TRACKER::weakLinkThresh)) {
-                    likelihood  = 0;
+                    lastVal  = 0;
                     return;
                 } else {
-                    likelihood += val;
+                    lastVal += val;
                 }
 
             }
             
         }
         
-        initFirstVal_cand = likelihood;
-        lastVal_cand      = likelihood;
+        initVal  = lastVal;
     }
-    
-    // initFirstVal_cand and lastVal_cand are not used in the asymmetric FOD case
     
     calcDataSupport();
 

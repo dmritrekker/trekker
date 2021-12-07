@@ -41,9 +41,6 @@ cdef class T:
     def orderOfDirections(self, s):
         self._ptr.orderOfDirections(s)
 
-    def algorithm(self, s):
-        self._ptr.algorithm(s)
-
     def stepSize(self, x):
         self._ptr.stepSize(x)
 

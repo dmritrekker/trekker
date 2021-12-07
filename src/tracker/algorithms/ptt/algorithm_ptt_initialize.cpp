@@ -15,7 +15,6 @@ void TrackWith_PTT::get_initial_curve() {
 
 Initialization_Decision TrackWith_PTT::initialize() {
 
-
 	// Sample initial curve by rejection sampling
 	int   tries;
 	int   fail   	= 0;
@@ -29,29 +28,25 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 		get_initial_curve();
         
-		if (curve->likelihood > posteriorMax) {
-            // This candidate is now selected and it will be propagated
-			posteriorMax        = curve->likelihood;
-            curve->initFirstVal = curve->initFirstVal_cand;
-            curve->lastVal      = curve->lastVal_cand;
-			initial_curve->swap(curve);
-		}
+		if (curve->likelihood > posteriorMax)
+			posteriorMax = curve->likelihood;
 		
 	}
-    
-	posteriorMax       *= std::pow(DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent); // initial compensation for underestimation
-    initialPosteriorMax = posteriorMax;
-    
-    
+
+	// initial compensation for underestimation
+	posteriorMax        = std::pow(posteriorMax*DEFAULT_PTT_MAXPOSTESTCOMPENS,TRACKER::dataSupportExponent);
+	if (GENERAL::verboseLevel > DETAILED) std::cout << "posteriorMax: " << posteriorMax << std::endl;
+
 	if (TRACKER::atInit==ATINIT_USEBEST) {
 
 		// Skip rejection sampling for initialization
-		if (curve->likelihood < modMinFodAmp ) {
+		if (curve->likelihood < currMinFODamp ) {
 			curve->likelihood = -2;
             reject++;
         } else {
-            curve->swap(initial_curve);
-        }
+			initial_curve->swap(curve);
+			if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
+		}
 
 	} else {
 
@@ -60,16 +55,14 @@ Initialization_Decision TrackWith_PTT::initialize() {
 
 			get_initial_curve();
 
-			if (curve->likelihood < modMinFodAmp) {
+			if (curve->likelihood < currMinFODamp) {
 				reject++;
 			} else if (curve->likelihood > posteriorMax) {
 				fail++;
 				curve->likelihood = -2;
 				break;
-			} else if (doRandomThings->uniform_01()*posteriorMax < curve->likelihood ) {
+			} else if (doRandomThings->uniform_01()*posteriorMax <= curve->likelihood ) { // Equal helps to sample extrema
                 // This candidate is now selected and it will be propagated
-                curve->initFirstVal = curve->initFirstVal_cand;
-                curve->lastVal      = curve->lastVal_cand;
 				initial_curve->swap(curve);
 				if (GENERAL::verboseLevel > DETAILED) std::cout << "Initialization successful, likelihood was: " << curve->likelihood << std::endl;
 				break;

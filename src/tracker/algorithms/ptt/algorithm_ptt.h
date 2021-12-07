@@ -25,7 +25,7 @@ public:
 	virtual void setDefaultParametersWhenNecessary();
 	virtual void print();
 
-	PTF 			*curve;
+	PTF *curve;
 
 
 
@@ -36,16 +36,12 @@ private:
 	void 			 estimatePosteriorMax();
 	void 		 	 rejectionSample();
 
-	PTF 			*initial_curve;
-    float 		 	 initialPosteriorMax;
-    
+	PTF 			*initial_curve;    
 	float 		 	 posteriorMax;
-    float 		 	 posteriorMaxScalingFactor;
-    
 	size_t 		 	 current_init_postEstItCount;
 	size_t 		 	 current_prop_postEstItCount;
 
-
+	float            currMinFODamp;
 	RandomDoer  	*doRandomThings;
 
 	Streamline_PTT 	*streamline;

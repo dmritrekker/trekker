@@ -76,9 +76,6 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 	// Handle minFODamp
 	if (TRACKER::minFODamp<0.0) TRACKER::minFODamp = DEFAULT_PTT_MINFODAMP;
     
-    // Update modMinFodAmp
-    TRACKER::modMinFodAmp = std::pow(TRACKER::minFODamp,TRACKER::dataSupportExponent);    
-    
     // Handle maxEstInterval
 	if (TRACKER::maxEstInterval<=0.0) {
 		TRACKER::maxEstInterval = DEFAULT_PTT_MAXESTINTERVAL;
@@ -149,14 +146,7 @@ void TrackWith_PTT::setDefaultParametersWhenNecessary() {
 void TrackWith_PTT::print() {
     
     if (GENERAL::usingAPI==false) {
-        
-        if (TRACKER::algorithm == PTT_C1) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C1 version"   	<< std::endl;
-        } else if (TRACKER::algorithm == PTT_C2) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C2 version"   	<< std::endl;
-        } else if (TRACKER::algorithm) {
-            std::cout << "algorithm            : parallel transport tracker (PTT) - C3 version"   	<< std::endl;
-        }
+        std::cout << "algorithm            : parallel transport tracker (PTT)"   	<< std::endl;
     }
 
 	std::cout << "stepSize             : "  << TRACKER::stepSize 			 	<< " " << TRACKER::img_FOD->getUnit() << std::endl;
@@ -167,7 +157,12 @@ void TrackWith_PTT::print() {
 	std::cout << "probeCount           : "  << TRACKER::probeCount	        	<< std::endl;
 	std::cout << "probeQuality         : "  << TRACKER::probeQuality	        << std::endl;
 
-	std::cout << "minFODamp            : "  << TRACKER::minFODamp               << std::endl;
+	if (TRACKER::useMinFODampImage) {
+		std::cout << "minFODamp            : "  << TRACKER::img_minFODamp->getFilePath() << std::endl;
+	} else {
+		std::cout << "minFODamp            : "  << TRACKER::minFODamp << std::endl;
+	}
+
     std::cout << "ignoreWeakLinks      : "  << TRACKER::weakLinkThresh 	        << std::endl;
     std::cout << "maxEstInterval       : "  << TRACKER::maxEstInterval 			<< std::endl;
     std::cout << "dataSupportExponent  : "  << TRACKER::dataSupportExponent 	<< std::endl;

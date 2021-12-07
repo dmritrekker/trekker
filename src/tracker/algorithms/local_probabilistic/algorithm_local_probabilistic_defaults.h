@@ -3,7 +3,7 @@
 
 #define DEFAULT_LOCAL_PROBABILISTIC_STEPSIZE_IN_PIXELDIM                         0.1
 #define DEFAULT_LOCAL_PROBABILISTIC_MINRADIUSOFCURVATURE_IN_PIXELDIM             0.5
-#define DEFAULT_LOCAL_PROBABILISTIC_MINFODAMP                                  0.025
+#define DEFAULT_LOCAL_PROBABILISTIC_MINFODAMP                                   0.05
 #define DEFAULT_LOCAL_PROBABILISTIC_MINLENGTH                                  1e-10
 #define DEFAULT_LOCAL_PROBABILISTIC_MAXLENGTH                                  1e+10
 #define DEFAULT_LOCAL_PROBABILISTIC_WRITEINTERVAL_IN_PIXELDIM                    0.5

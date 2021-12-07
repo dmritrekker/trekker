@@ -40,7 +40,6 @@ public:
     
     // Tracker config
     void orderOfDirections(std::string ood);
-    void algorithm(std::string alg);
     void stepSize(double _stepSize);
     void minRadiusOfCurvature(double x);
     void minFODamp(double _minFODamp);

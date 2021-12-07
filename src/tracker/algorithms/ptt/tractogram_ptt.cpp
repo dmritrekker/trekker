@@ -308,13 +308,8 @@ void Tractogram_PTT::writeMetadataOutput() {
 	FILE *out = writeBaseMetadataOutput();
 
 	fprintf(out,",\n\"TRACKER OPTIONS\": {");
-    if (TRACKER::algorithm == PTT_C1) {
-        fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) - C1 version\" ");
-    } else if (TRACKER::algorithm == PTT_C2) {
-        fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) - C2 version\" ");
-    } else {
-        fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) - C3 version\" ");
-    }
+    
+    fprintf(out,"\n\"algorithm\": \"probabilistic parallel transport tracker (ptt) \" ");
 
 	fprintf(out,(",\n\"stepSize\":" 			+ std::to_string(TRACKER::stepSize)).c_str());
 	fprintf(out,(",\n\"minRadiusOfCurvature\":" + std::to_string(TRACKER::minRadiusOfCurvature)).c_str());
@@ -322,7 +317,12 @@ void Tractogram_PTT::writeMetadataOutput() {
 	fprintf(out,(",\n\"probeRadius\":" 			+ std::to_string(TRACKER::probeRadius)).c_str());
 	fprintf(out,(",\n\"probeCount\":" 			+ std::to_string(TRACKER::probeCount)).c_str());
 	fprintf(out,(",\n\"probeQuality\":" 		+ std::to_string(TRACKER::probeQuality)).c_str());
-	fprintf(out,(",\n\"minFODamp\":" 			+ std::to_string(TRACKER::minFODamp)).c_str());
+	
+	if (TRACKER::useMinFODampImage)
+		fprintf(out,(",\n\"minFODamp\":\"" + TRACKER::img_minFODamp->getFilePath() + "\"").c_str());
+	else
+		fprintf(out,(",\n\"minFODamp\":"   + std::to_string(TRACKER::minFODamp)).c_str());
+
     fprintf(out,(",\n\"maxEstInterval\":" 		+ std::to_string(TRACKER::maxEstInterval)).c_str());
     fprintf(out,(",\n\"ignoreWeakLinks\":" 	    + std::to_string(TRACKER::weakLinkThresh)).c_str());
     fprintf(out,(",\n\"dataSupportExponent\":" 	+ std::to_string(TRACKER::dataSupportExponent)).c_str());

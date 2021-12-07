@@ -8,8 +8,6 @@
 #include "../tracker/algorithms/ptt/tractogram_ptt.h"
 #include "../tracker/algorithms/local_probabilistic/algorithm_local_probabilistic.h"
 #include "../tracker/algorithms/local_probabilistic/tractogram_local_probabilistic.h"
-#include "../tracker/algorithms/ptt_with_parameter_priors/algorithm_ptt_with_parameter_priors.h"
-#include "../tracker/algorithms/ptt_with_parameter_priors/tractogram_ptt_with_parameter_priors.h"
 
 using namespace GENERAL;
 using namespace SH;
@@ -26,6 +24,7 @@ Tractogram            *tractogram 		= NULL;
 float stepSize       					= NOTSET;
 float minRadiusOfCurvature   			= NOTSET;
 float minFODamp      					= NOTSET;
+bool  useMinFODampImage                 = false;
 int   maxEstInterval                    = NOTSET;
 float dataSupportExponent      			= NOTSET;
 float minLength      					= NOTSET;
@@ -35,6 +34,7 @@ Directionality directionality 			= DIRECTIONALITY_NOTSET;
 int   writeInterval  					= NOTSET;
 int	  initMaxEstTrials 					= NOTSET;
 int   propMaxEstTrials    				= NOTSET;
+SCALAR_Image* img_minFODamp             = new SCALAR_Image;
 
 // PTT parameters
 float probeLength    					= NOTSET;
@@ -44,9 +44,6 @@ int   probeCount 						= NOTSET;
 float probeStepSize                     = NOTSET;
 float probeNormalizer                   = NOTSET;
 float angularSeparation                 = NOTSET;
-
-// Parameter priors
-SCALAR_Image* img_dispersion            = new SCALAR_Image;
 
 // Derived parameters
 float maxCurvature   					= NOTSET;
@@ -98,24 +95,18 @@ void setDefaultParametersWhenNecessary() {
 
 	// Handle algorithm
 	if (algorithm==ALGORITHM_NOTSET) {
-		algorithm = PTT_C1;
-		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default algorithm: PTT - C1 version" << std::endl;
+		algorithm = PTT;
+		if (GENERAL::verboseLevel>MINIMAL) std::cout << "Using default algorithm: PTT" << std::endl;
 	}
 
 	switch (TRACKER::algorithm) {
-	case PTT_C1:
-    case PTT_C2:
-    case PTT_C3:
+	case PTT:
 		if (tractogram==NULL) { tractogram = new Tractogram_PTT(); }
 		if (method    ==NULL) { method     = new  TrackWith_PTT(); }
 		break;
 	case LOCAL_PROBABILISTIC:
 		if (tractogram==NULL) { tractogram = new Tractogram_Local_Probabilistic(); }
 		if (method    ==NULL) { method     = new  TrackWith_Local_Probabilistic(); }
-		break;
-    case PTT_WITH_PARAMETER_PRIORS:
-		if (tractogram==NULL) { tractogram = new Tractogram_PTT_with_parameter_priors(); }
-		if (method    ==NULL) { method     = new  TrackWith_PTT_with_parameter_priors(); }
 		break;
 	default :
 		break;
@@ -140,11 +131,10 @@ void readFODImage() {
 	if(!img_FOD->readImage()) exit(EXIT_FAILURE);
 }
 
-void readDispersionImage() {
-	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading dispersion image           : " << img_dispersion->getFilePath() << std::endl;
-	if(!img_dispersion->readImage()) exit(EXIT_FAILURE);
+void readMinFODampImage() {
+	if (GENERAL::verboseLevel!=QUITE) std::cout << "Reading minFODamp image            : " << img_minFODamp->getFilePath() << std::endl;
+	if(!img_minFODamp->readImage()) exit(EXIT_FAILURE);
 }
-
 
 void print() {
 	std::cout << std::endl;

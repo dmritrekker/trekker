@@ -58,6 +58,8 @@ Propagation_Decision TrackWith_Local_Probabilistic::propagate(int ) {
         thread->tracker_FOD->getVal(current_point,FOD);
     }
 
+	if (TRACKER::useMinFODampImage) TRACKER::img_minFODamp->getVal(current_point,&currMinFODamp);
+
 	// Estimate posterior maximum
 	estimatePosteriorMax();
 
@@ -66,7 +68,7 @@ Propagation_Decision TrackWith_Local_Probabilistic::propagate(int ) {
 
 	if (samplingOutput==-2) {
 		return FAIL;
-	} else if (samplingOutput < TRACKER::minFODamp) {
+	} else if (samplingOutput < currMinFODamp) {
 		return STOP;
 	} else
 		return CONTINUE;
