@@ -1,3 +1,6 @@
+#include "config/config_general.h"
+#include "config/config_seeding.h"
+#include "config/config_tracker.h"
 #include <string>
 #include <vector>
 
@@ -37,6 +40,9 @@ public:
     void timeLimit(int t);    
     void resetParameters();
 
+    int  getNumberOfThreads() {return GENERAL::numberOfThreads;}
+    int  getTimeLimit() {return GENERAL::timeLimit;}
+
     
     // Tracker config
     void orderOfDirections(std::string ood);
@@ -61,6 +67,28 @@ public:
     void probeQuality(int n);
     void ignoreWeakLinks(double x);
 
+    std::string getOrderOfDirections() {return TRACKER::orderOfDirectionsTextInput;}
+    float       getStepSize() {return TRACKER::stepSize;}
+    float       getMinRadiusOfCurvature() {return TRACKER::minRadiusOfCurvature;}
+    float       getMinFODamp() {return TRACKER::minFODamp;}
+    float       getDataSupportExponent() {return TRACKER::dataSupportExponent;}
+    float       getMinLength() {return TRACKER::minLength;}
+    float       getMaxLength() {return TRACKER::maxLength;}
+    std::string getAtMaxLength() {return (TRACKER::atMaxLength==ATMAXLENGTH_DISCARD)?"discard":"stop";}
+    int         getWriteInterval() {return TRACKER::writeInterval;}
+    std::string getDirectionality() {return (TRACKER::directionality==TWO_SIDED)?"two_sided":"one_sided";}
+    int         getMaxEstInterval() {return TRACKER::maxEstInterval;}
+    int         getInitMaxEstTrials() {return TRACKER::initMaxEstTrials;}
+    int         getPropMaxEstTrials() {return TRACKER::propMaxEstTrials;}
+    int         getMaxSamplingPerStep() {return TRACKER::triesPerRejectionSampling;}
+    bool        getUseBestAtInit() {return (TRACKER::atInit==ATINIT_USEBEST)?true:false;}
+
+    float       getProbeLength() {return TRACKER::probeLength;}
+    float       getProbeRadius() {return TRACKER::probeRadius;}
+    int         getProbeCount() {return TRACKER::probeCount;}
+    int         getProbeQuality() {return TRACKER::probeQuality;}
+    float       getIgnoreWeakLinks() {return TRACKER::weakLinkThresh;}
+
     
     
     // Seed config
@@ -72,6 +100,11 @@ public:
     void seed_count(int n);
     void seed_countPerVoxel(int n);
     void seed_maxTrials(int n);
+
+    std::string getSeed_image() {return SEED::img_SEED->getFilePath();}
+    int         getSeed_count() {return SEED::count;}
+    int         getSeed_countPerVoxle() {return SEED::countPerVoxel;}
+    int         getSeed_maxTrials() {return SEED::maxTrialsPerSeed;}
     
     
     

@@ -34,6 +34,7 @@ Directionality directionality 			= DIRECTIONALITY_NOTSET;
 int   writeInterval  					= NOTSET;
 int	  initMaxEstTrials 					= NOTSET;
 int   propMaxEstTrials    				= NOTSET;
+int   triesPerRejectionSampling         = NOTSET;
 SCALAR_Image* img_minFODamp             = new SCALAR_Image;
 
 // PTT parameters
@@ -48,11 +49,7 @@ float angularSeparation                 = NOTSET;
 // Derived parameters
 float maxCurvature   					= NOTSET;
 float writeStepSize                  	= NOTSET;
-float maxEstStepSize                    = NOTSET;
 float smallestPixDim 					= 0.0;
-int posteriorMaxEstimationInterval 		= NOTSET;
-int triesPerRejectionSampling      		= NOTSET;
-float posteriorMaxEstimationStepSize 	= NOTSET;
 float modMinFodAmp                      = 0.0;
 AtInit atInit 							= ATINIT_NOTSET;
 

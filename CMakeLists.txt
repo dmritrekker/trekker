@@ -93,6 +93,7 @@ if(UNIX AND NOT APPLE)
 
     set(trekkerLib ${CMAKE_BINARY_DIR}/libTrekker.a)
     add_custom_target(combined COMMAND ar -x $<TARGET_FILE:tmp> COMMAND ar -qcs ${trekkerLib} *.o WORKING_DIRECTORY ${CMAKE_BINARY_DIR} DEPENDS tmp)
+	add_custom_target(libTrekker.a)
 
     add_library(c STATIC IMPORTED GLOBAL)
     add_dependencies(c combined)
