@@ -785,3 +785,31 @@ void Trekker::pathway_satisy_requirements_in_order(bool q) {
     else
         PATHWAY::satisfy_requirements_in_order = NO_ORDER;
 }
+
+// Getters
+int         Trekker::getNumberOfThreads() {return GENERAL::numberOfThreads;}
+int         Trekker::getTimeLimit() {return GENERAL::timeLimit;}
+std::string Trekker::getOrderOfDirections() {return TRACKER::orderOfDirectionsTextInput;}
+float       Trekker::getStepSize() {return TRACKER::stepSize;}
+float       Trekker::getMinRadiusOfCurvature() {return TRACKER::minRadiusOfCurvature;}
+float       Trekker::getMinFODamp() {return TRACKER::minFODamp;}
+float       Trekker::getDataSupportExponent() {return TRACKER::dataSupportExponent;}
+float       Trekker::getMinLength() {return TRACKER::minLength;}
+float       Trekker::getMaxLength() {return TRACKER::maxLength;}
+std::string Trekker::getAtMaxLength() {return (TRACKER::atMaxLength==ATMAXLENGTH_DISCARD)?"discard":"stop";}
+int         Trekker::getWriteInterval() {return TRACKER::writeInterval;}
+std::string Trekker::getDirectionality() {return (TRACKER::directionality==TWO_SIDED)?"two_sided":"one_sided";}
+int         Trekker::getMaxEstInterval() {return TRACKER::maxEstInterval;}
+int         Trekker::getInitMaxEstTrials() {return TRACKER::initMaxEstTrials;}
+int         Trekker::getPropMaxEstTrials() {return TRACKER::propMaxEstTrials;}
+int         Trekker::getMaxSamplingPerStep() {return TRACKER::triesPerRejectionSampling;}
+bool        Trekker::getUseBestAtInit() {return (TRACKER::atInit==ATINIT_USEBEST)?true:false;}
+float       Trekker::getProbeLength() {return TRACKER::probeLength;}
+float       Trekker::getProbeRadius() {return TRACKER::probeRadius;}
+int         Trekker::getProbeCount() {return TRACKER::probeCount;}
+int         Trekker::getProbeQuality() {return TRACKER::probeQuality;}
+float       Trekker::getIgnoreWeakLinks() {return TRACKER::weakLinkThresh;}
+std::string Trekker::getSeed_image() {return SEED::img_SEED->getFilePath();}
+int         Trekker::getSeed_count() {return SEED::count;}
+int         Trekker::getSeed_countPerVoxle() {return SEED::countPerVoxel;}
+int         Trekker::getSeed_maxTrials() {return SEED::maxTrialsPerSeed;}

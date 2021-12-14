@@ -6,7 +6,7 @@ buildType=Release #Release or Debug
 c_compiler=gcc
 cxx_compiler=g++
 
-buildPythonPackage=OFF #ON or OFF
+buildPythonPackage=ON #ON or OFF
 pythonExe=python
 
 rm -rf build/Linux
