@@ -37,6 +37,9 @@ public:
     void timeLimit(int t);    
     void resetParameters();
 
+    int  getNumberOfThreads();
+    int  getTimeLimit();
+
     
     // Tracker config
     void orderOfDirections(std::string ood);
@@ -61,6 +64,28 @@ public:
     void probeQuality(int n);
     void ignoreWeakLinks(double x);
 
+    std::string getOrderOfDirections();
+    float       getStepSize();
+    float       getMinRadiusOfCurvature();
+    float       getMinFODamp();
+    float       getDataSupportExponent();
+    float       getMinLength();
+    float       getMaxLength();
+    std::string getAtMaxLength();
+    int         getWriteInterval();
+    std::string getDirectionality();
+    int         getMaxEstInterval();
+    int         getInitMaxEstTrials();
+    int         getPropMaxEstTrials();
+    int         getMaxSamplingPerStep();
+    bool        getUseBestAtInit();
+
+    float       getProbeLength();
+    float       getProbeRadius();
+    int         getProbeCount();
+    int         getProbeQuality();
+    float       getIgnoreWeakLinks();
+
     
     
     // Seed config
@@ -72,6 +97,11 @@ public:
     void seed_count(int n);
     void seed_countPerVoxel(int n);
     void seed_maxTrials(int n);
+
+    std::string getSeed_image();
+    int         getSeed_count();
+    int         getSeed_countPerVoxle();
+    int         getSeed_maxTrials();
     
     
     

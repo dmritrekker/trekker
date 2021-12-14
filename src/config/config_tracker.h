@@ -80,6 +80,7 @@ extern int 		       writeInterval;
 extern Directionality  directionality;
 extern int			   initMaxEstTrials;
 extern int			   propMaxEstTrials;
+extern int 		       triesPerRejectionSampling;
 
 extern float 		   probeLength;
 extern float 		   probeRadius;
@@ -95,11 +96,7 @@ extern SCALAR_Image   *img_minFODamp;
 // Derived parameters
 extern float		   maxCurvature;
 extern float		   smallestPixDim;
-extern int 		       posteriorMaxEstimationInterval;
-extern int 		       triesPerRejectionSampling;
 extern float           writeStepSize;
-extern float           maxEstStepSize;
-extern float           posteriorMaxEstimationStepSize;
 extern float           modMinFodAmp;
 extern AtInit 		   atInit;
 

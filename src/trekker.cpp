@@ -100,7 +100,7 @@ void changeOrderOfDirections(std::string ood) {
     else if (ood=="xYz") TRACKER::orderOfDirections = xYz;
     else if (ood=="xyZ") TRACKER::orderOfDirections = xyZ;
     else if (ood=="xyz") TRACKER::orderOfDirections = xyz;
-	else if (ood=="XZY") TRACKER::orderOfDirections = XZY;
+    else if (ood=="XZY") TRACKER::orderOfDirections = XZY;
     else if (ood=="XZy") TRACKER::orderOfDirections = XZy;
     else if (ood=="XzY") TRACKER::orderOfDirections = XzY;
     else if (ood=="Xzy") TRACKER::orderOfDirections = Xzy;
@@ -145,6 +145,7 @@ void changeOrderOfDirections(std::string ood) {
 	}
     
 }
+
 
 void Trekker::resetParameters() { resetAllParameters(); }
 
@@ -462,8 +463,8 @@ void Trekker::orderOfDirections(std::string ood) {
         std::cout << "TREKKER::Can't change order of directions since FOD is already discretized."<< std::endl;
 }
 
-void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize;}
-void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x;}
+void Trekker::stepSize(double _stepSize) { TRACKER::stepSize = _stepSize; TRACKER::writeStepSize = TRACKER::writeInterval*TRACKER::stepSize; }
+void Trekker::minRadiusOfCurvature(double x) { TRACKER::minRadiusOfCurvature = x; TRACKER::maxCurvature = 1/TRACKER::minRadiusOfCurvature;}
 void Trekker::minFODamp(double x) { TRACKER::minFODamp = x; }
 void Trekker::ignoreWeakLinks(double x) { TRACKER::weakLinkThresh = x; TRACKER::checkWeakLinks  = CHECKWEAKLINKS_ON; }
 void Trekker::maxEstInterval(int n) { TRACKER::maxEstInterval = n; }
@@ -488,7 +489,7 @@ void Trekker::atMaxLength(std::string aml) {
     
 }
 
-void Trekker::writeInterval(int n) { TRACKER::writeInterval = n; }
+void Trekker::writeInterval(int n) { TRACKER::writeInterval = n; TRACKER::writeStepSize = TRACKER::writeInterval*TRACKER::stepSize;}
 void Trekker::directionality(std::string d) { 
     
     if (d=="two_sided")
@@ -512,10 +513,20 @@ void Trekker::initMaxEstTrials(int n) {TRACKER::initMaxEstTrials=n;}
 void Trekker::propMaxEstTrials(int n) {TRACKER::propMaxEstTrials=n;}
 void Trekker::useBestAtInit(bool q) {TRACKER::atInit = q ? ATINIT_USEBEST : ATINIT_REJECTIONSAMPLE;}
 
-void Trekker::probeLength(double x) { TRACKER::probeLength = x;}
-void Trekker::probeRadius(double x) { TRACKER::probeRadius = x;}
-void Trekker::probeCount(int n) { TRACKER::probeCount  = n;}
-void Trekker::probeQuality(int n) { TRACKER::probeQuality = n;}
+void deriveProbeParameters() {
+    TRACKER::probeStepSize     = TRACKER::probeLength/(TRACKER::probeQuality-1);
+    if (TRACKER::img_FOD->iseven) {
+        TRACKER::probeNormalizer   = 1/float(TRACKER::probeQuality*TRACKER::probeCount);
+    } else {
+        TRACKER::probeNormalizer   = 1/float((TRACKER::probeQuality-1)*TRACKER::probeCount);
+    }
+    TRACKER::angularSeparation = TWOPI/float(TRACKER::probeCount);
+}
+
+void Trekker::probeLength(double x) { TRACKER::probeLength  = x; deriveProbeParameters();}
+void Trekker::probeRadius(double x) { TRACKER::probeRadius  = x; deriveProbeParameters();}
+void Trekker::probeCount(int n)     { TRACKER::probeCount   = n; deriveProbeParameters();}
+void Trekker::probeQuality(int n)   { TRACKER::probeQuality = n; deriveProbeParameters();}
 
 
 // Seed config
@@ -774,3 +785,31 @@ void Trekker::pathway_satisy_requirements_in_order(bool q) {
     else
         PATHWAY::satisfy_requirements_in_order = NO_ORDER;
 }
+
+// Getters
+int         Trekker::getNumberOfThreads() {return GENERAL::numberOfThreads;}
+int         Trekker::getTimeLimit() {return GENERAL::timeLimit;}
+std::string Trekker::getOrderOfDirections() {return TRACKER::orderOfDirectionsTextInput;}
+float       Trekker::getStepSize() {return TRACKER::stepSize;}
+float       Trekker::getMinRadiusOfCurvature() {return TRACKER::minRadiusOfCurvature;}
+float       Trekker::getMinFODamp() {return TRACKER::minFODamp;}
+float       Trekker::getDataSupportExponent() {return TRACKER::dataSupportExponent;}
+float       Trekker::getMinLength() {return TRACKER::minLength;}
+float       Trekker::getMaxLength() {return TRACKER::maxLength;}
+std::string Trekker::getAtMaxLength() {return (TRACKER::atMaxLength==ATMAXLENGTH_DISCARD)?"discard":"stop";}
+int         Trekker::getWriteInterval() {return TRACKER::writeInterval;}
+std::string Trekker::getDirectionality() {return (TRACKER::directionality==TWO_SIDED)?"two_sided":"one_sided";}
+int         Trekker::getMaxEstInterval() {return TRACKER::maxEstInterval;}
+int         Trekker::getInitMaxEstTrials() {return TRACKER::initMaxEstTrials;}
+int         Trekker::getPropMaxEstTrials() {return TRACKER::propMaxEstTrials;}
+int         Trekker::getMaxSamplingPerStep() {return TRACKER::triesPerRejectionSampling;}
+bool        Trekker::getUseBestAtInit() {return (TRACKER::atInit==ATINIT_USEBEST)?true:false;}
+float       Trekker::getProbeLength() {return TRACKER::probeLength;}
+float       Trekker::getProbeRadius() {return TRACKER::probeRadius;}
+int         Trekker::getProbeCount() {return TRACKER::probeCount;}
+int         Trekker::getProbeQuality() {return TRACKER::probeQuality;}
+float       Trekker::getIgnoreWeakLinks() {return TRACKER::weakLinkThresh;}
+std::string Trekker::getSeed_image() {return SEED::img_SEED->getFilePath();}
+int         Trekker::getSeed_count() {return SEED::count;}
+int         Trekker::getSeed_countPerVoxle() {return SEED::countPerVoxel;}
+int         Trekker::getSeed_maxTrials() {return SEED::maxTrialsPerSeed;}
