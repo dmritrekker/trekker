@@ -36,8 +36,11 @@ void setDefaultParametersWhenNecessary() {
 		numberOfThreads = MT::maxNumberOfThreads = 1;
 	} else {
 		if (numberOfThreads==NOTSET) {
-            numberOfThreads = MT::maxNumberOfThreads;
+                    numberOfThreads = MT::maxNumberOfThreads;
 		}
+                else {
+                    MT::maxNumberOfThreads = numberOfThreads;
+                }
 	}
 
 	if (timeLimit<=0) {
