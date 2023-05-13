@@ -292,7 +292,8 @@ void MT::MTRUN(size_t range, int numberOfThreads, std::function<void(MTTASK mtta
     progress         = 0;
     
     
-    std::shared_ptr<std::thread[]> task (new std::thread[numberOfThreads]);
+    std::vector<std::thread> task;
+    task.resize(numberOfThreads);
     
     std::unique_lock<std::mutex> lk(exit_mx);
     
@@ -360,8 +361,8 @@ void MT::MTRUN(size_t range, int chunkSize, int numberOfThreads, std::function<v
     float  chkPrgrs  = float(chunkSize)/float(range)*100;
     progress         = 0;
     
-    
-    std::shared_ptr<std::thread[]> task (new std::thread[numberOfThreads]);
+    std::vector<std::thread> task;
+    task.resize(numberOfThreads);
     
     std::unique_lock<std::mutex> lk(exit_mx);
     
@@ -435,7 +436,8 @@ void MT::MTRUN(size_t range, int numberOfThreads, std::string message, std::func
     float  chkPrgrs  = float(chunkSize)/float(range)*100;
     progress         = 0;
     
-    std::shared_ptr<std::thread[]> task (new std::thread[numberOfThreads]);
+    std::vector<std::thread> task;
+    task.resize(numberOfThreads);
     
     std::unique_lock<std::mutex> lk(exit_mx);
     
@@ -508,7 +510,8 @@ void MT::MTRUN(size_t range, int chunkSize, int numberOfThreads, std::string mes
     float  chkPrgrs  = float(chunkSize)/float(range)*100;
     progress         = 0;
     
-    std::shared_ptr<std::thread[]> task (new std::thread[numberOfThreads]);
+    std::vector<std::thread> task;
+    task.resize(numberOfThreads);
     
     std::unique_lock<std::mutex> lk(exit_mx);
     

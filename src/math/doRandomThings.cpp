@@ -3,7 +3,7 @@
 RandomDoer::RandomDoer() {
 	
 
-#ifdef BUILD_FOR_WINDOWS
+#if defined(BUILD_FOR_WINDOWS) || defined(BUILD_FOR_MACOS)
 	std::random_device rd;
 	unsigned long randSeed = rd();
 #else
