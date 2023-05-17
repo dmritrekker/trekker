@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
 #include <thread>
 #include <functional> 
 #include <mutex>

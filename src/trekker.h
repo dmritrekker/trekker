@@ -1,3 +1,6 @@
+#ifndef TREKKER_H_
+#define TREKKER_H_
+
 #include <string>
 #include <vector>
 
@@ -178,3 +181,5 @@ private:
     bool timeUp;
     
 };
+
+#endif
