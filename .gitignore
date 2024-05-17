@@ -1,6 +1,7 @@
 .vscode/
 .vs/
 .cache/
+releases/
 test/
 build/
 build_*/
