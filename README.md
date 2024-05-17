@@ -1,9 +1,16 @@
 Trekker
 =======
 
-Trekker implements a state-of-the-art tractography algorithm, parallel transport tractography (PTT). PTT is capable of reconstructing geometrically smooth and topographically organized fiber bundles.
+<img src="doc/source/_static/logo.png" alt="Trekker Logo" align="right" width="150">
 
-Trekker software has the following features:
+Trekker offers state-of-the-art fiber **tracking** and **filtering** algorithms:
+
+- **Fiber Tracking:** Trekker uses the Parallel Transport Tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles.
+
+- **Fiber Filtering:** Trekker employs an intuitive set of pathway rules, which can be specified using surface meshes, as well as commonly used image masks and partial volume fraction images.
+
+
+Trekker has the following features:
 
 - **Clean probabilistic tractography** with PTT.
 - **Pathway rules** that offer flexible options to reconstruct intricate connections.
@@ -11,58 +18,58 @@ Trekker software has the following features:
 - **Multithreading** reconstructs streamlines using multiple cores of a CPU.
 - **Support for asymmetric FODs** provides a more flexible option for fiber tracking.
 - **Command line interface**, an essential requirement to write scripts for processing *big data* in computer grids.
-- **Python package**, wrapped using Cython from Trekker's C/C++ code which provides easy access to PTT algorithm for python lovers.
-- **.vtk** output, that is compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.
+- **.vtk** and **.tck** input/output, making the results compatible with a large number of third party 3D rendering software, for easy and high quality visualizations.
 
 For complete documentation, tutorials and examples, visit https://dmritrekker.github.io/.
 
-**Example:**
+**Fiber tracking example:**
+```bash
+./trekker --input FOD.nii.gz \
+          --seed WHITE_MATTER_SURFACE.gii \
+          --seed_surf_useSurfNorm \
+          --seed_count 100000 \
+          --pathway discard_if_ends_inside WHITE_MATTER.nii.gz \
+          --pathway discard_if_enters CSF.nii.gz \
+          --minLength 20 \
+          --maxLength 300 \
+          --output OUT_TRACK.vtk
+```
 
-    #Clean whole brain tractography with intuitive options
+**Fiber filtering example:**
+```bash
+./trekker --input INP_TRACK.vtk \
+          --seed WHITE_MATTER_SURFACE.gii \
+          --pathway require_end_inside LEFT_THAL.nii.gz \
+          --output OUT_TRACK.vtk
 
-    ./trekker -fod FOD.nii.gz \
-              -seed_image WHITEMATTER.nii.gz \
-              -seed_count 100000 \
-              -pathway=discard_if_ends_inside WHITEMATTER.nii.gz \
-              -pathway=discard_if_enters CSF.nii.gz \
-              -minLength 20 \
-              -maxLength 300 \
-              -output OUTPUT.vtk
+# Yes! You can use the --seed option when filtering too.
+```
 
 
 Installation
 ------------
 
-
 **Stand-alone executables:**
 
-Latest binaries are under: https://github.com/baranaydogan/trekker/tree/master/binaries
+Please find the stand-alone executables under [Releases](https://github.com/dmritrekker/trekker/releases).
 
 
-**Building from source:**
+## Building from Source
 
-Step 1. Download the source code:
+Trekker relies on [nibrary](https://github.com/nibrary/nibrary). To compile Trekker from source, please ensure nibrary is installed first. Follow these steps to compile Trekker:
 
-	git clone https://github.com/dmritrekker/trekker
+#### Step 1: Download the Source Code
 
-Step 2. Modify the first few lines in the build script (make sure to have cmake-3.15 or newer):
+```bash
+git clone https://github.com/dmritrekker/trekker
+```
 
-- For Linux -> build_Linux.sh
-- For Windows -> build_Windows.bat
+#### Step 2: Modify and run the build script
 
-Step 3. Run the build script. This will build Trekker under:
+Make sure you have CMake 3.15 or newer installed.
 
-- For Linux -> <TrekkerFolder>/build/Linux/install
-- For Windows -> <TrekkerFolder>/build/Windows/install
-
-**Python package:**
-
-A python package can be built from source. You can also download a built distributions (.whl) from the /binaries folder.
-
-To install the python package use:
-
-    pip install Trekker-<VERSION>.whl
-
+- **For Linux:** Edit `build_Linux.sh`
+- **For Windows:** Edit `build_Windows.bat`
 
 Demo
 ----
