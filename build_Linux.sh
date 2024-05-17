@@ -11,7 +11,6 @@ lib_path="../nibrary/${buildDir}/install/lib/nibrary_v0.1"
 c_compiler=/bin/gcc
 cxx_compiler=/bin/g++
 
-
 rm -rf ${buildDir}
 mkdir -p ${buildDir}
 cd ${buildDir}

@@ -79,3 +79,4 @@ else()
 endif()
 
 INSTALL(TARGETS ${CMDNAME} DESTINATION bin)
+
