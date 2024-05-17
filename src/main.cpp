@@ -12,9 +12,24 @@ int main(int argc, char *argv[]) {
     app.footer("----------Trekker v1.0 beta---------\n© Copyright 2024, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
-    // app.require_subcommand(1);
+    app.require_subcommand(1);
     
-    trekker(&app);
+    // trekker(&app);
+    trekker(app.add_subcommand("track", ""));
+    filter(app.add_subcommand("filter", ""));
+    map2img(app.add_subcommand("map2img", ""));
+    map2surf(app.add_subcommand("map2surf", ""));
+    map2track(app.add_subcommand("map2track", ""));
+    select(app.add_subcommand("select", ""));
+    resample(app.add_subcommand("resample", ""));
+    convert(app.add_subcommand("convert", ""));
+    transform(app.add_subcommand("transform", ""));
+    diff(app.add_subcommand("diff", ""));
+    merge(app.add_subcommand("merge", ""));
+    addColor(app.add_subcommand("addColor", ""));
+    fieldExport(app.add_subcommand("fieldExport", ""));
+    fieldImport(app.add_subcommand("fieldImport", ""));
+    fieldRemove(app.add_subcommand("fieldRemove", ""));  
 
     // If no option is used just display the help
     try {

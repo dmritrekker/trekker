@@ -44,3 +44,28 @@ std::string wrap_text(const std::string &text, std::size_t first_line_indent, st
 
     return wrapped.str();
 }
+
+bool ensureVTK(std::string fname)
+{
+    std::string ext = getFileExtension(fname);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == "vtk")
+        return true;
+
+    disp(MSG_ERROR,"Unsupported file format: %s (only vtk is supported)", fname.c_str());
+    return false;
+}
+
+
+bool ensureVTKorTCK(std::string fname)
+{
+    std::string ext = getFileExtension(fname);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == "vtk" || ext == "tck")
+        return true;
+
+    disp(MSG_ERROR,"Unsupported file format: %s (only vtk/tck are supported)", fname.c_str());
+    return false;
+}

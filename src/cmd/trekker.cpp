@@ -5,10 +5,6 @@ using namespace NIBR;
 
 namespace CMDARGS_TREKKER
 {
-
-    // Input options
-    std::vector<std::string> inp_fname;
-
     // Tracking options
     std::string              alg                     = "";
     std::vector<std::string> fod;
@@ -71,10 +67,7 @@ namespace CMDARGS_TREKKER
     // Output options
     std::string out_fname;
     float       writeStepSize   =  0;
-    int         maxOut          = -1;
     bool        ascii           = false;
-    std::string saveDisc        = "";
-    std::string saveUncr        = "";
     
     // General options
     int numberOfThreads     =  0;
@@ -91,212 +84,8 @@ void run_trekker()
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
 
-
-    std::string inp_ext = getFileExtension(inp_fname[0]);
+    if(!ensureVTKorTCK(out_fname)) return;
     std::string out_ext = getFileExtension(out_fname);
-
-    if ( ((out_ext == "vtk") || (out_ext == "tck")) == false ) {
-        disp(MSG_FATAL, "Unknown output type");
-    }
-
-    bool filterOnly     = false;
-
-    if ( (inp_ext == "vtk") || (inp_ext == "tck") ) {
-        filterOnly = true;
-    } else if ( (inp_ext == "nii") || (inp_ext == "nii.gz") ) {
-        filterOnly = false;
-    } else {
-        disp(MSG_FATAL, "Unknown input type");
-    }
-
-
-    if (filterOnly) {
-
-        // Confirm overwrite if needed
-        if (saveDisc!="") { if (!parseForceOutput(saveDisc,force)) return; }
-        if (saveUncr!="") { if (!parseForceOutput(saveUncr,force)) return; }
-
-        // Initialize tractogram
-        NIBR::TractogramReader tractogram(inp_fname[0]);
-
-        if (tractogram.numberOfStreamlines < 1) {
-            std::vector<std::vector<std::vector<float>>> track;
-            disp(MSG_ERROR,"Empty tractogram file.");
-            
-            if (ascii && (out_ext=="vtk"))
-                NIBR::writeTractogram_VTK_ascii(out_fname, track);
-            else 
-                NIBR::writeTractogram(out_fname, track);
-
-            return;
-        }  
-    
-        Pathway pw;
-        pw.enableTracking(false); // This will prevent seeders to be created when a seed rule is defined
-
-        auto seed  = parseSeedInput(seedInp);
-        if ((!seedInp.empty()) && (seed.src==undef_src))
-            return;
-        if (seed.src != undef_src) {
-            if(!pw.add(seed)) return;
-        }
-
-        std::vector<std::string> tmp;
-        for (size_t n = 0; n < discardSeedInp.size(); n++) {
-            tmp.push_back("discard_seed");
-            tmp.push_back(discardSeedInp[n]);
-        }
-
-        auto discardSeed = parsePathwayInput(tmp);
-        if ((!tmp.empty()) && discardSeed.empty())
-            return;
-        for (auto r : discardSeed) {
-            if(!pw.add(r)) return;
-        }
-
-        auto rules = parsePathwayInput(pathway);
-        if ((!pathway.empty()) && rules.empty())
-            return;
-        for (auto r : rules) {
-            if(!pw.add(r)) return;
-        }
-
-        if(!pw.inOrder(inOrder))            return;
-        if(!pw.setMinLength(minlength))     return;
-        if(!pw.setMaxLength(maxlength))     return;
-        if(!pw.stopAtMax(stopAtMax))        return;
-        if(!pw.oneSided(oneSided))          return;
-        if(!pw.skipSeed(skipSeed))          return;
-        if((!seedInp.empty()) && (!pw.noEdgeSeed(!allowEdgeSeeds))) return;
-        if(!pw.setSeedTrials(seedTrials))   return;
-    
-        pw.print();
-
-        auto filtOut = pathFilter(&tractogram, &pw, numberOfThreads, maxOut);
-
-        std::vector<size_t> idx     = std::get<0>(filtOut);
-        std::vector<float>  begIdx  = std::get<1>(filtOut);
-        std::vector<float>  endIdx  = std::get<2>(filtOut);      
-        
-        bool followIndx = oneSided; 
-    
-        if (followIndx==false) { 
-            for (int i = 0; i < (int)pw.prules.size(); i++)
-            { 
-                if (pw.prules[i].type == stop_before_entry || pw.prules[i].type == stop_at_entry || pw.prules[i].type == stop_after_entry || 
-                    pw.prules[i].type == stop_before_exit  || pw.prules[i].type == stop_at_exit  || pw.prules[i].type == stop_after_exit  || 
-                    stopAtMax) 
-                { 
-                    followIndx = true;  
-                    break;  
-                }     
-            } 
-        }
-    
-        if (!followIndx) {  
-
-            if (ascii && (out_ext=="vtk")) {
-                NIBR::TractogramReader inp_tractogram(inp_fname[0]);
-                NIBR::writeTractogram_VTK_ascii(out_fname, &inp_tractogram, idx);
-            }
-            else {
-                NIBR::writeTractogram(out_fname, inp_fname[0], idx);
-            }
-
-        }  else { 
-    
-            std::vector<std::vector<std::vector<float>>> track;
-
-            track.resize(idx.size());
-
-            for (size_t i = 0; i < idx.size(); i++)
-            {     
-                
-                std::vector<Point> st = tractogram.readStreamlinePoints(idx[i]);
-
-                // Reverse the begin and end indexes
-                if(endIdx[i]<begIdx[i]) std::swap(begIdx[i],endIdx[i]);
-
-                int   intBeg   = (int)begIdx[i];
-                float fractBeg = begIdx[i]-intBeg;
-
-                int   intEnd   = (int)endIdx[i];
-                float fractEnd = endIdx[i]-intEnd;
-
-                // disp(MSG_DEBUG,"streamline %d - begIdx,endIdx:[%.2f,%.2f]",idx[i],begIdx[i],endIdx[i]);
-                // disp(MSG_DEBUG,"intBeg %d - fractBeg %.2f",intBeg,fractBeg);
-                // disp(MSG_DEBUG,"intEnd %d - fractEnd %.2f",intEnd,fractEnd);
-
-                // Handle first point
-                if (fractBeg!=0) {
-                    std::vector<float> p(3);
-                    p[0] = st[intBeg].x * (1 - fractBeg) + st[intBeg + 1].x * (fractBeg);
-                    p[1] = st[intBeg].y * (1 - fractBeg) + st[intBeg + 1].y * (fractBeg);
-                    p[2] = st[intBeg].z * (1 - fractBeg) + st[intBeg + 1].z * (fractBeg);
-                    track[i].push_back(p);
-                    intBeg++;
-                }
-
-                // Handle middle points
-                for (int j=intBeg; j<=intEnd; j++) {
-                    track[i].push_back({st[j].x,st[j].y,st[j].z});
-                }
-
-                // Handle last point
-                if (fractEnd!=0) {
-                    std::vector<float> p(3);
-                    p[0] = st[intEnd].x * (1 - fractEnd) + st[intEnd + 1].x * (fractEnd);
-                    p[1] = st[intEnd].y * (1 - fractEnd) + st[intEnd + 1].y * (fractEnd);
-                    p[2] = st[intEnd].z * (1 - fractEnd) + st[intEnd + 1].z * (fractEnd);
-                    track[i].push_back(p);
-                } else {
-                    track[i].push_back({st[intEnd].x,st[intEnd].y,st[intEnd].z});
-                }
-                
-            }
-            if (ascii && (out_ext=="vtk"))
-                NIBR::writeTractogram_VTK_ascii(out_fname, track);
-            else
-                NIBR::writeTractogram(out_fname, track);
-        }
-
-
-        if (followIndx && (saveUncr!="")) {
-            if (ascii && (getFileExtension(saveUncr)=="vtk")) {
-                NIBR::TractogramReader inp_tractogram(inp_fname[0]);
-                NIBR::writeTractogram_VTK_ascii(saveUncr, &inp_tractogram, idx);
-            } else {
-                NIBR::writeTractogram(saveUncr, inp_fname[0], idx);
-            }
-        }
-
-        if (saveDisc!="") {
-            
-            NIBR::TractogramReader inp_tractogram(inp_fname[0]);
-            std::vector<size_t> discIdx;
-            
-            discIdx.reserve(inp_tractogram.numberOfStreamlines);
-            for (size_t n = 0; n < inp_tractogram.numberOfStreamlines; n++) {
-                discIdx.push_back(n);
-            }
-            NIBR::removeIdx(discIdx,idx);
-
-            if (ascii && (getFileExtension(saveDisc)=="vtk")) {
-                NIBR::writeTractogram_VTK_ascii(saveDisc, &inp_tractogram, discIdx);
-            } else {
-                NIBR::writeTractogram(saveDisc, inp_fname[0], discIdx);
-            }
-
-        }
-
-        return;
-
-
-    }
-
-
-
-    fod = inp_fname;
 
     // =======================
     // TREKKER
@@ -432,8 +221,8 @@ void trekker(CLI::App *app)
 
     app->formatter(std::make_shared<CustomHelpFormatter>());
  
-    const std::string info = "Trekker is a fiber tracking and filtering tool"
-        "\n\nFiltering can be done during tracking or stand-alone by providing a tractogram as input. Trekker supports 12 different pathway rules for filtering streamlines, which can be defined using the \033[1m--pathway\033[0m or \033[1m-p\033[0m options:"
+    const std::string info = "Pathway rules"
+        "\n\nTrekker supports 12 different pathway rules for filtering streamlines, which can be defined using the \033[1m--pathway\033[0m or \033[1m-p\033[0m options:"
         "\n  \033[1m \u2022 require_entry:\033[0m tracks are required to enter this region"
         "\n  \033[1m \u2022 require_exit:\033[0m tracks are required to exit this region"
         "\n  \033[1m \u2022 require_end_inside:\033[0m tracks are required to end inside this region"
@@ -467,22 +256,25 @@ void trekker(CLI::App *app)
         "\n       \033[1m 2.\033[0m If the surface is followed by x,y,z,r notation, as in \'-s surf.vtk 1.2,2.4,33.2,4\', then a disc centered at x,y,z with radius r is extracted, and an open surface is generated and considered for filtering."
         "\n       \033[1m 3.\033[0m If the surface is followed by a string and an integer, as in \'-s surf.vtk label 3\', then the surface is considered to contain a field with the provided string. The integer is used as a label, which is used for filtering, e.g., a surface containing labels for different parts of the brain can be used for filtering."
         "\n       \033[1m 4.\033[0m If the surface is defined as in \'-s surf.vtk fileName VERT int 3\', then the fileName is considered to contain labels for each VERTices, the file contains \'int\' (integer) data type, and the filtering should only consider VERTices with label 3."
-        "\n       \033[1m Note:\033[0m For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1. All the four options above can additionally provide the discretization value, which is considered to be the number that follows the input file, as in \'-s surf.vtk 0.4 fileName VERT int 3\', where 0.4 will be used to discretize the surface.";
+        "\n       \033[1m Note:\033[0m For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1. All the four options above can additionally provide the discretization value, which is considered to be the number that follows the input file, as in \'-s surf.vtk 0.4 fileName VERT int 3\', where 0.4 will be used to discretize the surface."
+        "\n\n\033[1mREFERENCES\033[0m:"
+        "\n\n[Aydogan2021] Aydogan D.B., Shi Y., “Parallel transport tractography”, in IEEE Transactions on Medical Imaging, vol. 40, no. 2, pp. 635-647, Feb. 2021, doi: 10.1109/TMI.2020.3034038."
+        "\n\n[Aydogan2019] Aydogan D.B., Shi Y., “A novel fiber tracking algorithm using parallel transport frames”, Proceedings of the 27th Annual Meeting of the International Society of Magnetic Resonance in Medicine (ISMRM) 2019.";
 
-        // app->add_option (fod,   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required()->check(CLI::ExistingFile);
 
     setInfo(app,info);
 
-    app->description("Trekker is a fiber tracking and filtering tool");
+    app->description("fiber tracker");
 
     // auto tracking  = app->add_option_group("Fiber tracking", "These are the fiber tracking parameters, which are used when an FOD is provided as input. These parameters do not affect the results when the input is a tractogram. Fiber tracking parameters can be combined with filtering parameters.");
 
     // General options
     auto general = app->add_option_group(center_text("GENERAL OPTIONS",45));
-    general->add_option ("--input,-i",                inp_fname,             "Trekker will perform fiber tracking or filtering based on the input type: FOD image (.nii,.nii.gz) or tractogram (.tck,.vtk).")->required()->type_name("FILE");
-    general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");;
-    general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output. Only available when the output is .vtk.");
-    general->add_option ("--writeStepSize",           writeStepSize,         "Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeStepSize enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally Trekker always walks with the specified --stepSize. --writeStepSize by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.");
+    
+    general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required()->check(CLI::ExistingFile)->type_name("FILE");
+    general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
+    general->add_option ("--writeStepSize,-w",        writeStepSize,         "Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeStepSize enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally Trekker always walks with the specified --stepSize. --writeStepSize by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.");
     general->add_option("--numberOfThreads, -n",      numberOfThreads,       "Number of threads.");
     general->add_option("--verbose, -v",              verbose,               "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     general->add_flag("--force, -f",                  force,                 "Force overwriting of existing file");
@@ -525,42 +317,29 @@ void trekker(CLI::App *app)
 
     // Seeding options
     auto seeding = tracking->add_option_group("SEEDING PARAMETERS");
-    seedCount_option   = seeding->add_option ("--seed_count",             seedCount,              "Number of seeds. Trekker tries to generate a single streamline from each seed. For that it makes maximum amount of \"trials\". If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be less streamlines in the output tractogram than what is defined with \"count\".");
-    seedDensity_option = seeding->add_option ("--seed_density",           seedDensity,            "Density of seeds. If seed is an image, density is the number of seeds per mm^3. If seed is a surface mesh, density is the number of seeds per mm^2.");
-    seeding->add_option("--seed_surf_faceDensity",      seed_surf_faceDensity,        "A text file containing density information for each face of the input seed surface.");
-    seeding->add_option("--seed_surf_vertDensity",      seed_surf_vertDensity,        "A text file containing density information for each vertex of the input seed surface.");
-    seeding->add_option("--seed_surf_fieldDensity",     seed_surf_fieldDensity,       "The given field in the input seed surface will be used to set seed density.");
+    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
+    seeding->add_option ("--discard_seed",                          discardSeedInp,  "If a seed point falls into this region, it will be discarded")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
+    seeding->add_flag   ("--skipSeed",                              skipSeed,        "Does not output the points that are within seed region");
+    seeding->add_flag   ("--allowEdgeSeeds",                        allowEdgeSeeds,  "Allows seeding at the edges of pathway rules. Default: false");
+    seedTrials_option  = seeding->add_option ("--seed_trials",      seedTrials,      "Sets the maximum number of attempts to generate streamline from the seed point. Default=1.");
+    seedCount_option   = seeding->add_option ("--seed_count",          seedCount,       "Number of seeds. Trekker tries to generate a single streamline from each seed. For that it makes maximum amount of \"trials\". If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be less streamlines in the output tractogram than what is defined with \"count\".");
+    seedDensity_option = seeding->add_option ("--seed_density",        seedDensity,     "Density of seeds. If seed is an image, density is the number of seeds per mm^3. If seed is a surface mesh, density is the number of seeds per mm^2.");
+    seeding->add_option("--seed_surf_faceDensity",      seed_surf_faceDensity,          "A text file containing density information for each face of the input seed surface.");
+    seeding->add_option("--seed_surf_vertDensity",      seed_surf_vertDensity,          "A text file containing density information for each vertex of the input seed surface.");
+    seeding->add_option("--seed_surf_fieldDensity",     seed_surf_fieldDensity,         "The given field in the input seed surface will be used to set seed density.");
     seed_surf_useSurfNorm_option    = seeding->add_flag("--seed_surf_useSurfNorm",      seed_surf_useSurfNorm,          "Surface normals will be used as the initial direction.");
     seed_surf_dontSeedInside_option = seeding->add_flag("--seed_surf_dontSeedInside",   seed_surf_dontSeedInside,       "Only the surface will be used for seeding if the input is closed.");
-
-
-    // Fiber filtering options
-
-    // Seeding
-    auto pathwayOpt = app->add_option_group(center_text("FILTERING OPTIONS",45));
-
-    pathwayOpt->add_option ("--seed, -s",                              seedInp,          "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
-    pathwayOpt->add_option ("--discard_seed,-d",                       discardSeedInp,   "Discard seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
-    seedTrials_option  = pathwayOpt->add_option ("--seed_trials",      seedTrials,       "Sets the maximum number of attempts to generate streamline from the seed point. Default=1.");
+  
 
     // Pathway options
+    auto pathwayOpt = app->add_option_group(center_text("PATHWAY OPTIONS",45));    
     pathwayOpt->add_option ("--pathway, -p",            pathway,                "Pathway rules. (See below for details.)")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
     pathwayOpt->add_option ("--minlength",              minlength,              "Minimum length of output streamlines. Default=0");
     pathwayOpt->add_option ("--maxlength",              maxlength,              "Maximum length of output streamlines. Default=infinite");
     pathwayOpt->add_flag   ("--oneSided",               oneSided,               "If enabled tracking is done only towards the one direction. Default=OFF");
     pathwayOpt->add_flag   ("--stopAtMax",              stopAtMax,              "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
     pathwayOpt->add_flag   ("--inOrder",                inOrder,                "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
-    pathwayOpt->add_flag   ("--skipSeed",               skipSeed,               "Does not output the points that are within seed region");
-    pathwayOpt->add_flag   ("--allowEdgeSeeds",         allowEdgeSeeds,         "Allows seeding at the edges of pathway rules. Default: false");
-    pathwayOpt->add_option ("--discRes",                surfDiscRes,            "Discretization resolution for surface meshes. Default=1");
-
-    // Output options
-    pathwayOpt->add_option ("--maxOut",                  maxOut,                "Maximum number of output streamlines.");
-    pathwayOpt->add_option ("--saveDiscarded",           saveDisc,              "Path for saving discarded streamlines");
-    pathwayOpt->add_option ("--saveUncropped",           saveUncr,              "Path for saving uncropped versions of streamlines if they were cropped during filtering");
-
-
-    
+    pathwayOpt->add_option ("--discRes",                surfDiscRes,            "Discretization resolution for surface meshes. Default=1");    
 
     app->callback(run_trekker);
     
