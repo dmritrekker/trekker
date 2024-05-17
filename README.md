@@ -1,7 +1,7 @@
 Trekker
 =======
 
-<img src="doc/source/_static/logo.svg" alt="Trekker Logo" align="right" width="200">
+<img src="doc/source/_static/logo.svg" alt="Trekker Logo" align="center" width="150">
 
 Trekker offers state-of-the-art fiber **tracking** and **filtering** algorithms:
 
