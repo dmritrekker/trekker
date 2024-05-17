@@ -128,7 +128,7 @@ void run_select()
 void select(CLI::App* app) 
 {  
 
-    app->description("converts tractogram file formats");
+    app->description("selects streamlines from a tractogram");
 
     app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
         ->required()
