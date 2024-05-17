@@ -1,4 +1,4 @@
 Contact
 =======
 
-Please contact baran.aydogan@aalto.fi for questions and feedback.
+Please contact baran.aydogan@uef.fi for questions and feedback.

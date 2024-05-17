@@ -8,7 +8,7 @@ make html
 
 
 # Create trekker manual page
-make man
-mv build/man/trekker.1 build/man/trekker
+# make man
+# mv build/man/trekker.1 build/man/trekker
 
 

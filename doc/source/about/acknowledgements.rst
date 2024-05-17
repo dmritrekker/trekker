@@ -9,5 +9,7 @@ Acknowledgements
 	:scale: 40 %
 	:target: https://www.aalto.fi/en/department-of-neuroscience-and-biomedical-engineering
 
-.. figure:: acknowledgements_C2B.png
+.. figure:: acknowledgements_AIVI.png
 	:scale: 40 %
+	:target: https://www.uef.fi/en/unit/ai-virtanen-institute-for-molecular-sciences
+
