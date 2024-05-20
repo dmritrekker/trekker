@@ -35,7 +35,7 @@ git clone https://github.com/dmritrekker/trekker
 
 ## Usage
 
-Simple run `trekker` on the terminal. This will display help and the commands, which are listed below:
+Simply run `trekker` on the terminal. This will display help and the commands, which are listed below:
 
 | Command    | Description |
 |------------|-------------|
