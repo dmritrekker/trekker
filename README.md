@@ -10,6 +10,10 @@ Trekker offers state-of-the-art tractography tools to study the structural conne
 - **Support for asymmetric FODs**, providing greater flexibility in fiber tracking.
 - Several features designed for high-performance computing (HPC), including **multithreading**, **time-limited tracking**, and a user-friendly **command line interface**.
 
+🏆 **Awards and Recognitions:**
+
+Tractography pipelines based on Trekker have earned awards in every international tractography challenge since 2017. Click [here](https://dmritrekker.github.io/about/awards.html) to read more about Trekker's awards.
+
 For complete documentation, tutorials and examples, visit https://dmritrekker.github.io/.
 
 ## Installation
@@ -41,9 +45,9 @@ Simply run `trekker` on the terminal. This will display help and the commands, w
 |------------|-------------|
 | **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles. |
 | **filter** | Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions. |
-|**map2img**| maps tractogram features on an image |
-|**map2surf**| maps tractogram features on a surface |
-|**map2track**| maps image values on a tractogram |
+|**track2img**| maps tractogram features on an image |
+|**track2surf**| maps tractogram features on a surface |
+|**img2track**| maps image values on a tractogram |
 |**select**| selects streamlines from a tractogram |
 |**resample**| resamples streamlines in a tractogram |
 |**convert**| converts tractogram file formats (.vtk, .tck, .trk) |

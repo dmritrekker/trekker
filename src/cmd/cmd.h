@@ -5,9 +5,9 @@
 
 void trekker(CLI::App* app);
 void filter(CLI::App* app);
-void map2img(CLI::App* app);
-void map2surf(CLI::App* app);
-void map2track(CLI::App* app);
+void track2img(CLI::App* app);
+void track2surf(CLI::App* app);
+void img2track(CLI::App* app);
 void select(CLI::App* app);
 void resample(CLI::App* app);
 void convert(CLI::App* app);
