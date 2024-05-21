@@ -1,6 +1,31 @@
 Trekker
 =======
 
+.. note::
+
+
+    **MAJOR UPDATE!** We are excited to announce the release of Trekker v1.0 beta, now available for testing.
+
+    This version includes significant changes and improvements.
+
+    - Powered by `nibrary <https://github.com/nibrary/nibrary>`_, Trekker now features:
+        - Support for surface based tracking and filtering
+        - Advanced pathway rules for filtering streamlines
+        - Subcommands to perform various tractogram operations
+        - Improved command line interface
+    - While the core fiber tracking algorithm (PTT) works the same, the new version of Trekker is not compatible with the previous versions due to the above changes.
+        - *Remark:* Your previous code (script) written for earlier versions of Trekker need to be modified to work with the latest version.
+    - Some existing features in earlier versions of Trekker are currently missing in the latest version:
+        - Windows compatibility
+        - Python and Matlab support
+        - Exporting of a `.json` formatted tracking report
+
+    Enjoy the new Trekker!
+
+
+
+
+
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
 - **Well-organized, clean, probabilistic streamline tractography** using the parallel transport tractography (PTT) algorithm.
@@ -8,6 +33,7 @@ Trekker offers state-of-the-art tractography tools to study the structural conne
 - Compatibility with **.vtk** format, to enable the use of powerful third-party 3D rendering software, such as `Paraview <https://www.paraview.org/>`__, for easy and high-quality visualizations.
 - Support for asymmetric FODs, providing greater flexibility in fiber tracking.
 - Several features designed for high-performance computing (HPC), including multithreading, time-limited tracking, and a user-friendly command line interface.
+
 
 
 Installation
@@ -146,10 +172,19 @@ Examples
 
 ------------
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Guide
+   :hidden:
+
+   guide/tutorial.rst
+   guide/pathways.rst
+   guide/FOD.rst
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: List of commands
+   :caption: Commands
    :hidden:
 
    commands/track.rst

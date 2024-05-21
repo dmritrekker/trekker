@@ -2,24 +2,24 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="243.882mm"
+   width="145.20334mm"
    height="37.084mm"
-   viewBox="0 0 243.88201 37.084"
+   viewBox="0 0 145.20334 37.084"
    version="1.1"
    id="svg5671"
-   inkscape:version="0.92.1 r15371"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
    sodipodi:docname="acknowledgements_NBE.svg"
    inkscape:export-filename="/home/baran/Work/code/dev/dmritrekker/trekker/doc/source/about/acknowledgements_NBE.png"
    inkscape:export-xdpi="200"
-   inkscape:export-ydpi="200">
+   inkscape:export-ydpi="200"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs5665">
     <clipPath
@@ -119,8 +119,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="575.86617"
-     inkscape:cy="25.302865"
+     inkscape:cx="206.07112"
+     inkscape:cy="26.263966"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -128,11 +128,14 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1920"
-     inkscape:window-height="983"
+     inkscape:window-width="3840"
+     inkscape:window-height="2062"
      inkscape:window-x="0"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1" />
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata5668">
     <rdf:RDF>
@@ -141,7 +144,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -149,7 +151,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-77.076906,-59.987761)">
+     transform="translate(-175.50194,-59.987762)">
     <g
        transform="matrix(0.26458333,0,0,0.26458333,76.822945,14.098429)"
        id="g4677">
@@ -391,7 +393,7 @@
          id="g4858">
         <path
            inkscape:connector-curvature="0"
-           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.83554721"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.835547"
            d="m 845.35477,214.1225 v -1.06949 l 0.26738,-1.0695 0.26737,-1.06951 0.26738,-1.0695 0.53475,-0.9358 0.53474,-0.93582 0.66845,-0.80212 0.66843,-0.80214 0.80212,-0.66843 0.80213,-0.66844 0.93581,-0.53475 0.93582,-0.40105 1.06949,-0.40107 1.06951,-0.26738 1.0695,-0.13369 1.0695,-0.13368 h 76.06821 l 1.0695,0.13368 1.0695,0.13369 1.06951,0.26738 1.0695,0.40107 0.9358,0.40105 0.93582,0.53475 0.80212,0.66844 0.80214,0.66843 0.66843,0.80214 0.66844,0.80212 0.53475,0.93582 0.40106,0.9358 0.40106,1.0695 0.26737,1.06951 0.1337,1.0695 0.13368,1.06949 v 60.69415 l -0.13368,1.0695 -0.1337,1.06951 -0.26737,1.0695 -0.40106,1.06949 -0.40106,0.93582 -0.53475,0.93582 -0.66844,0.80212 -0.66843,0.80212 -0.80214,0.66845 -0.80212,0.66843 -0.93582,0.53474 -0.9358,0.53475 -1.0695,0.26738 -1.06951,0.26739 -1.0695,0.26737 h -1.0695 -76.06821 -1.0695 l -1.0695,-0.26737 -1.06951,-0.26739 -1.06949,-0.26738 -0.93582,-0.53475 -0.93581,-0.53474 -0.80213,-0.66843 -0.80212,-0.66845 -0.66843,-0.80212 -0.66845,-0.80212 -0.53474,-0.93582 -0.53475,-0.93582 -0.26738,-1.06949 -0.26737,-1.0695 -0.26738,-1.06951 v -1.0695 z"
            id="path39-3-6-9" />
         <g

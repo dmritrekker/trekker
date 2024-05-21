@@ -116,10 +116,11 @@ maps tractogram features on an image
 
 **References**
 
-For uses without spherical mapping:
+For uses without spherical mapping, please cite [Calamante2010]_, which provides detailed information on Track-density imaging (TDI).
 
-- Calamante, F.; Tournier, J.-D.; Jackson, G. D. & Connelly, A. Track-density imaging (TDI): Super-resolution white matter imaging using whole-brain track-density mapping. NeuroImage, 2010, 53, 1233-1243
+.. [Calamante2010] `Calamante, F.; Tournier, J.-D.; Jackson, G. D. & Connelly, A. "Track-density imaging (TDI): Super-resolution white matter imaging using whole-brain track-density mapping", NeuroImage, 2010, 53, 1233-1243. <https://www.sciencedirect.com/science/article/abs/pii/S1053811910009766>`__
 
-For uses with spherical mapping:
+For uses with spherical mapping, please cite [Dhollander2014]_, which explains Track Orientation Density Imaging (TODI) and Track Orientation Distribution (TOD) based tractography.
 
-- Dhollander, T., Emsell, L., Van Hecke, W., Maes, F., Sunaert, S., Suetens, P. Track Orientation Density Imaging (TODI) and Track Orientation Distribution (TOD) based tractography. NeuroImage, 2014, 94, 312-336
+.. [Dhollander2014] `Dhollander, T., Emsell, L., Van Hecke, W., Maes, F., Sunaert, S., Suetens, P. "Track Orientation Density Imaging (TODI) and Track Orientation Distribution (TOD) based tractography", NeuroImage, 2014, 94, 312-336. <https://www.sciencedirect.com/science/article/pii/S1053811913012676>`__
+
