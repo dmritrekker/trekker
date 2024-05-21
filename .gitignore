@@ -1,0 +1,10 @@
+.vscode/
+.vs/
+.cache/
+releases/
+test/
+doc/build/
+build/
+build_*/
+build-*/
+

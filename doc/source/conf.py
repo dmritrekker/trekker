@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'trekker'
-copyright = '2021, Dogu Baran Aydogan'
+copyright = '2024, Dogu Baran Aydogan'
 author = 'Dogu Baran Aydogan'
 
 # The short X.Y version
-version = '0.9'
+version = '1.0b'
 # The full version, including alpha/beta/rc tags
-release = '0.9'
+release = '1.0b'
 
 
 # -- General configuration ---------------------------------------------------
@@ -60,7 +60,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -76,8 +76,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
-html_theme_path = ["_templates"]
+# html_theme = 'sphinx_rtd_theme'
+# html_theme_path = ["_templates"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -158,7 +158,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'trekker', 'trekker Documentation',
-     author, 'trekker', 'an implementation for parallel transport tractography',
+     author, 'trekker', 'a fiber tracking and filtering tool',
      'Miscellaneous'),
 ]
 

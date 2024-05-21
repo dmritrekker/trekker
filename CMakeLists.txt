@@ -1,153 +1,82 @@
-﻿cmake_minimum_required (VERSION 3.15)
+cmake_minimum_required(VERSION 3.15.0)
 
-PROJECT(Trekker)
+PROJECT(trekker LANGUAGES CXX C)
 
-# Set output names
-set(trekkerExe trekker)
-
-# Using C++11 standard
-set(CMAKE_CXX_STANDARD 11)
+# Using C++17 standard
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(UNIX AND NOT APPLE)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-	message(STATUS "Building for Linux")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 
-	# Set up manual page
-	add_definitions(-DSHOWMANUAL="man ${CMAKE_SOURCE_DIR}/doc/build/man/trekker")
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_INCLUDE_PATH})
+link_directories(${CMAKE_LIBRARY_PATH})
 
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W -Wall -Wextra -pedantic -pedantic-errors -Wno-long-long -ggdb3 -fno-omit-frame-pointer")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W -Wall -Wextra -pedantic -pedantic-errors -Wno-long-long")
+# List source files
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
+list(REMOVE_ITEM SRCS "main.cpp")
 
-	# FOR STATIC BUILD
-	# Build and link only static libraries and executables
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive")
-	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+# Set executable
+set(CMDNAME trekker)
+add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
+target_link_libraries(${CMDNAME} Nibrary geogram z)
 
-	# Check for zlib support
-	find_package(ZLIB)
-	if(ZLIB_LIBRARIES)
-		add_definitions(-D HAVE_ZLIB)
-		message(STATUS "Enabled zlib support")
-	else()
-		message(STATUS "Disabled zlib support")
-	endif()
+find_package(OpenMP REQUIRED)
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
+if(UNIX)
+
+    message(STATUS "Building for Unix")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -march=native")
+
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        add_compile_options(-fsanitize=address)
+        add_link_options(-fsanitize=address)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wno-long-long -Wno-stringop-truncation -Wno-dev -Wno-unknown-pragmas -Wno-unused-result -Wall -Wextra -pedantic -pedantic-errors")
+
+        # Thread support
+        find_package (Threads)
+        target_link_libraries(${CMDNAME} Threads::Threads)
+
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
+
+    endif()
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
+        target_link_libraries(${CMDNAME} stdc++fs)
+    endif()
 
 elseif(MSVC)
 
-  message(STATUS "Building for Windows")
+    message(STATUS "Building for Windows")
 
-	# Building for Windows
-	add_definitions(-D BUILD_FOR_WINDOWS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /permissive- /bigobj")
 
-	# Enable static compilation
-	# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-	# set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Release>:Release>")
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
+    # For definitions
+    add_compile_definitions(BUILD_FOR_WINDOWS _USE_MATH_DEFINES _WIN32 WIN32 _WIN64 WIN64)
 
-	# Disable some compiler warnings for cl
-	add_compile_options(/wd4244) # conversion from 'double' to 'x', possible loss of data
-	add_compile_options(/wd4267) # conversion from 'size_t' to 'x', possible loss of data
-	add_compile_options(/wd4996) # 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead.
-	add_compile_options(/wd4305) # truncation from 'double' to 'float'
-	add_compile_options(/wd4101) # unreferenced local variable
-
-	# No zlib support for Windows at the moment
+    # Disable some compiler warnings
+    set(DISABLED_WARNINGS "/wd4244 /wd4267 /wd4996 /wd4305 /wd4101 /wd4068 /wd4661 /wd4477 /wd4804 /wd4700")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DISABLED_WARNINGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DISABLED_WARNINGS}")
 
 else()
     message(FATAL_ERROR "This operating system is not supported")
 endif()
 
-# Check if a python package should be built
-option(Build_Python3_WRAPPER "Enable to build a python package for Trekker" ${Build_Python3_WRAPPER})
+INSTALL(TARGETS ${CMDNAME} DESTINATION bin)
 
-if(${Build_Python3_WRAPPER} STREQUAL "ON")
-    message(STATUS "Enabled Python wrapper. A Python package will be build.")
-    message(WARNING "Please change Python path if necessary which is currently set as: ${Python3_EXECUTABLE}")
-else()
-    set(Build_Python3_WRAPPER "OFF")
-	message(STATUS "A Python package will not be build.")
-endif()
-
-# List all source files
-file(GLOB_RECURSE SRCS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
-list(REMOVE_ITEM SRCS "src/cmd.cpp")
-
-# Make an all object library
-add_library(OBJS OBJECT ${SRCS})
-target_include_directories(OBJS PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/znzlib)
-target_include_directories(OBJS PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/niftilib)
-
-# In order to build shared libraries PIC must be on
-set_property(TARGET OBJS PROPERTY POSITION_INDEPENDENT_CODE 1)
-
-# Build the static executable
-
-# The Linux version statically links zlib as well. We skip compiling and linking zlib for Windows yet.
-if(UNIX AND NOT APPLE)
-
-    add_library(Trekker SHARED $<TARGET_OBJECTS:OBJS>)
-    add_library(tmp STATIC $<TARGET_OBJECTS:OBJS>)
-    target_include_directories(tmp PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/znzlib)
-    target_include_directories(tmp PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/niftilib)
-
-    set(trekkerLib ${CMAKE_BINARY_DIR}/libTrekker.a)
-    add_custom_target(combined COMMAND ar -x $<TARGET_FILE:tmp> COMMAND ar -qcs ${trekkerLib} *.o WORKING_DIRECTORY ${CMAKE_BINARY_DIR} DEPENDS tmp)
-	add_custom_target(libTrekker.a)
-
-    add_library(c STATIC IMPORTED GLOBAL)
-    add_dependencies(c combined)
-    set_target_properties(c PROPERTIES IMPORTED_LOCATION ${trekkerLib})
-
-    add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-    if(ZLIB_LIBRARIES)
-        target_link_libraries(${trekkerExe} c ${ZLIB_LIBRARIES})
-    else()
-        target_link_libraries(${trekkerExe} c)
-    endif()
-
-    INSTALL(TARGETS ${trekkerExe} DESTINATION ${CMAKE_BINARY_DIR}/install/bin)
-    INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/libTrekker.a ${CMAKE_BINARY_DIR}/install/lib/libTrekker.a COPYONLY)")
-    INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/libTrekker.so ${CMAKE_BINARY_DIR}/install/lib/libTrekker.so COPYONLY)")
-    INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_BINARY_DIR}/install/include/trekker.h COPYONLY)")
-
-endif()
-
-if(MSVC)
-
-    add_library(libTrekker_shared SHARED $<TARGET_OBJECTS:OBJS>)
-    add_library(libTrekker STATIC $<TARGET_OBJECTS:OBJS>)
-    target_include_directories(libTrekker PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/znzlib)
-    target_include_directories(libTrekker PUBLIC ${CMAKE_SOURCE_DIR}/src/nifticlib-2.0.0/niftilib)
-
-    add_executable(${trekkerExe} ${CMAKE_SOURCE_DIR}/src/cmd.cpp)
-    target_link_libraries(${trekkerExe} libTrekker)
-
-    INSTALL(TARGETS libTrekker DESTINATION ${CMAKE_BINARY_DIR}/install/lib)
-    INSTALL(TARGETS ${trekkerExe} DESTINATION ${CMAKE_BINARY_DIR}/install/bin)
-    INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_BINARY_DIR}/install/include/trekker.h COPYONLY)")
-
-endif()
-
-
-if(${Build_Python3_WRAPPER} STREQUAL "ON")
-
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/python/setup.py ${CMAKE_BINARY_DIR}/install/python/setup.py COPYONLY)")
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/python/LICENSE ${CMAKE_BINARY_DIR}/install/python/LICENSE COPYONLY)")
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/python/README.md ${CMAKE_BINARY_DIR}/install/python/README.md COPYONLY)")
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/python/cython/Trekker.pxd ${CMAKE_BINARY_DIR}/install/python/cython/Trekker.pxd COPYONLY)")
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/python/cython/Trekker.pyx ${CMAKE_BINARY_DIR}/install/python/cython/Trekker.pyx COPYONLY)")
-	INSTALL(CODE "configure_file(${CMAKE_SOURCE_DIR}/src/trekker.h ${CMAKE_BINARY_DIR}/install/python/cython/trekker.h COPYONLY)")
-
-	if(UNIX AND NOT APPLE)
-		INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/install/lib/libTrekker.a ${CMAKE_BINARY_DIR}/install/python/cython/libTrekker.a COPYONLY)")
-		INSTALL(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_BINARY_DIR}/install/python/setup.py sdist bdist_wheel WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/install/python)")
-	endif()
-
-	if(MSVC)
-		INSTALL(CODE "configure_file(${CMAKE_BINARY_DIR}/install/lib/libTrekker.lib ${CMAKE_BINARY_DIR}/install/python/cython/Trekker.lib COPYONLY)")
-		string(REPLACE "/" "\\\\" PythonCommand ${Python3_EXECUTABLE})
-		INSTALL(CODE "execute_process(COMMAND cmd.exe /c \"${PythonCommand}\" ${CMAKE_BINARY_DIR}/install/python/setup.py sdist bdist_wheel WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/install/python)")
-	endif()
-
-endif()
