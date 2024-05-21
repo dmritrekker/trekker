@@ -10,6 +10,10 @@ Trekker offers state-of-the-art tractography tools to study the structural conne
 - **Support for asymmetric FODs**, providing greater flexibility in fiber tracking.
 - Several features designed for high-performance computing (HPC), including **multithreading**, **time-limited tracking**, and a user-friendly **command line interface**.
 
+🏆 **Awards and Recognitions:**
+
+Tractography pipelines based on Trekker have earned awards in every international tractography challenge since 2017. Click [here](https://dmritrekker.github.io/about/awards.html) to read more about Trekker's awards.
+
 For complete documentation, tutorials and examples, visit https://dmritrekker.github.io/.
 
 ## Installation

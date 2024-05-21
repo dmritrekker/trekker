@@ -36,6 +36,17 @@ Trekker offers state-of-the-art tractography tools to study the structural conne
 
 
 
+- Since 2017, algorithms and pipelines based on Trekker have earned awards in every international tractography competition, each featuring different themes.
+
+
+.. seealso::
+
+    🏆 **Awards and Recognitions**
+
+    Tractography pipelines based on Trekker have earned awards in every international tractography challenge since 2017. Click `here <about/awards.html>`__ to learn more about Trekker's awards.
+
+
+
 Installation
 ------------
 
@@ -209,6 +220,7 @@ Examples
    :caption: About
    :hidden:
 
+   about/awards
    about/licenseAndWarranty
    about/acknowledgements
    about/contact
