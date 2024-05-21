@@ -1,5 +1,5 @@
-map2img
-=======
+track2img
+=========
 
 maps tractogram features on an image
 
@@ -9,7 +9,7 @@ maps tractogram features on an image
 
 .. code-block:: bash
 
-    ./trekker map2img [OPTIONS] <input tractogram> <output image>
+    ./trekker track2img [OPTIONS] <input tractogram> <output image>
 
 |
 

@@ -1,7 +1,7 @@
-map2surf
-========
+img2track
+=========
 
-maps tractogram features on a surface
+maps image values on a tractogram
 
 |
 
@@ -9,23 +9,20 @@ maps tractogram features on a surface
 
 .. code-block:: bash
 
-    ./trekker map2surf [OPTIONS] <input tractogram> <input surface mesh> <output surface mesh> <field name>
+    ./trekker img2track [OPTIONS] <input image> <input tractogram> <output file name>
 
 |
 
 **Positionals**
 
+- `<input image> TEXT:FILE REQUIRED`
+  Input image (.nii, .nii.gz)
+
 - `<input tractogram> TEXT:FILE REQUIRED`
   Input tractogram (.vtk, .tck)
 
-- `<input surface mesh> TEXT:FILE REQUIRED`
-  Input surface mesh (.vtk, .gii)
-
-- `<output surface mesh> TEXT REQUIRED`
-  Output surface mesh (.vtk)
-
-- `<field name> TEXT REQUIRED`
-  Field name to use when writing the feature on the surface mesh
+- `<output file name> TEXT REQUIRED`
+  Output file name. Output is a float32 type binary file.
 
 |
 
@@ -39,8 +36,16 @@ maps tractogram features on a surface
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Description</th>
        </tr>
        <tr>
-           <td style="padding: 8px; font-weight: 500;">--feature TEXT REQUIRED</td>
-           <td style="padding: 8px;">Name of output feature. Options are: "streamlineDensity", "streamlineCount", "contactAngle" and "contactDirection".</td>
+           <td style="padding: 8px; font-weight: 500;">--SH</td>
+           <td style="padding: 8px;">Treat the image as a 4D spherical harmonics image.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--SF</td>
+           <td style="padding: 8px;">Treat the image as a 4D spherical function image.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--SF_smoothing FLOAT</td>
+           <td style="padding: 8px;">Apply spherical smoothing before using the spherical function.</td>
        </tr>
    </table>
 

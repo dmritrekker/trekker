@@ -83,15 +83,15 @@ Simply run ``trekker`` on the terminal. This will display help and the commands,
            <td style="padding: 8px;">Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions.</td>
        </tr>
        <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/map2img.html">map2img</a></strong></td>
+           <td style="padding: 8px;"><strong><a href="../commands/track2img.html">track2img</a></strong></td>
            <td style="padding: 8px;">Maps tractogram features on an image.</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px;"><strong><a href="../commands/map2surf.html">map2surf</a></strong></td>
+           <td style="padding: 8px;"><strong><a href="../commands/track2surf.html">track2surf</a></strong></td>
            <td style="padding: 8px;">Maps tractogram features on a surface.</td>
        </tr>
        <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/map2track.html">map2track</a></strong></td>
+           <td style="padding: 8px;"><strong><a href="../commands/img2track.html">img2track</a></strong></td>
            <td style="padding: 8px;">Maps image values on a tractogram.</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
@@ -189,9 +189,9 @@ Examples
 
    commands/track.rst
    commands/filter.rst
-   commands/map2img.rst
-   commands/map2surf.rst
-   commands/map2track.rst
+   commands/track2img.rst
+   commands/track2surf.rst
+   commands/img2track.rst
    commands/select.rst
    commands/resample.rst
    commands/convert.rst

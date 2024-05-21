@@ -2,7 +2,7 @@
 
 using namespace NIBR;
 
-namespace CMDARGS_MAP2IMAGE {
+namespace CMDARGS_TRACK2IMAGE {
 
     std::string             inp_fname;
     std::string             feature = "DEC_segmentLength";
@@ -28,9 +28,9 @@ namespace CMDARGS_MAP2IMAGE {
 
 }
 
-using namespace CMDARGS_MAP2IMAGE;
+using namespace CMDARGS_TRACK2IMAGE;
 
-void run_map2img()
+void run_track2img()
 {
 
     parseCommon(numberOfThreads,verbose);
@@ -340,7 +340,7 @@ void run_map2img()
 }
 
 
-void map2img(CLI::App* app)
+void track2img(CLI::App* app)
 {
     // app->formatter(std::make_shared<CustomHelpFormatter>());
  
@@ -391,7 +391,7 @@ void map2img(CLI::App* app)
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
     
-    app->callback(run_map2img);
+    app->callback(run_track2img);
     
 }
 

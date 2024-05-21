@@ -240,7 +240,7 @@ void run_map2track()
 
 }
 
-void map2track(CLI::App* app)
+void img2track(CLI::App* app)
 {
 
     app->description("maps image values on a tractogram");

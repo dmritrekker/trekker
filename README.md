@@ -41,9 +41,9 @@ Simply run `trekker` on the terminal. This will display help and the commands, w
 |------------|-------------|
 | **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles. |
 | **filter** | Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions. |
-|**map2img**| maps tractogram features on an image |
-|**map2surf**| maps tractogram features on a surface |
-|**map2track**| maps image values on a tractogram |
+|**track2img**| maps tractogram features on an image |
+|**track2surf**| maps tractogram features on a surface |
+|**img2track**| maps image values on a tractogram |
 |**select**| selects streamlines from a tractogram |
 |**resample**| resamples streamlines in a tractogram |
 |**convert**| converts tractogram file formats (.vtk, .tck, .trk) |

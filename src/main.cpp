@@ -17,9 +17,9 @@ int main(int argc, char *argv[]) {
     // trekker(&app);
     trekker(app.add_subcommand("track", ""));
     filter(app.add_subcommand("filter", ""));
-    map2img(app.add_subcommand("map2img", ""));
-    map2surf(app.add_subcommand("map2surf", ""));
-    map2track(app.add_subcommand("map2track", ""));
+    track2img(app.add_subcommand("track2img", ""));
+    track2surf(app.add_subcommand("track2surf", ""));
+    img2track(app.add_subcommand("img2track", ""));
     select(app.add_subcommand("select", ""));
     resample(app.add_subcommand("resample", ""));
     convert(app.add_subcommand("convert", ""));
