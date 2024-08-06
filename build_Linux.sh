@@ -5,8 +5,8 @@ buildType=Release #Release or Debug
 buildShared=OFF
 buildDir=build-static
 
-inc_path="../nibrary/${buildDir}/install/include/nibrary_v0.1"
-lib_path="../nibrary/${buildDir}/install/lib/nibrary_v0.1"
+inc_path="../nibrary/${buildDir}/install/include/nibrary_v0.1.0"
+lib_path="../nibrary/${buildDir}/install/lib/nibrary_v0.1.0"
 
 c_compiler=/bin/gcc
 cxx_compiler=/bin/g++
