@@ -23,7 +23,7 @@ For complete documentation, tutorials and examples, visit https://dmritrekker.gi
 
 ### Building from Source
 
-Trekker relies on [nibrary](https://github.com/nibrary/nibrary). To compile Trekker from source, ensure that nibrary is installed first. Then follow these steps to compile Trekker:
+Trekker relies on [nibrary](https://github.com/nibrary/nibrary). To compile Trekker from source, ensure that nibrary is installed first.  To avoid errors when building trekker, ensure you install [nibrary commit 01ec9a0](https://github.com/nibrary/nibrary/commit/01ec9a0d03918fa7a3c304d3352338c7420ed5ec) from 02/Aug/2024, or an older commit. Then follow these steps to compile Trekker:
 
 #### Step 1: Download the Source Code
 
