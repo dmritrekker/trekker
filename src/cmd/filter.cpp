@@ -10,7 +10,7 @@ namespace CMDARGS_FILTER
     bool ascii              = false;
     bool inOrder            = false;
     bool skipSeed           = false;
-    bool allowEdgeSeeds     = false;
+    // bool allowEdgeSeeds     = false;
     int  seedTrials         = 0;
     bool stopAtMax          = false;
     bool oneSided           = false;
@@ -99,7 +99,7 @@ void run_filter()
     if(!pw.stopAtMax(stopAtMax))        return;
     if(!pw.oneSided(oneSided))          return;
     if(!pw.skipSeed(skipSeed))          return;
-    if((!seedList.empty()) && (!pw.noEdgeSeed(!allowEdgeSeeds))) return;
+    // if((!seedList.empty()) && (!pw.noEdgeSeed(!allowEdgeSeeds))) return;
     if(!pw.setSeedTrials(seedTrials))   return;
  
     pw.print();
@@ -249,7 +249,7 @@ void filter(CLI::App *app)
         "\n  \033[1m \u2022 Side specific filtering:\033[0m the above pathway rules can be defined separately for each side of the track, using \'_A\' and  \'_B\' extensions, e.g., \'require_entry_A\' or \'discard_if_ends_inside_B\'. Here, seed is considered to be somewhere between the end points A and B. If one of the pathway rules is defined using the \'_A\' or \'_B\' extensions, then all the other rules must also have an \'_A\' or \'_B\' extension."
         "\n  \033[1m \u2022 One-sided filtering:\033[0m the --oneSided option can only be used when pathway rules are not side specific. When --oneSided is used, starting from the seed, only one side of the track is taken into account, the other side is ignored and it will not appear in the output."
         "\n  \033[1m \u2022 Skipping seed:\033[0m the --skipSeed option can only used together with --oneSided. When --skipSeed is enabled, the output tracks only have one point that falls within the seed, and that point is one of the end points of the tracks."
-        "\n  \033[1m \u2022 Using stop rules:\033[0m the \'stop_at_entry\' and \'stop_at_exit\' rules can only be used when a seed is defined."
+        "\n  \033[1m \u2022 Using stop rules:\033[0m the \'stop_at_entry\', \'stop_at_exit\' etc. rules can only be used when a seed is defined."
         "\n\nTrekker supports the following input options to define the seed and pathway rules:"
         "\n  \033[1m \u2022 Sphere:\033[0m e.g. \'-p require_entry 1.2,2.4,33.2,4\' defines a sphere using x,y,z,r notation."
         "\n  \033[1m \u2022 Image files (.nii, .nii.gz):\033[0m The use of images are interpreted in six different ways:"
@@ -259,12 +259,14 @@ void filter(CLI::App *app)
         "\n       \033[1m 4.\033[0m If an image is provided followed by \'pvf\', as in \'-s img.nii pvf\', then it is considered to provide partial volume fraction. A value above zero is considered inside, and during filtering, linear interpolation is used."
         "\n       \033[1m 5.\033[0m If an image is provided followed by \'label\' and an integer, as in \'-s img.nii label 1023\', then the provided integer value is considered as a label and a label image is created only using that value. And during filtering, nearest neighbor interpolation is used."
         "\n       \033[1m 6.\033[0m If an image is provided followed by \'pvf\' and an integer, as in \'-s img.nii label 0\', then it is considered that the input image is 4 dimensional, where the 4th dimension contains partial volume fractions, and the provided integer indicates the volume to use for filtering. A value above zero is considered inside, and during filtering, linear interpolation is used."
-        "\n  \033[1m \u2022 Surface files (.vtk, .gii): \033[0m The use of surfaces are interpreted in four different ways:"
-        "\n       \033[1m 1.\033[0m If only the surface is provided, as in \'-s surf.vtk\', then if the surface is closed, the rule includes the interior of the surface, otherwise only the surface is considered."
-        "\n       \033[1m 2.\033[0m If the surface is followed by x,y,z,r notation, as in \'-s surf.vtk 1.2,2.4,33.2,4\', then a disc centered at x,y,z with radius r is extracted, and an open surface is generated and considered for filtering."
-        "\n       \033[1m 3.\033[0m If the surface is followed by a string and an integer, as in \'-s surf.vtk label 3\', then the surface is considered to contain a field with the provided string. The integer is used as a label, which is used for filtering, e.g., a surface containing labels for different parts of the brain can be used for filtering."
-        "\n       \033[1m 4.\033[0m If the surface is defined as in \'-s surf.vtk fileName VERT int 3\', then the fileName is considered to contain labels for each VERTices, the file contains \'int\' (integer) data type, and the filtering should only consider VERTices with label 3."
-        "\n       \033[1m Note:\033[0m For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1. All the four options above can additionally provide the discretization value, which is considered to be the number that follows the input file, as in \'-s surf.vtk 0.4 fileName VERT int 3\', where 0.4 will be used to discretize the surface.";
+        "\n  \033[1m \u2022 Surface files (.vtk, .gii): \033[0m "
+        "\n       \033[1m 1.\033[0m Surfaces can be provided only as they are, as in \'-s surf.vtk\'."
+        "\n       \033[1m 2.\033[0m If the surface is followed by x,y,z,r notation, as in \'-s surf.vtk 1.2,2.4,33.2,4\', then a disc centered at x,y,z with radius r is extracted and used for the rule."
+        "\n       \033[1m 3.\033[0m If the surface is followed by a string and an integer, as in \'-s surf.vtk label,3\', then the surface is considered to contain a field with the provided string. The integer is used as a label, which is used for filtering, e.g., a surface containing labels for different parts of the brain can be used for filtering."
+        "\n       \033[1m 4.\033[0m If the surface is defined as in \'-s surf.vtk fileName,VERT,int,3\', then the fileName is considered to contain labels for each VERTices, the file contains \'int\' (integer) data type, and the filtering should only consider VERTices with label 3."
+        "\n       \033[1m Note 1:\033[0m For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1, which can be changed by proving a scalar number after the surface file is defined, as in \'-s surf.vtk 0.4 label,3\', where 0.4 will be used to discretize the surface."
+        "\n       \033[1m Note 2:\033[0m If the surface is closed, it is possible exclude the interior region, and only apply the rules based on the surface mesh (boundary). This can be done by adding \'2D\' after the file name, as in \'-s surf.vtk 2D label,3\'"
+        "\n       \033[1m Note 3:\033[0m It is possible change the place of the surface options, e.g. \'-s surf.vtk label,3 0.5 2D\' is same as \'-s surf.vtk 0.5 label,3 2D\'";
 
     setInfo(app,info);
 
@@ -279,10 +281,10 @@ void filter(CLI::App *app)
     app->add_option("--minlength",           minlength,          "Minimum length of the tracks. Default=0");
     app->add_option("--maxlength",           maxlength,          "Maximum length of the tracks. Default=infinite");
 
-    app->add_flag("--stopAtMax",             stopAtMax,          "If set to “stop”, when maxLength is reached the propagation stops and the streamline is written in the output. If set to “discard”, the streamline is not written in the output. Default=discard");
+    app->add_flag("--stopAtMax",             stopAtMax,          "If set to \"stop\", when maxLength is reached the propagation stops and the streamline is written in the output. If set to \"discard\", the streamline is not written in the output. Default=discard");
     app->add_flag("--oneSided",              oneSided,           "If enabled tracking is done only towards the one direction.");
     app->add_flag("--skipSeed",              skipSeed,           "Does not output the points that are within seed region");
-    app->add_flag("--allowEdgeSeeds",        allowEdgeSeeds,     "Allows seeding at the edges of pathway rules. Default: false");
+    // app->add_flag("--allowEdgeSeeds",        allowEdgeSeeds,     "Allows seeding at the edges of pathway rules. Default: false");
     app->add_option("--seedTrials",          seedTrials,         "Number of random trials for assigning seed. Default: 0");
     app->add_flag("--inOrder",               inOrder,            "If enabled all pathway requirements are going to be satisfied in the order that they are given. All pathway options should be defined for pathway_A/pathway_B in order to use this option");
 

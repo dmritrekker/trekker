@@ -3,7 +3,7 @@
 #include "conf/config.h"
 #include "conf/aux.h"
 
-void trekker(CLI::App* app);
+void track(CLI::App* app);
 void filter(CLI::App* app);
 void track2img(CLI::App* app);
 void track2surf(CLI::App* app);
