@@ -30,8 +30,8 @@ void run_diff()
 
     if(!ensureVTKorTCK(inp_fname))      return;
     if(!ensureVTKorTCK(ref_fname))      return;
-    if(!ensureVTKorTCK(out_diff_fname)) return;
-    if(!ensureVTKorTCK(out_same_fname)) return;
+    if( (out_diff_fname!="") && !ensureVTKorTCK(out_diff_fname)) return;
+    if( (out_same_fname!="") && !ensureVTKorTCK(out_same_fname)) return;
 
 
 
