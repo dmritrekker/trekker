@@ -34,7 +34,6 @@ git clone https://github.com/dmritrekker/trekker
 #### Step 2: Modify and run the build script
 
 - **For Linux:** Edit `build_Linux.sh`
-- **For Windows:** Edit `build_Windows.bat`
 
 
 ## Usage
