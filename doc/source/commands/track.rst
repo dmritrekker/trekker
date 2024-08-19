@@ -185,10 +185,12 @@ fiber tracker
            <td style="padding: 8px; font-weight: 500;">--skipSeed</td>
            <td style="padding: 8px;">Does not output the points that are within seed region.</td>
        </tr>
+       <!--
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--allowEdgeSeeds</td>
            <td style="padding: 8px;">Allows seeding at the edges of pathway rules. Default: false.</td>
        </tr>
+       -->
        <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_trials INT</td>
            <td style="padding: 8px;">Sets the maximum number of attempts to generate streamline from the seed point. Default=1.</td>
@@ -216,10 +218,6 @@ fiber tracker
        <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_surf_useSurfNorm</td>
            <td style="padding: 8px;">Surface normals will be used as the initial direction.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500;">--seed_surf_dontSeedInside</td>
-           <td style="padding: 8px;">Only the surface will be used for seeding if the input is closed.</td>
        </tr>
    </table>
 
@@ -261,10 +259,6 @@ fiber tracker
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--inOrder</td>
            <td style="padding: 8px;">If enabled, all pathway requirements are going to be satisfied in the order that they are input to Trekker. All pathway options should be defined for pathway_A/pathway_B in order to use this option.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px; font-weight: 500;">--discRes FLOAT</td>
-           <td style="padding: 8px;">Discretization resolution for surface meshes. Default=1.</td>
        </tr>
    </table>
 

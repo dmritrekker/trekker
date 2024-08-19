@@ -3,70 +3,9 @@ Trekker
 
 .. note::
 
-    August 6\ :sup:`th`, 2024
+    August 19\ :sup:`th`, 2024
 
-    **UPDATE:** We are excited to announce the first release candidate for Trekker version 1.
-
-    Trekker v1.0.0-rc1 includes bug fixes and improvements, particularly in surface handling:
-
-    - **Bug fix 1**: Fixed a bug in `track` where streamlines were not stopped as expected when a pathway rule was set. This issue occurred because `track` allowed stop options unsupported by nibrary. The fix involved providing nibrary with the necessary stopping features during tracking.
-    
-    - **Bug fix 2**: (*Kudos to John Kruper for spotting it!*) Fixed a bug in `track` related to the computation of data support in parallel transport tracking. Previously, the contribution from the last part of the probe was reused as the first part's contribution in the next iteration to speed up computation. This fix ensures the data support contribution is computed only once for the first part and reused for other candidate probes. Although this bug has existed since v0.5, it should not significantly affect results with default probe quality (4) and length (0.25 x voxel size). However, it may impact streamlines computed with longer probe lengths and lower quality probes.
-    
-    - **Improvement 1**: Reorganized the code to harmonize the handling of segment-surface interactions.
-
-    - **Improvement 2**: Switched to the *double* datatype in certain functions to better manage edge cases.
-
-
-
-    August 6\ :sup:`th`, 2024
-
-    **UPDATE:** We are excited to announce the first release candidate for Trekker version 1.
-
-    Trekker v1.0.0-rc1 fixes some bugs and also provides certain improvements in particular for the handling of surfaces:
-    
-    - *Bug fix 1*: A bug in `track`, preventing the streamlines not being stopped was fixed despite such a pathway rule was set. The issue happened because `track` allowed stop options to be defined, which were not supported by nibrary. The bug was fixed by providing nibrary the stopping features while tracking.
-    - *Bug fix 2*: (*Kudos to John Kruper for spotting it!*) A bug in `track` involved with how the data support was computed in parallel transport tracking was fixed. The contribution from the last part of the probe was re-used as the contribution of the first part probe in the next iteration for speeding up the computation. The bug was fixed by computing the data support contribution for the first part only once, and re-use for the other candidate probes. Unfortunately, this bug has been there for a few years (since v0.5). While for default values of probe quality (that is 4) and length (0.25 x voxel size), we do not expect the bug to lead to any significant visual or quantitave differences in the results, the bug might affect streamlines computed with long probe lengths with low quality probes. 
-
-
-    - Powered by `nibrary <https://github.com/nibrary/nibrary>`_, Trekker now features:
-        - Support for surface based tracking and filtering
-        - Advanced pathway rules for filtering streamlines
-        - Subcommands to perform various tractogram operations
-        - Improved command line interface
-    - While the core fiber tracking algorithm (PTT) works the same, the new version of Trekker is not compatible with the previous versions due to the above changes.
-        - *Remark:* Your previous code (script) written for earlier versions of Trekker need to be modified to work with the latest version.
-    - Some existing features in earlier versions of Trekker are currently missing in the latest version:
-        - Windows compatibility
-        - Python and Matlab support
-        - Exporting of a `.json` formatted tracking report
-
-    Enjoy the new Trekker!
-
-    ..
-        May 21\ :sup:`st`, 2024
-
-        **MAJOR UPDATE!** We are excited to announce the release of Trekker v1.0 beta, now available for testing.
-
-        This version includes significant changes and improvements.
-
-        - Powered by `nibrary <https://github.com/nibrary/nibrary>`_, Trekker now features:
-            - Support for surface based tracking and filtering
-            - Advanced pathway rules for filtering streamlines
-            - Subcommands to perform various tractogram operations
-            - Improved command line interface
-        - While the core fiber tracking algorithm (PTT) works the same, the new version of Trekker is not compatible with the previous versions due to the above changes.
-            - *Remark:* Your previous code (script) written for earlier versions of Trekker need to be modified to work with the latest version.
-        - Some existing features in earlier versions of Trekker are currently missing in the latest version:
-            - Windows compatibility
-            - Python and Matlab support
-            - Exporting of a `.json` formatted tracking report
-
-        Enjoy the new Trekker!
-
-
-
-
+    **UPDATE:** We are excited to announce the first release candidate. Trekker v1.0.0-rc1 includes bug fixes and improvements, particularly in surface handling. See below for a list of major changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -75,9 +14,6 @@ Trekker offers state-of-the-art tractography tools to study the structural conne
 - Compatibility with **.vtk** format, to enable the use of powerful third-party 3D rendering software, such as `Paraview <https://www.paraview.org/>`__, for easy and high-quality visualizations.
 - Support for asymmetric FODs, providing greater flexibility in fiber tracking.
 - Several features designed for high-performance computing (HPC), including multithreading, time-limited tracking, and a user-friendly command line interface.
-
-
-
 - Since 2017, algorithms and pipelines based on Trekker have earned awards in every international tractography competition, each featuring different themes.
 
 
@@ -110,7 +46,6 @@ Trekker relies on `nibrary <https://github.com/nibrary/nibrary>`_. To compile Tr
 **Step 2: Modify and run the build script**
 
 - **For Linux:** Edit ``build_Linux.sh``
-- **For Windows:** Edit ``build_Windows.bat``
 
 
 
@@ -220,8 +155,55 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              OUT_TRACK.vtk
 
+Release notes for Trekker-v1.0.0-rc1
+------------------------------------
 
+    - **Bug fix 1**: Fixed a bug in `track` where streamlines were not stopped as expected when a pathway rule was set. This issue occurred because `track` allowed stop options unsupported by nibrary. The fix involved providing nibrary with the necessary stopping features during tracking.
+    
+    - **Bug fix 2**: (*Thanks to John Kruper for spotting this one!*) Fixed a bug in `track` related to the computation of data support in parallel transport tracking. Previously, the contribution from the last part of the probe was reused as the first part's contribution in the next iteration to speed up computation. This fix ensures the data support contribution is computed only once for the first part and reused for other candidate probes. Although this bug has existed since v0.5, it should not significantly affect results with default probe quality (4) and length (0.25 x voxel size). However, it may impact streamlines computed with longer probe lengths and lower quality probes.
 
+    - **Bug fix 3**: Fixed a bug affecting both `track` and `filter`, where streamlines were not following the `require_end_inside` rule. The issue occured because this rule was commented out during a part of the development, and it was forgotten to be restored.
+    
+    - **Improvement 1**: Reorganized the code to harmonize the handling of segment-surface interactions.
+
+    - **Improvement 2**: Switched to the *double* datatype in certain functions to better manage edge cases.
+
+    With the beta release (May 21\ :sup:`st`, 2024), Trekker has gone through significant changes:
+
+    - Powered by `nibrary <https://github.com/nibrary/nibrary>`_, Trekker now features:
+        - Support for surface based tracking and filtering
+        - Advanced pathway rules for filtering streamlines
+        - Subcommands to perform various tractogram operations
+        - Improved command line interface
+    - While the core fiber tracking algorithm (PTT) works the same, the new version of Trekker is not compatible with the previous versions due to the above changes.
+        - *Remark:* Your previous code (script) written for earlier versions of Trekker need to be modified to work with the latest version.
+    - Some existing features in earlier versions of Trekker are currently missing in the latest version:
+        - Windows compatibility
+        - Python and Matlab support
+        - Exporting of a `.json` formatted tracking report
+
+    Enjoy the new Trekker!
+
+    ..
+        May 21\ :sup:`st`, 2024
+
+        **MAJOR UPDATE!** We are excited to announce the release of Trekker v1.0 beta, now available for testing.
+
+        This version includes significant changes and improvements.
+
+        - Powered by `nibrary <https://github.com/nibrary/nibrary>`_, Trekker now features:
+            - Support for surface based tracking and filtering
+            - Advanced pathway rules for filtering streamlines
+            - Subcommands to perform various tractogram operations
+            - Improved command line interface
+        - While the core fiber tracking algorithm (PTT) works the same, the new version of Trekker is not compatible with the previous versions due to the above changes.
+            - *Remark:* Your previous code (script) written for earlier versions of Trekker need to be modified to work with the latest version.
+        - Some existing features in earlier versions of Trekker are currently missing in the latest version:
+            - Windows compatibility
+            - Python and Matlab support
+            - Exporting of a `.json` formatted tracking report
+
+        Enjoy the new Trekker!
 
 ------------
 

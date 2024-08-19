@@ -22,6 +22,10 @@ filters tractograms
   Output tractogram (.vtk, .tck)
 
 |
+.. tip::
+
+    Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+|   
 
 **Options**
 
@@ -64,10 +68,12 @@ filters tractograms
            <td style="padding: 8px; font-weight: 500;">--skipSeed</td>
            <td style="padding: 8px;">Does not output the points that are within the seed region.</td>
        </tr>
+       <!--
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--allowEdgeSeeds</td>
            <td style="padding: 8px;">Allows seeding at the edges of pathway rules. Default: false.</td>
        </tr>
+       -->
        <tr>
            <td style="padding: 8px; font-weight: 500;">--seedTrials INT</td>
            <td style="padding: 8px;">Number of random trials for assigning seed. Default: 0.</td>
