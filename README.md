@@ -35,6 +35,13 @@ git clone https://github.com/dmritrekker/trekker
 
 - **For Linux:** Edit `build_Linux.sh`
 
+**Note:** Trekker binaries can be compiled using the following version matching with [nibrary](https://github.com/nibrary/nibrary):
+
+| Trekker version    | nibrary version|
+|--------------------|-------------|
+| [master](https://github.com/dmritrekker/trekker/tree/master)  | [main](https://github.com/nibrary/nibrary/tree/main) |
+| [v1.0.0-rc1](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc1)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
+| [v1.0-beta](https://github.com/dmritrekker/trekker/tree/v1.0-beta)   | [v0.0.0](https://github.com/nibrary/nibrary/tree/v0.0.0) |
 
 ## Usage
 
