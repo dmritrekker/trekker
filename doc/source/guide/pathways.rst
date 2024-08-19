@@ -45,8 +45,7 @@ Trekker offers powerful options for specifying pathway definitions. Rules can be
    - **stop_before_exit**: If a pathway is about to exit the region, it will be truncated just before it exit. The end point will still be inside the region.
    - **stop_after_exit**: If a pathway exits the region, it will be truncated just after it exits. The end point will be outside the region.
 
-.. Note::
-
+.. 
    **Why stop before / at / after?**
 
    - Trekker supports surface meshes for tracking and filtering.
@@ -98,12 +97,14 @@ Trekker supports the following to be used together with the *seed* and *pathway 
   5. If an image is provided followed by ``label`` and an integer, as in ``img.nii label 1023``, then the provided integer value is considered as a label and a label image is created only using that value. During filtering, nearest neighbor interpolation is used.
   6. If an image is provided followed by ``pvf`` and an integer, as in ``img.nii pvf 0``, then it is considered that the input image is 4-dimensional, where the 4th dimension contains partial volume fractions, and the provided integer indicates the volume to use for filtering. A value above zero is considered inside, and during filtering, linear interpolation is used.
 
-- **Surface files (.vtk, .gii):** The use of surfaces are interpreted in four different ways:
+- **Surface files (.vtk, .gii):**
 
-  1. If only the surface is provided, as in ``surf.vtk``, then if the surface is closed, the rule includes the interior of the surface; otherwise, only the surface is considered.
-  2. If the surface is followed by x,y,z,r notation, as in ``surf.vtk 1.2,2.4,33.2,4``, then a disc centered at x,y,z with radius r is extracted, and an open surface is generated and considered for filtering.
-  3. If the surface is followed by a string and an integer, as in ``surf.vtk label 3``, then the surface is considered to contain a field with the provided string. The integer is used as a label, which is used for filtering. For example, a surface containing labels for different parts of the brain can be used for filtering.
-  4. If the surface is defined as in ``surf.vtk fileName VERT int 3``, then the fileName is considered to contain labels for each VERTex. The file contains 'int' (integer) data type, and the filtering should only consider VERTices with label 3.
+  1. Surfaces can be provided only as they are, as in ``-s surf.vtk``.
+  2. If the surface is followed by x,y,z,r notation, as in ``-s surf.vtk 1.2,2.4,33.2,4``, then a disc centered at x,y,z with radius r is extracted and used for the rule.
+  3. If the surface is followed by a string and an integer, as in ``-s surf.vtk label,3``, then the surface is considered to contain a field with the provided string. The integer is used as a label, which is used for filtering, e.g., a surface containing labels for different parts of the brain can be used for filtering.
+  4. If the surface is defined as in ``-s surf.vtk fileName,VERT,int,3``, then the fileName is considered to contain labels for each VERTices, the file contains ``int`` (integer) data type, and the filtering should only consider VERTices with label 3.
 
   .. note::
-     For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1. All the four options above can additionally provide the discretization value, which is considered to be the number that follows the input file, as in ``surf.vtk 0.4 fileName VERT int 3``, where 0.4 will be used to discretize the surface.
+     - For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1, which can be changed by proving a scalar number after the surface file is defined, as in ``-s surf.vtk 0.4 label,3``, where 0.4 will be used to discretize the surface.
+     - If the surface is closed, it is possible exclude the interior region, and only apply the rules based on the surface mesh (boundary). This can be done by adding ``2D`` after the file name, as in ``-s surf.vtk 2D label,3``.
+     - It is possible change the place of the surface options, e.g. ``-s surf.vtk label,3 0.5 2D`` is same as ``-s surf.vtk 0.5 label,3 2D``.
