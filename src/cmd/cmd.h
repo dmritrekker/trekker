@@ -3,6 +3,7 @@
 #include "conf/config.h"
 #include "conf/aux.h"
 
+void info(CLI::App* app);
 void track(CLI::App* app);
 void filter(CLI::App* app);
 void track2img(CLI::App* app);
@@ -17,4 +18,7 @@ void merge(CLI::App* app);
 void addColor(CLI::App* app);
 void fieldExport(CLI::App* app);
 void fieldImport(CLI::App* app);
-void fieldRemove(CLI::App* app); 
+void fieldRemove(CLI::App* app);
+void dMRI_cmd(CLI::App* app);
+void dMRI_recon(CLI::App* app);
+void dMRI_recon_transhi2015(CLI::App* app);
