@@ -24,9 +24,9 @@ copyright = '2024, Dogu Baran Aydogan'
 author = 'Dogu Baran Aydogan'
 
 # The short X.Y version
-version = '1.0b'
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '1.0b'
+release = '1.0.0-rc2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -158,7 +158,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'trekker', 'trekker Documentation',
-     author, 'trekker', 'a fiber tracking and filtering tool',
+     author, 'trekker', 'diffusion MRI based tractography software',
      'Miscellaneous'),
 ]
 

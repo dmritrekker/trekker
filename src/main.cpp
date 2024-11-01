@@ -8,12 +8,13 @@ int main(int argc, char *argv[]) {
     NIBR::INITIALIZE();
 
     // Parse input
-    CLI::App app("Trekker v1.0.0-rc1");
-    app.footer("----------Trekker v1.0.0-rc1---------\n© Copyright 2024, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
+    CLI::App app("Trekker v1.0.0-rc2");
+    app.footer("----------Trekker v1.0.0-rc2---------\n© Copyright 2024, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
     app.require_subcommand(1);
     
+    info(app.add_subcommand("info", ""));
     track(app.add_subcommand("track", ""));
     filter(app.add_subcommand("filter", ""));
     track2img(app.add_subcommand("track2img", ""));
@@ -28,7 +29,8 @@ int main(int argc, char *argv[]) {
     addColor(app.add_subcommand("addColor", ""));
     fieldExport(app.add_subcommand("fieldExport", ""));
     fieldImport(app.add_subcommand("fieldImport", ""));
-    fieldRemove(app.add_subcommand("fieldRemove", ""));  
+    fieldRemove(app.add_subcommand("fieldRemove", ""));
+    dMRI_cmd(app.add_subcommand("dMRI", ""));
 
     // If no option is used just display the help
     try {
