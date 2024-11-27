@@ -84,8 +84,6 @@ void run_track2surf()
     // Prepare and write selected feature on surface
     int**   idata;
     float** fdata;
-    
-    float** fdata_vertex;
     float*  segmentDirPerFace;   // Magnitude of total segment directions per face, which is used for normalization
     
 
@@ -94,15 +92,8 @@ void run_track2surf()
         fdata = new float*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
             fdata[n]    = new float[1];
-            fdata[n][0] = 0;
+            fdata[n][0] = float(mapping[n].size())/surf->areasOfFaces[n];
         }
-        
-        auto compileStreamlineDensity = [&](NIBR::MT::TASK task)->void {
-
-            fdata[task.no][0] = mapping[task.no].size()/surf->areasOfFaces[task.no];
-             
-        };
-        NIBR::MT::MTRUN(surf->nf, "Compiling face output", compileStreamlineDensity);
         
         NIBR::SurfaceField field;
         field.name      = "face_" + field_name;;
@@ -113,38 +104,9 @@ void run_track2surf()
         field.dimension = 1;
         surf->fields.push_back(field);
         
-        
-        fdata_vertex = new float*[surf->nv];
-        for (int n=0; n<surf->nv; n++) {
-            fdata_vertex[n]    = new float[1];
-            fdata_vertex[n][0] = 0;
-        }
-        
-        auto compileStreamlineDensityAtVertices = [&](NIBR::MT::TASK task)->void {
-    
-            fdata_vertex[task.no][0] = 0;
-            float totArea = 0;
-            
-            for (auto nInd : surf->neighboringFaces[task.no]) {
-                fdata_vertex[task.no][0] += mapping[nInd].size();
-                totArea                  += surf->areasOfFaces[nInd];
-            }
-            
-            if (totArea>0)
-                fdata_vertex[task.no][0] /= totArea;
-                
-        };
-        NIBR::MT::MTRUN(surf->nv, "Compiling vertex output", compileStreamlineDensityAtVertices);
-        
-        NIBR::SurfaceField vfield;
-        vfield.name      = "vertex_" + field_name;
-        vfield.owner     = NIBR::VERTEX;
-        vfield.datatype  = "float";
-        vfield.fdata     = fdata_vertex;
-        vfield.idata     = NULL;
-        vfield.dimension = 1;
+        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &field);
+        vfield.name = "vertex_" + field_name;
         surf->fields.push_back(vfield);
-        
         
     }
 
@@ -156,15 +118,8 @@ void run_track2surf()
         idata = new int*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
             idata[n]    = new int[1];
-            idata[n][0] = 0;
+            idata[n][0] = mapping[n].size();
         }
-        
-        
-        auto compileStreamlineCount = [&](NIBR::MT::TASK task)->void {
-            idata[task.no][0] = mapping[task.no].size();
-        };
-        
-        NIBR::MT::MTRUN(surf->nf, "Compiling face output", compileStreamlineCount);
         
         NIBR::SurfaceField field;
         field.name      = "face_" + field_name;;
@@ -175,35 +130,9 @@ void run_track2surf()
         field.dimension = 1;
         surf->fields.push_back(field);
         
-        
-        fdata_vertex = new float*[surf->nv];
-        for (int n=0; n<surf->nv; n++) {
-            fdata_vertex[n]    = new float[1];
-            fdata_vertex[n][0] = 0;
-        }
-        
-        auto compileStreamlineCountAtVertices = [&](NIBR::MT::TASK task)->void {
-    
-            fdata_vertex[task.no][0] = 0;
-            
-            for (auto nInd : surf->neighboringFaces[task.no])
-                fdata_vertex[task.no][0] += mapping[nInd].size();
-            
-            if (surf->neighboringFaces[task.no].size()>0)
-                fdata_vertex[task.no][0] /= float(surf->neighboringFaces[task.no].size());
-                
-        };
-        NIBR::MT::MTRUN(surf->nv, "Compiling vertex output", compileStreamlineCountAtVertices);
-        
-        NIBR::SurfaceField vfield;
-        vfield.name      = "vertex_" + field_name;
-        vfield.owner     = NIBR::VERTEX;
-        vfield.datatype  = "float";
-        vfield.fdata     = fdata_vertex;
-        vfield.idata     = NULL;
-        vfield.dimension = 1;
+        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &field);
+        vfield.name = "vertex_" + field_name;
         surf->fields.push_back(vfield);
-        
         
     }
     
@@ -227,7 +156,7 @@ void run_track2surf()
 
         };
 
-        NIBR::MT::MTRUN(surf->nf, "Compiling face output", compileContactAngle);
+        NIBR::MT::MTRUN(1, "Compiling face output", compileContactAngle);
         
         NIBR::SurfaceField field;
         field.name      = "face_" + field_name;
@@ -236,42 +165,12 @@ void run_track2surf()
         field.fdata     = fdata;
         field.idata     = NULL;
         field.dimension = 1;
-        
         surf->fields.push_back(field);
         
         
-        fdata_vertex = new float*[surf->nv];
-        for (int n=0; n<surf->nv; n++) {
-            fdata_vertex[n]    = new float[1];
-            fdata_vertex[n][0] = 0;
-        }
-        
-        auto compileContactAngleAtVertices = [&](NIBR::MT::TASK task)->void {
-
-            fdata_vertex[task.no][0] = 0;
-            
-            int totalSegmentCount = 0;
-            
-            for (auto i : surf->neighboringFaces[task.no]) {
-                fdata_vertex[task.no][0] += fdata[i][0]*float(mapping[i].size());
-                totalSegmentCount        += mapping[i].size();
-            }
-            
-            if (totalSegmentCount>0)
-                fdata_vertex[task.no][0] /= float(totalSegmentCount);
-            
-        };
-        NIBR::MT::MTRUN(surf->nv, "Compiling vertex output", compileContactAngleAtVertices);
-        
-        NIBR::SurfaceField vfield;
-        vfield.name      = "vertex_" + field_name;
-        vfield.owner     = NIBR::VERTEX;
-        vfield.datatype  = "float";
-        vfield.fdata     = fdata_vertex;
-        vfield.idata     = NULL;
-        vfield.dimension = 1;
+        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &field);
+        vfield.name = "vertex_" + field_name;
         surf->fields.push_back(vfield);
-
         
     }
     
@@ -312,7 +211,7 @@ void run_track2surf()
             }
             
         };
-        NIBR::MT::MTRUN(surf->nf, "Compiling face output", compileContactDirection);
+        NIBR::MT::MTRUN(1, "Compiling face output", compileContactDirection);
         
         
         float maxDirMag = 0;
@@ -336,45 +235,10 @@ void run_track2surf()
         ffield.dimension = 3;
         surf->fields.push_back(ffield);
         
-        
-        fdata_vertex = new float*[surf->nv];
-        for (int n=0; n<surf->nv; n++) {
-            fdata_vertex[n]    = new float[3];
-            fdata_vertex[n][0] = 0;
-            fdata_vertex[n][1] = 0;
-            fdata_vertex[n][2] = 0;
-        }
-        
-        auto compileContactDirectionAtVertices = [&](NIBR::MT::TASK task)->void {
-                
-            for (int i=0;i<3;i++)
-                fdata_vertex[task.no][i] = 0;
-            
-            float totArea = 0;
-            
-            for (auto f : surf->neighboringFaces[task.no]) {
-                for (int i=0;i<3;i++)
-                    fdata_vertex[task.no][i] += fdata[f][i]*surf->areasOfFaces[f];
-                totArea  += surf->areasOfFaces[f];
-            }
-            
-            if (totArea>0)
-                for (int i=0;i<3;i++)
-                    fdata_vertex[task.no][i] /= totArea;
-                
-        };
-        NIBR::MT::MTRUN(surf->nv, "Compiling vertex output", compileContactDirectionAtVertices);
-        
-        
-        NIBR::SurfaceField vfield;
-        vfield.name      = "vertex_" + field_name;
-        vfield.owner     = NIBR::VERTEX;
-        vfield.datatype  = "float";
-        vfield.fdata     = fdata_vertex;
-        vfield.idata     = NULL;
-        vfield.dimension = 3;
-        surf->fields.push_back(vfield);
-        
+
+        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &ffield);
+        vfield.name = "vertex_" + field_name;
+        surf->fields.push_back(vfield);        
         
     }
 
