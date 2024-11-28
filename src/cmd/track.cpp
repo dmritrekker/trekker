@@ -151,7 +151,7 @@ void run_track()
     if (!seed_surf_faceDensity.empty()) {
 
         if ((seed_surf_faceDensity.size()!=2)){
-            disp(MSG_ERROR,"seed_surf_faceDensity expects 2 arguments: file name and data type. Acceptable types are \"int\" or \"float\". E.g. \"--seed_surf_faceDensity density int\"");
+            disp(MSG_ERROR,"seed_surf_faceDensity expects 2 arguments: file name and data type. Acceptable types are \"int\", \"float\" or \"ascii\". E.g. \"--seed_surf_faceDensity density int\"");
             return;
         }
         trekker->seed_surface_faceDensity(seed_surf_faceDensity[0]);
@@ -160,7 +160,7 @@ void run_track()
 
     if (!seed_surf_vertDensity.empty()) {
         if ((seed_surf_vertDensity.size()!=2)){
-            disp(MSG_ERROR,"seed_surf_vertDensity expects 2 arguments: file name and data type. Acceptable types are \"int\" or \"float\". E.g. \"--seed_surf_vertDensity density int\"");
+            disp(MSG_ERROR,"seed_surf_vertDensity expects 2 arguments: file name and data type. Acceptable types are \"int\", \"float\" or \"ascii\". E.g. \"--seed_surf_vertDensity density int\"");
             return;
         }
         trekker->seed_surface_vertDensity(seed_surf_vertDensity[0]);

@@ -82,7 +82,6 @@ void run_track2surf()
     delete tractogram;
 
     // Prepare and write selected feature on surface
-    int**   idata;
     float** fdata;
     float*  segmentDirPerFace;   // Magnitude of total segment directions per face, which is used for normalization
     
@@ -115,18 +114,18 @@ void run_track2surf()
 
     if (feature=="streamlineCount") {
         
-        idata = new int*[surf->nf];
+        fdata = new float*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
-            idata[n]    = new int[1];
-            idata[n][0] = mapping[n].size();
+            fdata[n]    = new float[1];
+            fdata[n][0] = mapping[n].size();
         }
         
         NIBR::SurfaceField field;
         field.name      = "face_" + field_name;;
         field.owner     = NIBR::FACE;
-        field.datatype  = "int";
-        field.fdata     = NULL;
-        field.idata     = idata;
+        field.datatype  = "float";
+        field.fdata     = fdata;
+        field.idata     = NULL;
         field.dimension = 1;
         surf->fields.push_back(field);
         
