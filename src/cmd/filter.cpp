@@ -124,8 +124,12 @@ void run_filter()
             }     
         } 
     }
+
+    disp(MSG_INFO, "Filtering completed.");
  
     if (!followIndx) {  
+
+        disp(MSG_INFO, "Writing selected streamlines.");
 
         if (ascii && (out_ext=="vtk")) {
             NIBR::TractogramReader inp_tractogram(inp_fname);
@@ -136,6 +140,8 @@ void run_filter()
         }
 
     }  else { 
+
+        disp(MSG_INFO, "Cropping and writing streamlines.");
   
         std::vector<std::vector<std::vector<float>>> track;
 
@@ -194,6 +200,9 @@ void run_filter()
 
 
     if (followIndx && (saveUncr!="")) {
+
+        disp(MSG_INFO, "Writing uncropped streamlines.");
+
         if (ascii && (getFileExtension(saveUncr)=="vtk")) {
             NIBR::TractogramReader inp_tractogram(inp_fname);
             NIBR::writeTractogram_VTK_ascii(saveUncr, &inp_tractogram, idx);
@@ -203,6 +212,8 @@ void run_filter()
     }
 
     if (saveDisc!="") {
+
+        disp(MSG_INFO, "Writing discarded streamlines.");
         
         NIBR::TractogramReader inp_tractogram(inp_fname);
         std::vector<size_t> discIdx;
@@ -220,6 +231,8 @@ void run_filter()
         }
 
     }
+
+    disp(MSG_INFO, "Done.");
 
     return;
 } 
