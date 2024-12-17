@@ -82,13 +82,10 @@ void run_track2surf()
     delete tractogram;
 
     // Prepare and write selected feature on surface
-    float** fdata;
-    float*  segmentDirPerFace;   // Magnitude of total segment directions per face, which is used for normalization
-    
 
     if (feature=="streamlineDensity") {
         
-        fdata = new float*[surf->nf];
+        float** fdata = new float*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
             fdata[n]    = new float[1];
             fdata[n][0] = float(mapping[n].size())/surf->areasOfFaces[n];
@@ -114,7 +111,7 @@ void run_track2surf()
 
     if (feature=="streamlineCount") {
         
-        fdata = new float*[surf->nf];
+        float** fdata = new float*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
             fdata[n]    = new float[1];
             fdata[n][0] = mapping[n].size();
@@ -137,25 +134,18 @@ void run_track2surf()
     
     if (feature=="contactAngle") {
         
-        fdata = new float*[surf->nf];
+        float** fdata = new float*[surf->nf];
         for (int n=0; n<surf->nf; n++) {
             fdata[n]    = new float[1];
             fdata[n][0] = 0;
+
+            for (auto indAng : mapping[n])
+                fdata[n][0] += indAng.angle;
+
+            if (mapping[n].size()>0)
+                fdata[n][0] /= float(mapping[n].size());
+
         }
-        
-        auto compileContactAngle = [&](NIBR::MT::TASK task)->void {
-                
-            float totalAngle = 0;
-
-            for (auto indAng : mapping[task.no])
-                totalAngle += indAng.angle;
-            
-            if (mapping[task.no].size()>0)
-                fdata[task.no][0] = totalAngle/(float)mapping[task.no].size();
-
-        };
-
-        NIBR::MT::MTRUN(1, "Compiling face output", compileContactAngle);
         
         NIBR::SurfaceField field;
         field.name      = "face_" + field_name;
@@ -175,48 +165,34 @@ void run_track2surf()
     
     if (feature=="contactDirection") {
         
-        fdata               = new float*[surf->nf];
-        segmentDirPerFace   = new float[surf->nf];
+        float** fdata             = new float*[surf->nf];
+        float*  segmentDirPerFace = new float[surf->nf];
+        float   maxDirMag         = 0;
+        
         for (int n=0; n<surf->nf; n++) {
             fdata[n]    = new float[3];
             fdata[n][0] = 0;
             fdata[n][1] = 0;
             fdata[n][2] = 0;
             segmentDirPerFace[n]   = 0;
-        }
-        
-        fdata               = new float*[surf->nf];
-        for (int n=0; n<surf->nf; n++) {
-            fdata[n]    = new float[3];
-            fdata[n][0] = 0;
-            fdata[n][1] = 0;
-            fdata[n][2] = 0;
-        }
-        
-        auto compileContactDirection = [&](NIBR::MT::TASK task)->void {
-                
-            for (auto indAng : mapping[task.no]) {
-                fdata[task.no][0] += std::fabs(indAng.dir[0]);
-                fdata[task.no][1] += std::fabs(indAng.dir[1]);
-                fdata[task.no][2] += std::fabs(indAng.dir[2]);
+
+            for (auto indAng : mapping[n]) {
+                fdata[n][0] += std::fabs(indAng.dir[0]);
+                fdata[n][1] += std::fabs(indAng.dir[1]);
+                fdata[n][2] += std::fabs(indAng.dir[2]);
             }
 
-            fdata[task.no][0] /= surf->areasOfFaces[task.no];
-            fdata[task.no][1] /= surf->areasOfFaces[task.no];
-            fdata[task.no][2] /= surf->areasOfFaces[task.no];
-            
-        if (mapping[task.no].size()>0) {
-                segmentDirPerFace[task.no] = norm(fdata[task.no]);
+            fdata[n][0] /= surf->areasOfFaces[n];
+            fdata[n][1] /= surf->areasOfFaces[n];
+            fdata[n][2] /= surf->areasOfFaces[n];
+
+            if (mapping[n].size()>0) {
+                segmentDirPerFace[n] = norm(fdata[n]);
             }
-            
-        };
-        NIBR::MT::MTRUN(1, "Compiling face output", compileContactDirection);
-        
-        
-        float maxDirMag = 0;
-        for (int n=0; n<surf->nf; n++) {
+
             if (segmentDirPerFace[n]>maxDirMag)
                 maxDirMag = segmentDirPerFace[n];
+
         }
         
         for (int n=0; n<surf->nf; n++) {
@@ -225,19 +201,21 @@ void run_track2surf()
             fdata[n][2] /= maxDirMag;
         }
         
-        NIBR::SurfaceField ffield;
-        ffield.name      = "face_" + field_name;
-        ffield.owner     = NIBR::FACE;
-        ffield.datatype  = "float";
-        ffield.fdata     = fdata;
-        ffield.idata     = NULL;
-        ffield.dimension = 3;
-        surf->fields.push_back(ffield);
+        NIBR::SurfaceField field;
+        field.name      = "face_" + field_name;
+        field.owner     = NIBR::FACE;
+        field.datatype  = "float";
+        field.fdata     = fdata;
+        field.idata     = NULL;
+        field.dimension = 3;
+        surf->fields.push_back(field);
         
 
-        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &ffield);
+        NIBR::SurfaceField vfield = NIBR::convert2VertField(surf, &field);
         vfield.name = "vertex_" + field_name;
-        surf->fields.push_back(vfield);        
+        surf->fields.push_back(vfield);
+
+        delete[] segmentDirPerFace;
         
     }
 
