@@ -40,6 +40,7 @@ git clone https://github.com/dmritrekker/trekker
 | Trekker version    | nibrary version|
 |--------------------|-------------|
 | [master](https://github.com/dmritrekker/trekker/tree/master)  | [main](https://github.com/nibrary/nibrary/tree/main) |
+| [v1.0.0-rc2](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc2)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
 | [v1.0.0-rc1](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc1)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
 | [v1.0-beta](https://github.com/dmritrekker/trekker/tree/v1.0-beta)   | [v0.0.0](https://github.com/nibrary/nibrary/tree/v0.0.0) |
 
@@ -49,7 +50,8 @@ Simply run `trekker` on the terminal. This will display help and the commands, w
 
 | Command    | Description |
 |------------|-------------|
-| **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles. |
+| **info**  | displays information about input file |
+| **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles |
 | **filter** | Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions. |
 |**track2img**| maps tractogram features on an image |
 |**track2surf**| maps tractogram features on a surface |

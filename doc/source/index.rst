@@ -3,9 +3,9 @@ Trekker
 
 .. note::
 
-    August 19\ :sup:`th`, 2024
+    December 19\ :sup:`th`, 2024
 
-    **UPDATE:** We are excited to announce the first release candidate. Trekker v1.0.0-rc1 includes bug fixes and improvements, particularly in surface handling. See below for a list of major changes.
+    **UPDATE:** Trekker v1.0.0-rc2 now out! See below for a list of major changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -61,6 +61,10 @@ Simply run ``trekker`` on the terminal. This will display help and the commands,
        <tr style="background-color: #f2f2f2;">
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Command</th>
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Description</th>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/info.html">info</a></strong></td>
+           <td style="padding: 8px;">Displays information about input file.</td>
        </tr>
        <tr>
            <td style="padding: 8px;"><strong><a href="../commands/track.html">track</a></strong></td>
@@ -155,6 +159,24 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              OUT_TRACK.vtk
 
+Release notes for Trekker-v1.0.0-rc2
+------------------------------------
+
+    - **Bug fix 1**: Fixed a bug which prevented using negative labels for selecting surface ROIs.
+
+    - **Bug fix 2**: Fixed a bug in `track2surf` that was introduced as a result of the major updates in rc1, which led to the saving of wrong field information for mapped streamlines on surface meshes.
+
+    - **Improvement 1**: Added a new command `info`, which prints basic information about input files.
+
+    - **Improvement 2**: Added option to flip surface normals when defining pathway rules.
+
+    - **Improvement 3**: Added option to use only the surface boundary when the provided mesh is closed for defining pathway rules.
+
+    - **Improvement 4**: (*As a solution to the nibrary issue submitted by Xi Zhu*) Added option to use ascii (text) files for defining seed density for fiber tracking with surface-based seeding.
+
+    - **Improvement 5**: Random seeds are now sampled using an approach based on cumulative distribution function instead of rejection sampling.
+
+
 Release notes for Trekker-v1.0.0-rc1
 ------------------------------------
 
@@ -185,6 +207,10 @@ Release notes for Trekker-v1.0.0-rc1
     Enjoy the new Trekker!
 
     ..
+        August 19\ :sup:`th`, 2024
+
+        **UPDATE:** We are excited to announce the first release candidate. Trekker v1.0.0-rc1 includes bug fixes and improvements, particularly in surface handling. See below for a list of major changes.
+
         May 21\ :sup:`st`, 2024
 
         **MAJOR UPDATE!** We are excited to announce the release of Trekker v1.0 beta, now available for testing.
@@ -222,6 +248,7 @@ Release notes for Trekker-v1.0.0-rc1
    :caption: Commands
    :hidden:
 
+   commands/info.rst
    commands/track.rst
    commands/filter.rst
    commands/track2img.rst
