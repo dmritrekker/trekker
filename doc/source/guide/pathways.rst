@@ -105,6 +105,7 @@ Trekker supports the following to be used together with the *seed* and *pathway 
   4. If the surface is defined as in ``-s surf.vtk fileName,VERT,int,3``, then the fileName is considered to contain labels for each VERTices, the file contains ``int`` (integer) data type, and the filtering should only consider VERTices with label 3.
 
   .. note::
+     - Inside/outside of a surface is determined by the direction of the normal vectors. It is considered that normals point towards the outside of surface meshes. This convention can be changed by using ``-s surf.vtk flipNormals``, which will internally flip the direction of the surface normals when tracking/filtering.
      - For fast filtering, Trekker first discretizes the surface meshes onto images. The default discretization resolution is 1, which can be changed by proving a scalar number after the surface file is defined, as in ``-s surf.vtk 0.4 label,3``, where 0.4 will be used to discretize the surface.
      - If the surface is closed, it is possible exclude the interior region, and only apply the rules based on the surface mesh (boundary). This can be done by adding ``2D`` after the file name, as in ``-s surf.vtk 2D label,3``.
      - It is possible change the place of the surface options, e.g. ``-s surf.vtk label,3 0.5 2D`` is same as ``-s surf.vtk 0.5 label,3 2D``.

@@ -22,9 +22,11 @@ filters tractograms
   Output tractogram (.vtk, .tck)
 
 |
+
 .. tip::
 
     Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+    
 |   
 
 **Options**
