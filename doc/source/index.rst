@@ -123,8 +123,12 @@ Simply run ``trekker`` on the terminal. This will display help and the commands,
            <td style="padding: 8px;">Adds a new vtk field with values read from a file (.vtk only).</td>
        </tr>
        <tr>
-           <td style="padding: 8px; border-bottom: 1px solid #000;"><strong><a href="../commands/fieldRemove.html">fieldRemove</a></strong></td>
-           <td style="padding: 8px; border-bottom: 1px solid #000;">Removes a vtk field from a tractogram (.vtk only).</td>
+           <td style="padding: 8px;"><strong><a href="../commands/fieldRemove.html">fieldRemove</a></strong></td>
+           <td style="padding: 8px;">Removes a vtk field from a tractogram (.vtk only).</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; border-bottom: 1px solid #000;"><strong><a href="../commands/dMRI.html">dMRI</a></strong></td>
+           <td style="padding: 8px; border-bottom: 1px solid #000;">dMRI commands</td>
        </tr>
    </table>
 
@@ -168,13 +172,15 @@ Release notes for Trekker-v1.0.0-rc2
 
     - **Improvement 1**: Added a new command `info`, which prints basic information about input files.
 
-    - **Improvement 2**: Added option to flip surface normals when defining pathway rules.
+    - **Improvement 2**: Added a new command `dMRI recon tran_shi_2015`, which fits dMRI data onto a compartment model proposed in [TranShi2015]_.
 
-    - **Improvement 3**: Added option to use only the surface boundary when the provided mesh is closed for defining pathway rules.
+    - **Improvement 3**: Added option to flip surface normals when defining pathway rules.
 
-    - **Improvement 4**: (*As a solution to the nibrary issue submitted by Xi Zhu*) Added option to use ascii (text) files for defining seed density for fiber tracking with surface-based seeding.
+    - **Improvement 4**: Added option to use only the surface boundary when the provided mesh is closed for defining pathway rules.
 
-    - **Improvement 5**: Random seeds are now sampled using an approach based on cumulative distribution function instead of rejection sampling.
+    - **Improvement 5**: (*As a solution to the nibrary issue submitted by Xi Zhu*) Added option to use ascii (text) files for defining seed density for fiber tracking with surface-based seeding.
+
+    - **Improvement 6**: Random seeds are now sampled using an approach based on cumulative distribution function instead of rejection sampling.
 
 
 Release notes for Trekker-v1.0.0-rc1
@@ -264,6 +270,7 @@ Release notes for Trekker-v1.0.0-rc1
    commands/fieldExport.rst
    commands/fieldImport.rst
    commands/fieldRemove.rst
+   commands/dMRI.rst
 
 
 .. toctree::
