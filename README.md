@@ -40,7 +40,7 @@ git clone https://github.com/dmritrekker/trekker
 | Trekker version    | nibrary version|
 |--------------------|-------------|
 | [master](https://github.com/dmritrekker/trekker/tree/master)  | [main](https://github.com/nibrary/nibrary/tree/main) |
-| [v1.0.0-rc2](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc2)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
+| [v1.0.0-rc2](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc2)   | [v0.2.0](https://github.com/nibrary/nibrary/tree/v0.2.0) |
 | [v1.0.0-rc1](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc1)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
 | [v1.0-beta](https://github.com/dmritrekker/trekker/tree/v1.0-beta)   | [v0.0.0](https://github.com/nibrary/nibrary/tree/v0.0.0) |
 
@@ -66,6 +66,7 @@ Simply run `trekker` on the terminal. This will display help and the commands, w
 |**fieldExport**| exports a selected vtk field from a tractogram (.vtk only) |
 |**fieldImport**| adds a new vtk field with values read from a file (.vtk only) |
 |**fieldRemove**| removes a vtk field from a tractogram (.vtk only) |
+|**dMRI**| dMRI commands |
 
 
 ### Examples
