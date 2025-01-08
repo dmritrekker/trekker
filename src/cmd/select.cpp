@@ -108,7 +108,7 @@ void run_select()
         }
 
         for (int i = _ordered[0]; i < (_ordered[1]+1); i++)
-            select.push_back(i);
+            select.push_back(i-1);
 
         NIBR::writeTractogram(out_fname, &tractogram, select);
         
