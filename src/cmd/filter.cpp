@@ -86,13 +86,6 @@ void run_filter()
         if(!pw.add(r)) return;
     }
 
-    auto rules = parsePathwayInput(pathway);
-    if ((!pathway.empty()) && rules.empty())
-        return;
-    for (auto r : rules) {
-        if(!pw.add(r)) return;
-    }
-
     if(!pw.inOrder(inOrder))            return;
     if(!pw.setMinLength(minlength))     return;
     if(!pw.setMaxLength(maxlength))     return;
@@ -101,6 +94,13 @@ void run_filter()
     if(!pw.skipSeed(skipSeed))          return;
     // if((!seedList.empty()) && (!pw.noEdgeSeed(!allowEdgeSeeds))) return;
     if(!pw.setSeedTrials(seedTrials))   return;
+
+    auto rules = parsePathwayInput(pathway);
+    if ((!pathway.empty()) && rules.empty())
+        return;
+    for (auto r : rules) {
+        if(!pw.add(r)) return;
+    }
  
     pw.print();
 

@@ -190,9 +190,6 @@ void run_track()
     if (!trekker->pathway_addRule(tmp))  return;
     // =======================
 
-
-
-
     // =======================
     // PATHWAY
     if (!trekker->pathway_minLength(minlength))         return;
