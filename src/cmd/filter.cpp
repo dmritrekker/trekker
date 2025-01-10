@@ -299,7 +299,7 @@ void filter(CLI::App *app)
     app->add_flag("--oneSided",              oneSided,           "If enabled tracking is done only towards the one direction.");
     app->add_flag("--skipSeed",              skipSeed,           "Does not output the points that are within seed region");
     // app->add_flag("--allowEdgeSeeds",        allowEdgeSeeds,     "Allows seeding at the edges of pathway rules. Default: false");
-    app->add_option("--seedTrials",          seedTrials,         "Number of random trials for assigning seed. Default: 0");
+    app->add_option("--seed_trials",         seedTrials,         "Number of random trials for assigning seed. Default: 0");
     app->add_flag("--inOrder",               inOrder,            "If enabled all pathway requirements are going to be satisfied in the order that they are given. All pathway options should be defined for pathway_A/pathway_B in order to use this option");
 
     app->add_option("--maxOut",              maxOut,             "Maximum number of output streamlines.");
