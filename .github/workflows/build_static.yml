@@ -3,7 +3,7 @@ name: Static build
 on:
   push:
     branches:
-      - builtTest
+      - buildTest
   pull_request:
     branches:
       - main
