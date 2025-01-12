@@ -1,5 +1,8 @@
 # Trekker
 
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Shared build](https://github.com/baranaydogan/trekker/actions/workflows/build_shared.yml/badge.svg)](https://github.com/baranaydogan/trekker/actions/workflows/build_shared.yml) [![Static build](https://github.com/baranaydogan/trekker/actions/workflows/build_static.yml/badge.svg)](https://github.com/baranaydogan/trekker/actions/workflows/build_static.yml)
+
+
 <img src="doc/source/_static/logo_github.png" alt="Trekker Logo" align="center" width="150">
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
