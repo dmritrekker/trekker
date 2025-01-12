@@ -18,11 +18,11 @@ if (NOT USE_SYSTEM_NIBRARY)
 
         set(BUILDING_NIBRARY_FROM_SOURCE TRUE CACHE INTERNAL "Nibrary will be built from local source")
 
-    elseif (EXISTS "${CMAKE_SOURCE_DIR}/external/nibrary_${NIBRARY_MIN_VERSION}/CMakeLists.txt")
+    elseif (EXISTS "${CMAKE_SOURCE_DIR}/external/nibrary_v${NIBRARY_MIN_VERSION}/CMakeLists.txt")
 
         message(STATUS "Nibrary will be built from local source")
 
-        set(NIBRARY_SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/nibrary_${NIBRARY_MIN_VERSION}")
+        set(NIBRARY_SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/nibrary_v${NIBRARY_MIN_VERSION}")
 
         set(BUILDING_NIBRARY_FROM_SOURCE TRUE CACHE INTERNAL "Nibrary will be built from local source")
 
@@ -34,7 +34,7 @@ if (NOT USE_SYSTEM_NIBRARY)
 
         set(NIBRARY_SOURCE_DIR "${CMAKE_BINARY_DIR}/external/nibrary_v${NIBRARY_MIN_VERSION}")
 
-        set(DOWNLOAD_FNAME "nibrary_${NIBRARY_MIN_VERSION}.zip")
+        set(DOWNLOAD_FNAME "nibrary_v${NIBRARY_MIN_VERSION}.zip")
         set(DOWNLOAD_URL   "https://github.com/nibrary/nibrary/releases/download/v${NIBRARY_MIN_VERSION}/${DOWNLOAD_FNAME}")
         set(DOWNLOAD_PATH  "${CMAKE_BINARY_DIR}/external/download/${DOWNLOAD_FNAME}")
         
