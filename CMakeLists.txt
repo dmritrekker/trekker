@@ -2,17 +2,26 @@ cmake_minimum_required(VERSION 3.15.0)
 
 PROJECT(trekker VERSION 1.0.0 LANGUAGES CXX C)
 
+set(trekker "Trekker_v${trekker_VERSION}-rc3")
+message(STATUS ">> Building ${trekker}")
+
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
+
+option(BUILD_SHARED_LIBS    "Build shared libraries"            ON)
+option(USE_SYSTEM_NIBRARY   "Use system nibrary if exists"      OFF)
+
 # Using C++17 standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
-
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_INCLUDE_PATH})
 link_directories(${CMAKE_LIBRARY_PATH})
+
+# Include external dependencies
+add_subdirectory(external)
+include_directories(${NIBRARY_INCLUDE_DIR})
+link_directories(${NIBRARY_LIBRARY_DIR})
 
 # List source files
 file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
@@ -21,7 +30,6 @@ list(REMOVE_ITEM SRCS "main.cpp")
 # Set executable
 set(CMDNAME trekker)
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
-target_link_libraries(${CMDNAME} Nibrary geogram z)
 
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
@@ -78,5 +86,27 @@ else()
     message(FATAL_ERROR "This operating system is not supported")
 endif()
 
-INSTALL(TARGETS ${CMDNAME} DESTINATION bin)
 
+if(BUILDING_NIBRARY_FROM_SOURCE)
+    message(STATUS ">> NIBRARY_LIBRARY_DIR: ${NIBRARY_LIBRARY_DIR}")
+    message(STATUS ">> NIBRARY_INCLUDE_DIR: ${NIBRARY_INCLUDE_DIR}")
+    add_dependencies(trekker build_nibrary)
+endif()
+
+target_link_libraries(${CMDNAME} ${NIBRARY_LIBRARIES})
+
+install(TARGETS ${CMDNAME} RUNTIME DESTINATION bin)
+
+if(BUILDING_NIBRARY_FROM_SOURCE)
+    install(DIRECTORY ${NIBRARY_INCLUDE_DIR} DESTINATION include)
+endif()
+
+# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/doc\")")
+# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/share\")")
+# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/lib/${nibrary}/cmake\")")
+# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/lib/${nibrary}/pkgconfig\")")
+
+add_custom_target(uninstall 
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_INSTALL_PREFIX}/include/${trekker}"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_INSTALL_PREFIX}/lib/${trekker}"
+)
