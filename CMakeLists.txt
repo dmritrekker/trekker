@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.15.0)
 
 PROJECT(trekker VERSION 1.0.0 LANGUAGES CXX C)
 
-set(trekker "Trekker_v${trekker_VERSION}-rc3")
-message(STATUS ">> Building ${trekker}")
+set(CMDNAME trekker_v${trekker_VERSION}-rc3)
+
+message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 
@@ -28,7 +29,6 @@ file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*"
 list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable
-set(CMDNAME trekker)
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
 
 find_package(OpenMP REQUIRED)
@@ -90,7 +90,7 @@ endif()
 if(BUILDING_NIBRARY_FROM_SOURCE)
     message(STATUS ">> NIBRARY_LIBRARY_DIR: ${NIBRARY_LIBRARY_DIR}")
     message(STATUS ">> NIBRARY_INCLUDE_DIR: ${NIBRARY_INCLUDE_DIR}")
-    add_dependencies(trekker build_nibrary)
+    add_dependencies(${CMDNAME} build_nibrary)
 endif()
 
 target_link_libraries(${CMDNAME} ${NIBRARY_LIBRARIES})
@@ -101,12 +101,11 @@ if(BUILDING_NIBRARY_FROM_SOURCE)
     install(DIRECTORY ${NIBRARY_INCLUDE_DIR} DESTINATION include)
 endif()
 
-# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/doc\")")
-# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/share\")")
-# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/lib/${nibrary}/cmake\")")
-# install(CODE "file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/lib/${nibrary}/pkgconfig\")")
-
-add_custom_target(uninstall 
-    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_INSTALL_PREFIX}/include/${trekker}"
-    COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_INSTALL_PREFIX}/lib/${trekker}"
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -E echo "Uninstalling ${NIBRARY_LIBRARY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory -v "${NIBRARY_LIBRARY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Uninstalling ${NIBRARY_INCLUDE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory -v "${NIBRARY_INCLUDE_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Uninstalling ${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
 )
