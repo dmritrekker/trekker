@@ -32,7 +32,7 @@ if (NOT USE_SYSTEM_NIBRARY)
 
         message(STATUS "Nibrary will be downloaded and built from source")
 
-        set(NIBRARY_SOURCE_DIR "${CMAKE_BINARY_DIR}/external/nibrary_${NIBRARY_MIN_VERSION}")
+        set(NIBRARY_SOURCE_DIR "${CMAKE_BINARY_DIR}/external/nibrary_v${NIBRARY_MIN_VERSION}")
 
         set(DOWNLOAD_FNAME "nibrary_${NIBRARY_MIN_VERSION}.zip")
         set(DOWNLOAD_URL   "https://github.com/nibrary/nibrary/releases/download/v${NIBRARY_MIN_VERSION}/${DOWNLOAD_FNAME}")
