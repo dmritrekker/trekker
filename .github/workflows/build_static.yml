@@ -25,6 +25,7 @@ jobs:
             c_compiler: gcc-14
             cpp_compiler: g++-14
             additional_packages: libomp-dev
+            compiler_package: gcc-14 g++-14
           - os: macos-latest
             c_compiler: clang-18
             cpp_compiler: clang-18
@@ -51,7 +52,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++' || '' }} -S ${{ github.workspace }}
+        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++' || '' }} -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
