@@ -26,8 +26,9 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18 libomp
 
     steps:
     - uses: actions/checkout@v3
@@ -42,13 +43,13 @@ jobs:
         sudo apt-get install -y ${{ matrix.compiler_package }} ${{ matrix.additional_packages }}
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140 --slave /usr/bin/g++ g++ /usr/bin/g++-14
 
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v2
+    - name: Install dependencies (macOS)
       if: startsWith(matrix.os, 'macos')
-      with:
-        version: "18.1.4"
-        cached: true
-        env: true
+      run: |
+        brew install ${{ matrix.additional_packages }}
+        export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH" >> /Users/runner/.bash_profile
+        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib" >> /Users/runner/.bash_profile
+        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include" >> /Users/runner/.bash_profile
 
     - name: Set up build directory
       shell: bash
@@ -59,9 +60,9 @@ jobs:
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
           -S ${{ github.workspace }}
@@ -71,11 +72,13 @@ jobs:
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_CXX_COMPILER=${{ env.CC }} \
-          -DCMAKE_C_COMPILER=${{ env.CXX }} \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
+          -DCMAKE_C_FLAGS="-fopenmp" \
+          -DCMAKE_CXX_FLAGS="-fopenmp" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
@@ -83,9 +86,9 @@ jobs:
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
           -S ${{ github.workspace }}    
