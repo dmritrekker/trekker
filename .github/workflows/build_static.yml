@@ -26,9 +26,9 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: /opt/homebrew/opt/llvm/bin/clang
-            cpp_compiler: /opt/homebrew/opt/llvm/bin/clang++
-            additional_packages: llvm
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18
 
     steps:
     - uses: actions/checkout@v3
@@ -43,10 +43,14 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        echo "PATH=/opt/homebrew/opt/llvm/bin:$PATH" >> $GITHUB_PATH
-        echo "OpenMP_ROOT=/opt/homebrew/opt/llvm" >> $GITHUB_ENV
-        echo "OpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm/lib/libomp.dylib" >> $GITHUB_ENV
+        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "OpenMP_ROOT=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
+        echo "OpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib" >> $GITHUB_ENV
 
+    - name: Check LLVM version (macOS)
+      if: startsWith(matrix.os, 'macos')
+      run: |
+        /opt/homebrew/opt/llvm@18/bin/clang --version
 
     - name: Set up build directory
       shell: bash
@@ -54,7 +58,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DOpenMP_ROOT=/opt/homebrew/opt/llvm -DOpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm/lib/libomp.dylib' || '' }} -S ${{ github.workspace }}        
+        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DOpenMP_ROOT=/opt/homebrew/opt/llvm@18 -DOpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib' || '' }} -S ${{ github.workspace }}        
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
