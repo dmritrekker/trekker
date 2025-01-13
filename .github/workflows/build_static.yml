@@ -86,7 +86,7 @@ jobs:
           -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
           -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
           -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
-          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_libomp_LIBRARY }}" \
+          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
