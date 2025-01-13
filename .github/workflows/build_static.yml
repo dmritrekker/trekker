@@ -47,10 +47,10 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> /Users/runner/.bash_profile
-        echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"' >> $GITHUB_ENV
-        echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"' >> $GITHUB_ENV
-        echo 'export OpenMP_ROOT=/opt/homebrew/opt/llvm@18' >> $GITHUB_ENV
+        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"
+        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"
+        echo "OpenMP_ROOT=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
 
 
     - name: Set up build directory
@@ -79,7 +79,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
-          -DOpenMP_ROOT=/opt/homebrew/opt/llvm@18 \
+          -DOpenMP_ROOT="${{ env.OpenMP_C_FLAGS }}" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
