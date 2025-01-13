@@ -46,7 +46,7 @@ jobs:
     - name: Install dependencies (macOS)
       if: startsWith(matrix.os, 'macos')
       run: |
-        brew install ${{ matrix.brew_packages }}
+        brew install ${{ matrix.additional_packages }}
         echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
         echo "OpenMP_ROOT=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
         echo "OpenMP_DIR=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
