@@ -25,7 +25,7 @@ include_directories(${NIBRARY_INCLUDE_DIR})
 link_directories(${NIBRARY_LIBRARY_DIR})
 
 # List source files
-file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c*")
 list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable

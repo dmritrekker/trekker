@@ -25,7 +25,6 @@ jobs:
             c_compiler: gcc-14
             cpp_compiler: g++-14
             additional_packages: libomp-dev
-            compiler_package: gcc-14 g++-14
           - os: macos-latest
             c_compiler: clang-18
             cpp_compiler: clang-18
@@ -33,6 +32,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Install dependencies (Ubuntu)
       if: startsWith(matrix.os, 'ubuntu')
@@ -45,6 +46,10 @@ jobs:
         echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> /Users/runner/.bash_profile
         export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"
         export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"
+        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "OpenMP_ROOT=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
+        echo "OpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib" >> $GITHUB_ENV
+
 
     - name: Set up build directory
       shell: bash

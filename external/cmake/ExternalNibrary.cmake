@@ -4,11 +4,12 @@ SET(NIBRARY_MIN_VERSION "0.3.0" CACHE STRING "Minimum nibrary version")
 
 include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
 
+set(NIBRARY_LIBRARIES Nibrary geogram z CACHE INTERNAL "Nibrary libraries to link against")
+
 if (NOT USE_SYSTEM_NIBRARY)
 
     set(NIBRARY_LIBRARY_DIR ${CMAKE_INSTALL_PREFIX}/lib/nibrary_v${NIBRARY_MIN_VERSION} CACHE INTERNAL "")
     set(NIBRARY_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include/nibrary_v${NIBRARY_MIN_VERSION} CACHE INTERNAL "")
-    set(NIBRARY_LIBRARIES Nibrary geogram z CACHE INTERNAL "Nibrary libraries to link against")
 
     if (EXISTS "${CMAKE_SOURCE_DIR}/external/nibrary/CMakeLists.txt")
         
@@ -69,7 +70,8 @@ if (NOT USE_SYSTEM_NIBRARY)
 
             PREFIX ${CMAKE_BINARY_DIR}/external/nibrary
 
-            CMAKE_ARGS  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+            CMAKE_ARGS  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                        -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 
@@ -78,7 +80,7 @@ if (NOT USE_SYSTEM_NIBRARY)
         ExternalProject_Add_Step(build_nibrary POST_BUILD
             COMMENT "Moving nibrary headers and libraries"
             DEPENDEES install
-            COMMAND ${CMAKE_COMMAND} -D trekker=${trekker} -D BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -D NIBRARY_MIN_VERSION=${NIBRARY_MIN_VERSION} -P "${CMAKE_CURRENT_LIST_DIR}/ExternalNibrary_aux.cmake"
+            COMMAND ${CMAKE_COMMAND} -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -D NIBRARY_MIN_VERSION=${NIBRARY_MIN_VERSION} -P "${CMAKE_CURRENT_LIST_DIR}/ExternalNibrary_aux.cmake"
             ALWAYS 0
         )
 
