@@ -74,6 +74,7 @@ if (NOT USE_SYSTEM_NIBRARY)
                         -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
                         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                         -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                        -DOpenMP_ROOT=$ENV{OpenMP_ROOT}
                         -DOpenMP_C_FLAGS=$ENV{OpenMP_C_FLAGS}
                         -DOpenMP_CXX_FLAGS=$ENV{OpenMP_CXX_FLAGS}
                         -DOpenMP_C_LIB_NAMES=$ENV{OpenMP_C_LIB_NAMES}
