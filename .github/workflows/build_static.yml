@@ -26,9 +26,9 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
-            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
-            additional_packages: llvm@18
+            c_compiler: clang
+            cpp_compiler: clang++
+            additional_packages: llvm
 
     steps:
     - uses: actions/checkout@v3
@@ -47,12 +47,12 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "PATH=/opt/homebrew/opt/llvm/bin:$PATH" >> $GITHUB_PATH
 
     - name: Check for OpenMPConfig.cmake
       if: startsWith(matrix.os, 'macos')
       run: |
-        if [[ -f /opt/homebrew/opt/llvm@18/lib/cmake/openmp/OpenMPConfig.cmake ]]; then
+        if [[ -f /opt/homebrew/opt/llvm/lib/cmake/openmp/OpenMPConfig.cmake ]]; then
           echo "OpenMPConfig.cmake found!"
         else
           echo "OpenMPConfig.cmake not found!"
@@ -62,7 +62,7 @@ jobs:
     - name: Check for libomp.dylib
       if: startsWith(matrix.os, 'macos')
       run: |
-        if [[ -f /opt/homebrew/opt/llvm@18/lib/libomp.dylib ]]; then
+        if [[ -f /opt/homebrew/opt/llvm/lib/libomp.dylib ]]; then
           echo "libomp.dylib found!"
         else
           echo "libomp.dylib not found!"
@@ -96,7 +96,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
-          -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm@18 \
+          -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/llvm \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
