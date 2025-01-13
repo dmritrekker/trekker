@@ -26,8 +26,8 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: /Users/runner/work/trekker/trekker/llvm/bin/clang-18
-            cpp_compiler: /Users/runner/work/trekker/trekker/llvm/bin/clang++-18
+            c_compiler: clang
+            cpp_compiler: clang++
 
     steps:
     - uses: actions/checkout@v3
@@ -48,6 +48,7 @@ jobs:
       with:
         version: "18.1.4"
         cached: true
+        env: true
 
     - name: Set up build directory
       shell: bash
