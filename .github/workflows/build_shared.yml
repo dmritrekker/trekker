@@ -26,9 +26,9 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: clang-18
-            cpp_compiler: clang-18
-            additional_packages: llvm@18
+            c_compiler: clang-omp
+            cpp_compiler: clang-omp++
+            additional_packages: llvm
 
     steps:
     - uses: actions/checkout@v3
@@ -43,12 +43,9 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> /Users/runner/.bash_profile
-        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"
-        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"
-        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
-        echo "OpenMP_ROOT=/opt/homebrew/opt/llvm@18" >> $GITHUB_ENV
-        echo "OpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib" >> $GITHUB_ENV
+        echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> /Users/runner/.bash_profile
+        export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+        export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
 
 
     - name: Set up build directory
@@ -57,7 +54,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=ON -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++' || '' }} -S ${{ github.workspace }}
+        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=ON -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++' || '' }} -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
