@@ -74,6 +74,12 @@ jobs:
           -DDEFINE_CUDA=OFF \
           -S ${{ github.workspace }}
 
+    - name: Find omp.h
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        find /opt/homebrew/opt/llvm@18 -name "omp.h" -print
+
     - name: Configure CMake (macOS)
       if: startsWith(matrix.os, 'macos')
       shell: bash
