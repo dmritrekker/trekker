@@ -26,8 +26,8 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: /Users/runner/work/trekker/trekker/llvm/clang
-            cpp_compiler: /Users/runner/work/trekker/trekker/llvm/clang++
+            c_compiler: /Users/runner/work/trekker/trekker/llvm/bin/clang
+            cpp_compiler: /Users/runner/work/trekker/trekker/llvm/bin/clang++
 
     steps:
     - uses: actions/checkout@v3
