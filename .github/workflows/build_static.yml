@@ -54,7 +54,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DOpenMP_ROOT=${{ env.OpenMP_ROOT }} -DOpenMP_libomp_LIBRARY=${{ env.OpenMP_libomp_LIBRARY }}' || '' }} -S ${{ github.workspace }}        
+        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DOpenMP_ROOT=/opt/homebrew/opt/llvm -DOpenMP_libomp_LIBRARY=/opt/homebrew/opt/llvm/lib/libomp.dylib' || '' }} -S ${{ github.workspace }}        
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
