@@ -47,7 +47,7 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        echo "export PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> /Users/runner/.bash_profile
         export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"
         export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"
 
