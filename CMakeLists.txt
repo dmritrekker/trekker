@@ -33,10 +33,10 @@ add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
 
 find_package(OpenMP REQUIRED)
 
-if(OpenMP_FOUND)
-    target_compile_options(${CMDNAME} PUBLIC ${OpenMP_CXX_FLAGS})
-    target_link_libraries(${CMDNAME} OpenMP::OpenMP_CXX)
-    target_include_directories(${CMDNAME} PUBLIC ${OpenMP_CXX_INCLUDE_DIRS})
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
 
