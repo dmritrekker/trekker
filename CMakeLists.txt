@@ -38,39 +38,48 @@ if(OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-if(UNIX)
 
-    message(STATUS "Building for Unix")
-
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -march=native")
-
-    if(CMAKE_BUILD_TYPE MATCHES Debug)
-        add_compile_options(-fsanitize=address)
-        add_link_options(-fsanitize=address)
-    endif()
-
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wno-long-long -Wno-stringop-truncation -Wno-dev -Wno-unknown-pragmas -Wno-unused-result -Wall -Wextra -pedantic -pedantic-errors")
-
-        # Thread support
-        find_package (Threads)
-        target_link_libraries(${CMDNAME} Threads::Threads)
-
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
-
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wno-long-long -Wno-stringop-truncation -Wno-dev -Wno-unknown-pragmas -Wno-unused-result -Wall -Wextra -pedantic -pedantic-errors" CACHE STRING "C++ Compiler Flags" FORCE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
-        target_link_libraries(${CMDNAME} stdc++fs)
+        target_link_libraries(${libNibrary} PUBLIC stdc++fs)
     endif()
 
-elseif(MSVC)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -mtune=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wno-long-long -Wno-stringop-truncation -Wno-dev -Wno-unknown-pragmas -Wno-unused-result -Wall -Wextra -pedantic -pedantic-errors" CACHE STRING "C++ Compiler Flags" FORCE)
+endif()
 
-    message(STATUS "Building for Windows")
+if (UNIX)
+    # Thread support
+    find_package(Threads)
+    if(Threads_FOUND)
+        target_link_libraries(${CMDNAME} Threads::Threads)
+    else()
+        message(WARNING "pthreads not found")
+    endif()
+
+    # Debug messages
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+    endif()
+endif()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+
+    message(STATUS ">> Trekker::Building for Linux")
+
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+
+    message(STATUS ">> Trekker::Building for MacOs")
+    add_compile_definitions(APPLE)
+
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    message(STATUS ">> Trekker::Building for Windows")
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /permissive- /bigobj")
 
@@ -82,8 +91,10 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DISABLED_WARNINGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DISABLED_WARNINGS}")
 
+    set_target_properties(${libNibrary} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
 else()
-    message(FATAL_ERROR "This operating system is not supported")
+    message(FATAL_ERROR ">> Nibrary::This operating system is not supported")
 endif()
 
 
