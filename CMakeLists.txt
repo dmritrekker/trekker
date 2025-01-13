@@ -31,8 +31,6 @@ list(REMOVE_ITEM SRCS "main.cpp")
 # Set executable
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
 
-message(STATUS "OpenMP_Root: ${OpenMP_ROOT}")
-
 find_package(OpenMP REQUIRED)
 
 if(OpenMP_FOUND)
