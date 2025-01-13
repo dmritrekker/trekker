@@ -26,8 +26,8 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: clang-omp
-            cpp_compiler: clang-omp++
+            c_compiler: /opt/homebrew/opt/llvm/bin/clang-omp
+            cpp_compiler: /opt/homebrew/opt/llvm/bin/clang-omp++
             additional_packages: llvm
 
     steps:
@@ -53,7 +53,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF ${{ matrix.os == 'macos-latest' && '-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++' || '' }} -S ${{ github.workspace }}
+        cmake -B ${{ env.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_SHARED_LIBS=OFF -DDEFINE_CUDA=OFF -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
