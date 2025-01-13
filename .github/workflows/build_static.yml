@@ -54,6 +54,7 @@ jobs:
         echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
         echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_omp_INCLUDE=/opt/homebrew/opt/llvm@18/include" >> $GITHUB_ENV
         echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib" >> $GITHUB_ENV
 
 
@@ -87,6 +88,7 @@ jobs:
           -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
           -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
           -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
+          -DOpenMP_omp_INCLUDE="${{ env.OpenMP_omp_INCLUDE }}" \
           -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
           -S ${{ github.workspace }}
 
