@@ -80,6 +80,7 @@ jobs:
           -DDEFINE_CUDA=OFF \
           -DCMAKE_C_FLAGS="-fopenmp" \
           -DCMAKE_CXX_FLAGS="-fopenmp" \
+          -DOpenMP_ROOT="/opt/homebrew/opt/libomp" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
