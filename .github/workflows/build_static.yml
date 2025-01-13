@@ -15,12 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [ubuntu-latest, macos-latest]
         build_type: [Release]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
           - os: ubuntu-latest
             c_compiler: gcc-14
             cpp_compiler: g++-14
@@ -87,19 +84,7 @@ jobs:
           -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
           -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
           -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
-          -S ${{ github.workspace }}
-
-    - name: Configure CMake (Windows)
-      if: startsWith(matrix.os, 'windows')
-      shell: bash
-      run: |
-        cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-          -DBUILD_SHARED_LIBS=OFF \
-          -DDEFINE_CUDA=OFF \
-          -S ${{ github.workspace }}    
+          -S ${{ github.workspace }}  
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}

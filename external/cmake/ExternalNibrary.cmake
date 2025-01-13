@@ -65,23 +65,18 @@ if (NOT USE_SYSTEM_NIBRARY)
 
         include(ExternalProject)
         
-
         ExternalProject_Add(build_nibrary
 
             SOURCE_DIR "${NIBRARY_SOURCE_DIR}"
 
             PREFIX ${CMAKE_BINARY_DIR}/external/nibrary
 
-            CMAKE_ARGS  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                        -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-                        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-                        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-                        -DOpenMP_C_FLAGS=$ENV{OpenMP_C_FLAGS}
-                        -DOpenMP_CXX_FLAGS=$ENV{OpenMP_CXX_FLAGS}
-                        -DOpenMP_C_LIB_NAMES=$ENV{OpenMP_C_LIB_NAMES}
-                        -DOpenMP_CXX_LIB_NAMES=$ENV{OpenMP_CXX_LIB_NAMES}
-                        -DOpenMP_omp_LIBRARY=$ENV{OpenMP_omp_LIBRARY}
-
+            CMAKE_ARGS
+                "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                "-DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}"
+                "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+                "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+                "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_C_FLAGS=\"$ENV{OpenMP_C_FLAGS}\" -DOpenMP_CXX_FLAGS=\"$ENV{OpenMP_CXX_FLAGS}\" -DOpenMP_C_LIB_NAMES=\"$ENV{OpenMP_C_LIB_NAMES}\" -DOpenMP_CXX_LIB_NAMES=\"$ENV{OpenMP_CXX_LIB_NAMES}\" -DOpenMP_omp_LIBRARY=\"$ENV{OpenMP_omp_LIBRARY}\">"
         )
 
         ExternalProject_Add_Step(build_nibrary POST_BUILD
