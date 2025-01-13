@@ -50,13 +50,13 @@ jobs:
         echo "export PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
         export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
         export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
-        export OpenMP_ROOT=/opt/homebrew/opt/llvm@18"
-        export OpenMP_DIR=/opt/homebrew/opt/llvm@18"
-        export OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp"
-        export OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp"
-        export OpenMP_C_LIB_NAMES=omp"
-        export OpenMP_CXX_LIB_NAMES=omp"
-        export OpenMP_omp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib"
+        export OpenMP_ROOT="/opt/homebrew/opt/llvm@18"
+        export OpenMP_DIR="/opt/homebrew/opt/llvm@18"
+        export OpenMP_C_FLAGS="-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp"
+        export OpenMP_CXX_FLAGS="-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp"
+        export OpenMP_C_LIB_NAMES="omp"
+        export OpenMP_CXX_LIB_NAMES="omp"
+        export OpenMP_omp_LIBRARY="/opt/homebrew/opt/llvm@18/lib/libomp.dylib"
 
     - name: Set up build directory
       shell: bash
