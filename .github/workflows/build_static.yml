@@ -80,6 +80,8 @@ jobs:
           -DDEFINE_CUDA=OFF \
           -DCMAKE_C_FLAGS="-fopenmp" \
           -DCMAKE_CXX_FLAGS="-fopenmp" \
+          -DCMAKE_LIBRARY_PATH="/opt/homebrew/opt/llvm@18/lib;/opt/homebrew/opt/libomp/lib" \
+          -DCMAKE_INCLUDE_PATH="/opt/homebrew/opt/llvm@18/include;/opt/homebrew/opt/libomp/include" \
           -DOpenMP_ROOT="/opt/homebrew/opt/libomp" \
           -S ${{ github.workspace }}
 
