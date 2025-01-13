@@ -26,9 +26,9 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: clang-18
-            cpp_compiler: clang++-18
-            additional_packages: libomp
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18 libomp@18
 
     steps:
     - uses: actions/checkout@v3
@@ -47,7 +47,9 @@ jobs:
       if: startsWith(matrix.os, 'macos')
       run: |
         brew install ${{ matrix.additional_packages }}
-        export OpenMP_ROOT=$(brew --prefix)/opt/libomp
+        export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH" >> /Users/runner/.bash_profile
+        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp@18/lib" >> /Users/runner/.bash_profile
+        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp@18/include" >> /Users/runner/.bash_profile
 
     - name: Set up build directory
       shell: bash
@@ -75,6 +77,8 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
+          -DCMAKE_C_FLAGS="-fopenmp" \
+          -DCMAKE_CXX_FLAGS="-fopenmp" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
