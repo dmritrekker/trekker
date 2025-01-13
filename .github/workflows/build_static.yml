@@ -79,7 +79,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
-          -DOpenMP_ROOT="${{ env.OpenMP_C_FLAGS }}" \
+          -DOpenMP_ROOT="${{ env.OpenMP_ROOT }}" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)
