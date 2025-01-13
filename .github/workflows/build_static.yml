@@ -50,12 +50,7 @@ jobs:
         echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
         export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib"
         export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include"
-        echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp" >> $GITHUB_ENV
-        echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -Xclang -fopenmp" >> $GITHUB_ENV
-        echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
-        echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
-        echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/llvm@18/lib/libomp.dylib" >> $GITHUB_ENV
-
+        export OpenMP_ROOT="/opt/homebrew/opt/llvm@18"
 
     - name: Set up build directory
       shell: bash
@@ -83,11 +78,6 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
-          -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
-          -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
-          -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
-          -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
-          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
           -S ${{ github.workspace }}
 
     - name: Configure CMake (Windows)

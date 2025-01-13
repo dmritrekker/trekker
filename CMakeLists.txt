@@ -32,10 +32,11 @@ list(REMOVE_ITEM SRCS "main.cpp")
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
 
 find_package(OpenMP REQUIRED)
-if(OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+
+if(OpenMP_FOUND)
+    target_compile_options(${CMDNAME} PUBLIC ${OpenMP_CXX_FLAGS})
+    target_link_libraries(${CMDNAME} OpenMP::OpenMP_CXX)
+    target_include_directories(${CMDNAME} PUBLIC ${OpenMP_CXX_INCLUDE_DIRS})
 endif()
 
 
@@ -44,7 +45,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wno-long-long -Wno-stringop-truncation -Wno-dev -Wno-unknown-pragmas -Wno-unused-result -Wall -Wextra -pedantic -pedantic-errors" CACHE STRING "C++ Compiler Flags" FORCE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9")
-        target_link_libraries(${libNibrary} PUBLIC stdc++fs)
+        target_link_libraries(${CMDNAME} PUBLIC stdc++fs)
     endif()
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
