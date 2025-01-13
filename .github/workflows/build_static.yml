@@ -83,6 +83,8 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
+          -DCMAKE_INCLUDE_PATH=/opt/homebrew/opt/llvm@18/include \
+          -DCMAKE_LIBRARY_PATH=/opt/homebrew/opt/llvm@18/lib \
           -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
           -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
           -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
