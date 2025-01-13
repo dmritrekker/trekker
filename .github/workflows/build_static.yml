@@ -26,8 +26,8 @@ jobs:
             cpp_compiler: g++-14
             additional_packages: libomp-dev
           - os: macos-latest
-            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
-            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            c_compiler: /opt/homebrew/opt/llvm/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm/bin/clang++
             additional_packages: llvm
 
     steps:
