@@ -1,0 +1,94 @@
+name: Static build
+
+on:
+  push:
+    branches:
+      - build
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        build_type: [Release]
+        include:
+          - os: ubuntu-latest
+            c_compiler: gcc-14
+            cpp_compiler: g++-14
+            additional_packages: libomp-dev
+          - os: macos-latest
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18 libomp
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Install dependencies (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install -y ${{ matrix.compiler_package }} ${{ matrix.additional_packages }}
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+
+    - name: Install dependencies (macOS)
+      if: startsWith(matrix.os, 'macos')
+      run: |
+        brew install ${{ matrix.additional_packages }}
+        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"
+        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"
+        echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
+
+    - name: Set up build directory
+      shell: bash
+      run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_ENV"
+
+    - name: Configure CMake (Ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DDEFINE_CUDA=OFF \
+          -S ${{ github.workspace }}
+
+    - name: Configure CMake (macOS)
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DDEFINE_CUDA=OFF \
+          -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
+          -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
+          -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
+          -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
+          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
+          -S ${{ github.workspace }}  
+
+    - name: Build
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
+
+    - name: Test
+      working-directory: ${{ env.build-output-dir }}
+      run: ctest --build-config ${{ matrix.build_type }}

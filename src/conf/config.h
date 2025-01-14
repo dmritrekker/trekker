@@ -2,17 +2,17 @@
 
 #include "nibrary.h"
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#include "CLI11.hpp"
-#pragma GCC diagnostic pop
-
-#else
-
-#include "CLI11.hpp"
-
 #endif
+
+#include "CLI11.hpp"
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
 
 void parseCommon(int& numberOfThreads, std::string verbose);
 bool parseForceOutput(std::string out_fname, bool force);
