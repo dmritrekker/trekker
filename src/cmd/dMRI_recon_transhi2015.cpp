@@ -57,11 +57,12 @@ void run_dMRI_recon_transhi2015()
     // This makes it faster to read the diffusion signal for each voxel separately when we do the reconstruction.
     // Then why do have 4,5,6 at the end? This is because the maximum image dimension supported with NIBR is 7, and an order needs to be set for all dimensions.
     int indexOrder[7] = {3,0,1,2,4,5,6};
+    
     NIBR::Image<float> dMRI(inp_dMRI_img,indexOrder);
-
     NIBR::Image<bool>  mask(inp_mask_img);
 
     // Read input images
+    disp(MSG_INFO,"Reading dMRI image: %s",inp_dMRI_img.c_str());
     dMRI.read();
     mask.read();
 
