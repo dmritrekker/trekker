@@ -26,8 +26,6 @@ For complete documentation, tutorials and examples, visit https://dmritrekker.gi
 
 ### Building from Source
 
-Trekker relies on [nibrary](https://github.com/nibrary/nibrary). To compile Trekker from source, ensure that nibrary is installed first. Then follow these steps to compile Trekker:
-
 #### Step 1: Download the Source Code
 
 ```bash
@@ -36,41 +34,9 @@ git clone https://github.com/dmritrekker/trekker
 
 #### Step 2: Modify and run the build script
 
-- **For Linux:** Edit `build_Linux.sh`
-
-**Note:** Trekker binaries can be compiled using the following version matching with [nibrary](https://github.com/nibrary/nibrary):
-
-| Trekker version    | nibrary version|
-|--------------------|-------------|
-| [master](https://github.com/dmritrekker/trekker/tree/master)  | [main](https://github.com/nibrary/nibrary/tree/main) |
-| [v1.0.0-rc3](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc3)   | [v0.3.0](https://github.com/nibrary/nibrary/tree/v0.3.0) |
-| [v1.0.0-rc2](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc2)   | [v0.2.0](https://github.com/nibrary/nibrary/tree/v0.2.0) |
-| [v1.0.0-rc1](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc1)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
-| [v1.0-beta](https://github.com/dmritrekker/trekker/tree/v1.0-beta)   | [v0.0.0](https://github.com/nibrary/nibrary/tree/v0.0.0) |
-
-## Usage
-
-Simply run `trekker` on the terminal. This will display help and the commands, which are listed below:
-
-| Command    | Description |
-|------------|-------------|
-| **info**  | displays information about input file |
-| **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles |
-| **filter** | Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions. |
-|**track2img**| maps tractogram features on an image |
-|**track2surf**| maps tractogram features on a surface |
-|**img2track**| maps image values on a tractogram |
-|**select**| selects streamlines from a tractogram |
-|**resample**| resamples streamlines in a tractogram |
-|**convert**| converts tractogram file formats (.vtk, .tck, .trk) |
-|**transform**| applies a transform on an input tractogram |
-|**diff**| finds different streamlines between two tractograms |
-|**merge**| merges two tractograms, optionally ignoring duplicates |
-|**addColor**| adds colors to streamlines (.vtk only) |
-|**fieldExport**| exports a selected vtk field from a tractogram (.vtk only) |
-|**fieldImport**| adds a new vtk field with values read from a file (.vtk only) |
-|**fieldRemove**| removes a vtk field from a tractogram (.vtk only) |
-|**dMRI**| dMRI commands |
+```bash
+sh build.sh
+```
 
 
 ### Examples
