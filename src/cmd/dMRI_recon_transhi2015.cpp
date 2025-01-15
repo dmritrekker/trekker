@@ -46,7 +46,10 @@ void run_dMRI_recon_transhi2015()
     // Check bval and bvec
     auto grad = NIBR::readGradTable(std::get<0>(grad_fnames), std::get<1>(grad_fnames));
 
-    if (!std::get<0>(grad)) return; // Errors related to reading of bvals and bvecs should be displayed in the above function
+    if (!std::get<0>(grad)) {
+        disp(MSG_ERROR,"Incorrect bvals/bvecs definition.");
+        return;
+    }
     
     // Read input image headers
     
