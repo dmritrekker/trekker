@@ -92,3 +92,9 @@ jobs:
     - name: Test
       working-directory: ${{ env.build-output-dir }}
       run: ctest --build-config ${{ matrix.build_type }}
+
+    - name: Upload binaries as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: ${{ env.build-output-dir }}/install/bin/*
