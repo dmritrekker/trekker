@@ -22,10 +22,21 @@ jobs:
             c_compiler: gcc-14
             cpp_compiler: g++-14
             additional_packages: libomp-dev
+            artifact_prefix: ubuntu
+            executable_name: trekker_linux
           - os: macos-latest
             c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
             additional_packages: llvm@18 libomp
+            artifact_prefix: macos-arm64
+            executable_name: trekker_macos_arm64
+            arch: arm64
+          - os: macos-latest
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18 libomp
+            artifact_prefix: macos-x86_64
+            executable_name: trekker_macos_x86_64
 
     steps:
     - uses: actions/checkout@v3
@@ -77,6 +88,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
           -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
@@ -93,8 +105,22 @@ jobs:
       shell: bash
       run: echo "ARTIFACT_NAME=${{ matrix.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
 
+    - name: Rename executable
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+
+    - name: Rename executable
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+
     - name: Upload binaries as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
-        path: ${{ env.build-output-dir }}/install/bin/**
+        path: ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+        if-no-files-found: error
+        retention-days: 5
