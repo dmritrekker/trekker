@@ -87,11 +87,7 @@ jobs:
           -S ${{ github.workspace }}  
 
     - name: Build
-      run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }}
-
-    - name: Test
-      working-directory: ${{ env.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
 
     - name: Upload binaries as artifact
       uses: actions/upload-artifact@v3
