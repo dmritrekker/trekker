@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-14-arm64, macos-13]
         build_type: [Release]
         include:
           - os: ubuntu-latest
@@ -24,19 +24,20 @@ jobs:
             additional_packages: libomp-dev
             artifact_prefix: ubuntu
             executable_name: trekker_linux
-          - os: macos-latest
+          - os: macos-14-arm64
             c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
             additional_packages: llvm@18 libomp
             artifact_prefix: macos-arm64
             executable_name: trekker_macos_arm64
             arch: arm64
-          - os: macos-latest
+          - os: macos-13
             c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
             additional_packages: llvm@18 libomp
             artifact_prefix: macos-x86_64
             executable_name: trekker_macos_x86_64
+            arch: x86_64
 
     steps:
     - uses: actions/checkout@v3
