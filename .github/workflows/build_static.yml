@@ -93,4 +93,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.artifact_name }}
-        path: ${{ env.build-output-dir }}/install/bin/**
+        path: ${{ env.build-output-dir }}/install/bin/trekker_v1.0.0-rc3
