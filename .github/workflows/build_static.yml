@@ -31,13 +31,6 @@ jobs:
             artifact_prefix: macos-arm64
             executable_name: trekker_macos_arm64
             arch: arm64
-          - os: macos-latest
-            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
-            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
-            additional_packages: llvm@18 libomp
-            artifact_prefix: macos-x86_64
-            executable_name: trekker_macos_x86_64
-            arch: x86_64
 
     steps:
     - uses: actions/checkout@v3
