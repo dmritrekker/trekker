@@ -93,3 +93,27 @@ jobs:
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
+
+    - name: Set artifact name
+      shell: bash
+      run: echo "ARTIFACT_NAME=${{ matrix.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
+
+    - name: Rename executable
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+
+    - name: Rename executable
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+
+    - name: Upload binaries as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
+        if-no-files-found: error
+        retention-days: 5
