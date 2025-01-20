@@ -3,7 +3,7 @@ name: Shared build
 on:
   push:
     branches:
-      - test
+      - build
   pull_request:
     branches:
       - main
@@ -22,10 +22,15 @@ jobs:
             c_compiler: gcc-14
             cpp_compiler: g++-14
             additional_packages: libomp-dev
+            artifact_prefix: ubuntu
+            executable_name: trekker_linux
           - os: macos-latest
             c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
             cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
             additional_packages: llvm@18 libomp
+            artifact_prefix: macos-arm64
+            executable_name: trekker_macos_arm64
+            arch: arm64
 
     steps:
     - uses: actions/checkout@v3
@@ -37,8 +42,7 @@ jobs:
       run: |
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
-        sudo apt-get install -y ${{ matrix.compiler_package }} ${{ matrix.additional_packages }}
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+        sudo apt-get install -y gcc-14 g++-14 ${{ matrix.additional_packages }}
 
     - name: Install dependencies (macOS)
       if: startsWith(matrix.os, 'macos')
@@ -55,7 +59,7 @@ jobs:
 
     - name: Set up build directory
       shell: bash
-      run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_ENV"
+      run: echo "build-output-dir=${{ github.workspace }}/build_${{ matrix.artifact_prefix }}" >> "$GITHUB_ENV"
 
     - name: Configure CMake (Ubuntu)
       if: startsWith(matrix.os, 'ubuntu')
@@ -77,6 +81,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
           -DBUILD_SHARED_LIBS=ON \
           -DDEFINE_CUDA=OFF \
           -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
@@ -88,4 +93,3 @@ jobs:
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
-
