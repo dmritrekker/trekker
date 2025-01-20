@@ -24,7 +24,8 @@ void run_info()
     if ((ext == "nii")    || 
         (ext == "nii.gz") || 
         (ext == "mgh")    || 
-        (ext == "mgz") ) {
+        (ext == "mgz")    ||
+        (ext == "dcm") ) {
         
         NIBR::Image<float> img(inp_fname);
         img.read();
