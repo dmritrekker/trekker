@@ -31,6 +31,13 @@ jobs:
             artifact_prefix: macos-arm64
             executable_name: trekker_macos_arm64
             arch: arm64
+          - os: macos-latest
+            c_compiler: /opt/homebrew/opt/llvm@18/bin/clang
+            cpp_compiler: /opt/homebrew/opt/llvm@18/bin/clang++
+            additional_packages: llvm@18 libomp
+            artifact_prefix: macos-x86_64
+            executable_name: trekker_macos_x86_64
+            arch: x86_64
 
     steps:
     - uses: actions/checkout@v3
@@ -44,10 +51,21 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gcc-14 g++-14 ${{ matrix.additional_packages }}
 
-    - name: Install dependencies (macOS)
+    - name: Install dependencies (macos-arm64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
+      run: |
+        brew update
+        brew install ${{ matrix.additional_packages }}
+
+    - name: Install dependencies (macos-x86_64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'x86_64'
+      run: |
+        arch -x86_64 brew update
+        arch -x86_64 brew install ${{ matrix.additional_packages }}
+    
+    - name: Set environment (macos)
       if: startsWith(matrix.os, 'macos')
       run: |
-        brew install ${{ matrix.additional_packages }}
         echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
         export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"
         export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"
@@ -73,8 +91,8 @@ jobs:
           -DDEFINE_CUDA=OFF \
           -S ${{ github.workspace }}
 
-    - name: Configure CMake (macOS)
-      if: startsWith(matrix.os, 'macos')
+    - name: Configure CMake (macos-arm64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
@@ -89,10 +107,37 @@ jobs:
           -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
           -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
           -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
+          -S ${{ github.workspace }}
+
+    - name: Configure CMake (macos-x86_64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'x86_64'
+      shell: bash
+      run: |
+        arch -x86_64 cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DDEFINE_CUDA=OFF \
+          -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
+          -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
+          -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
+          -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
+          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
           -S ${{ github.workspace }}  
 
-    - name: Build
+    - name: Build (ubuntu)
+      if: startsWith(matrix.os, 'ubuntu')
       run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
+
+    - name: Build (macos-arm64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'arm64'
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
+
+    - name: Build (macos-x86_64)
+      if: startsWith(matrix.os, 'macos') && matrix.arch == 'x86_64'
+      run: arch -x86_64 cmake --build ${{ env.build-output-dir }} --config ${{ matrix.build_type }} --target install
 
     - name: Set artifact name
       shell: bash
@@ -117,3 +162,35 @@ jobs:
         path: ${{ env.build-output-dir }}/install/bin/${{ matrix.executable_name }}
         if-no-files-found: error
         retention-days: 5
+
+  create-universal-binary:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - name: Set up build directory
+        shell: bash
+        run: echo "build-output-dir=${{ github.workspace }}/build_universal" >> "$GITHUB_ENV"
+
+      - name: Download arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-arm64_binaries
+          path: ${{ env.build-output-dir }}/arm64
+
+      - name: Download x86_64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-x86_64_binaries
+          path: ${{ env.build-output-dir }}/x86_64
+
+      - name: Create Universal Binary with lipo
+        run: |
+          lipo -create ${{ env.build-output-dir }}/arm64/trekker_macos_arm64 ${{ env.build-output-dir }}/x86_64/trekker_macos_x86_64 -output ${{ env.build-output-dir }}/trekker_macos
+
+      - name: Upload universal binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal_binaries
+          path: ${{ env.build-output-dir }}/trekker_macos
+          if-no-files-found: error
+          retention-days: 5

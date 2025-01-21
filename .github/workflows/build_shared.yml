@@ -3,7 +3,7 @@ name: Shared build
 on:
   push:
     branches:
-      - build
+      - test
   pull_request:
     branches:
       - main
