@@ -21,7 +21,7 @@ jobs:
     - name: Install x86_64 Homebrew
       shell: bash
       run: |
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         echo >> /Users/runner/.bash_profile
         echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/runner/.bash_profile
         eval "$(/opt/homebrew/bin/brew shellenv)"
