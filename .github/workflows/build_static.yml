@@ -166,8 +166,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-9 g++-9 libomp-dev
+        apt-get update
+        apt-get install -y gcc-9 g++-9 libomp-dev
         
     - name: Set up build directory and environment
       shell: bash
