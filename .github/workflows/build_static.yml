@@ -29,7 +29,7 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        arch -x86_64 /usr/local/bin/brew install llvm@18 libomp
+        arch -x86_64 /usr/local/bin/brew install llvm@18 libomp cmake
         echo "/usr/local/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
         echo "LDFLAGS=-L/usr/local/opt/llvm@18/lib -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/libomp/lib" >> $GITHUB_ENV
         echo "CPPFLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include" >> $GITHUB_ENV
@@ -54,7 +54,7 @@ jobs:
       shell: bash
       run: |
         eval "$(/usr/local/bin/brew shellenv)"
-        arch -x86_64 cmake -B ${{ env.build-output-dir }} \
+        arch -x86_64 /usr/local/bin/cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
           -DCMAKE_C_COMPILER=/usr/local/opt/llvm@18/bin/clang \
           -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm@18/bin/clang++ \
@@ -70,7 +70,7 @@ jobs:
 
 
     - name: Build
-      run: arch -x86_64 cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+      run: arch -x86_64 /usr/local/bin/cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
 
     - name: Rename executable
       shell: bash
