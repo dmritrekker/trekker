@@ -22,8 +22,8 @@ jobs:
       run: |
         arch -x86_64 brew install llvm@18 libomp
         echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
-        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"
-        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib -Wl,-rpath,/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
         echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
@@ -37,6 +37,7 @@ jobs:
         echo "artifact_prefix=macos_${{ env.arch }}" >> "$GITHUB_ENV"
         echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
         echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
+        echo "build_type=Release" >> "$GITHUB_ENV"
         echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
         
 
@@ -44,7 +45,7 @@ jobs:
       shell: bash
       run: |
         arch -x86_64 cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_BUILD_TYPE=release \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
           -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang \
           -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++ \
           -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
@@ -88,8 +89,8 @@ jobs:
       run: |
         brew install llvm@18 libomp
         echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
-        export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"
-        export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib -Wl,-rpath,/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
         echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
@@ -103,6 +104,7 @@ jobs:
         echo "artifact_prefix=macos_${{ env.arch }}" >> "$GITHUB_ENV"
         echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
         echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
+        echo "build_type=Release" >> "$GITHUB_ENV"
         echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
         
 
@@ -110,7 +112,7 @@ jobs:
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_BUILD_TYPE=release \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
           -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang \
           -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++ \
           -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
@@ -161,13 +163,14 @@ jobs:
         echo "artifact_prefix=linux" >> "$GITHUB_ENV"
         echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
         echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
+        echo "build_type=Release" >> "$GITHUB_ENV"
         echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
 
     - name: Configure CMake (Ubuntu)
       shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
-          -DCMAKE_BUILD_TYPE=release \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
           -DCMAKE_C_COMPILER=gcc-14 \
           -DCMAKE_CXX_COMPILER=g++-14 \
           -DBUILD_SHARED_LIBS=OFF \
@@ -192,7 +195,7 @@ jobs:
 
 
   create-universal-binary:
-    needs: build_macOs_arm64 build_macOs_x86_64
+    needs: [build_macOs_arm64, build_macOs_x86_64]
     runs-on: macos-latest
     steps:
       - name: Set up build directory
