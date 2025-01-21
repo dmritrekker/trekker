@@ -15,6 +15,8 @@ option(USE_SYSTEM_NIBRARY   "Use system nibrary if exists"      OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_INCLUDE_PATH})
 link_directories(${CMAKE_LIBRARY_PATH})
