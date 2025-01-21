@@ -45,7 +45,7 @@ jobs:
         echo "arch=x86_64" >> $GITHUB_ENV
         echo "artifact_prefix=macos_x86_64" >> $GITHUB_ENV
         echo "executable_name=trekker_macos_x86_64" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=macos_x86_64_binaries" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macos-x86_64_binaries" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
         echo "build-output-dir=${{ github.workspace }}/build_macos_x86_64" >> $GITHUB_ENV
         
@@ -114,7 +114,7 @@ jobs:
         echo "arch=arm64" >> $GITHUB_ENV
         echo "artifact_prefix=macos_arm64" >> $GITHUB_ENV
         echo "executable_name=trekker_macos_arm64" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=macos_arm64_binaries" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macos-arm64_binaries" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
         echo "build-output-dir=${{ github.workspace }}/build_macos_arm64" >> $GITHUB_ENV
         
