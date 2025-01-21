@@ -205,7 +205,7 @@ jobs:
         retention-days: 5
 
 
-  create-universal-binary:
+  create-universal-macOs-binary:
     needs: [build_macOs_arm64, build_macOs_x86_64]
     runs-on: macos-latest
     steps:
