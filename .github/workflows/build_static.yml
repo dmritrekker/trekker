@@ -43,11 +43,11 @@ jobs:
       shell: bash
       run: |
         echo "arch=x86_64" >> $GITHUB_ENV
-        echo "artifact_prefix=macos_${{ env.arch }}" >> $GITHUB_ENV
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "artifact_prefix=macos_x86_64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macos_x86_64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macos_x86_64_binaries" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macos_x86_64" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -112,11 +112,11 @@ jobs:
       shell: bash
       run: |
         echo "arch=arm64" >> $GITHUB_ENV
-        echo "artifact_prefix=macos_${{ env.arch }}" >> $GITHUB_ENV
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "artifact_prefix=macos_arm64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macos_arm64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macos_arm64_binaries" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macos_arm64" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -172,10 +172,10 @@ jobs:
       shell: bash
       run: |
         echo "artifact_prefix=linux" >> $GITHUB_ENV
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "executable_name=trekker_linux" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=linux_binaries" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_linux" >> $GITHUB_ENV
 
     - name: Configure CMake (Ubuntu)
       shell: bash
