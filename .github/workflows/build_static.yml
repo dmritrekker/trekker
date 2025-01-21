@@ -30,24 +30,24 @@ jobs:
       shell: bash
       run: |
         arch -x86_64 /usr/local/bin/brew install llvm@18 libomp
-        echo "/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
-        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib -Wl,-rpath,/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
-        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
-        echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
-        echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "/usr/local/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "LDFLAGS=-L/usr/local/opt/llvm@18/lib -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include" >> $GITHUB_ENV
+        echo "OpenMP_C_FLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
         echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
-        echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
 
     - name: Set up build directory and environment
       shell: bash
       run: |
-        echo "arch=x86_64" >> "$GITHUB_ENV"
-        echo "artifact_prefix=macos_${{ env.arch }}" >> "$GITHUB_ENV"
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
-        echo "build_type=Release" >> "$GITHUB_ENV"
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
+        echo "arch=x86_64" >> $GITHUB_ENV
+        echo "artifact_prefix=macos_${{ env.arch }}" >> $GITHUB_ENV
+        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -56,8 +56,8 @@ jobs:
         eval "$(/usr/local/bin/brew shellenv)"
         arch -x86_64 cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
-          -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang \
-          -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++ \
+          -DCMAKE_C_COMPILER=/usr/local/opt/llvm@18/bin/clang \
+          -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm@18/bin/clang++ \
           -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
@@ -111,12 +111,12 @@ jobs:
     - name: Set up build directory and environment
       shell: bash
       run: |
-        echo "arch=arm64" >> "$GITHUB_ENV"
-        echo "artifact_prefix=macos_${{ env.arch }}" >> "$GITHUB_ENV"
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
-        echo "build_type=Release" >> "$GITHUB_ENV"
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
+        echo "arch=arm64" >> $GITHUB_ENV
+        echo "artifact_prefix=macos_${{ env.arch }}" >> $GITHUB_ENV
+        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -171,11 +171,11 @@ jobs:
     - name: Set up build directory and environment
       shell: bash
       run: |
-        echo "artifact_prefix=linux" >> "$GITHUB_ENV"
-        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
-        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> "$GITHUB_ENV"
-        echo "build_type=Release" >> "$GITHUB_ENV"
-        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> "$GITHUB_ENV"
+        echo "artifact_prefix=linux" >> $GITHUB_ENV
+        echo "executable_name=trekker_${{ env.artifact_prefix }}" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=${{ env.artifact_prefix }}_binaries" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_${{ env.artifact_prefix }}" >> $GITHUB_ENV
 
     - name: Configure CMake (Ubuntu)
       shell: bash
@@ -211,7 +211,7 @@ jobs:
     steps:
       - name: Set up build directory
         shell: bash
-        run: echo "build-output-dir=${{ github.workspace }}/build_universal" >> "$GITHUB_ENV"
+        run: echo "build-output-dir=${{ github.workspace }}/build_universal" >> $GITHUB_ENV
 
       - name: Download arm64 artifact
         uses: actions/download-artifact@v4
