@@ -18,17 +18,24 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
+    - name: Install x86_64 Homebrew
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo 'eval "$(/usr/local/Homebrew/bin/brew shellenv)"' >> $GITHUB_PROFILE
+        source $GITHUB_PROFILE
+      shell: bash
+
     - name: Install dependencies
       run: |
-        arch -x86_64 brew install llvm@18 libomp
-        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
-        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib -Wl,-rpath,/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
-        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
-        echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
-        echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        arch -x86_64 /usr/local/Homebrew/bin/brew install llvm@18 libomp
+        echo "/usr/local/Homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "LDFLAGS=-L/usr/local/Homebrew/opt/llvm@18/lib -L/usr/local/Homebrew/opt/libomp/lib -Wl,-rpath,/usr/local/Homebrew/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/usr/local/Homebrew/opt/llvm@18/include -I/usr/local/Homebrew/opt/libomp/include" >> $GITHUB_ENV
+        echo "OpenMP_C_FLAGS=-I/usr/local/Homebrew/opt/llvm@18/include -I/usr/local/Homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-I/usr/local/Homebrew/opt/llvm@18/include -I/usr/local/Homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
         echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
         echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
-        echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=/usr/local/Homebrew/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
 
     - name: Set up build directory and environment
       shell: bash
@@ -44,10 +51,11 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: |
+        eval "$(/usr/local/Homebrew/bin/brew shellenv)"
         arch -x86_64 cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
-          -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang \
-          -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++ \
+          -DCMAKE_C_COMPILER=/usr/local/Homebrew/opt/llvm@18/bin/clang \
+          -DCMAKE_CXX_COMPILER=/usr/local/Homebrew/opt/llvm@18/bin/clang++ \
           -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
           -DBUILD_SHARED_LIBS=OFF \
           -DDEFINE_CUDA=OFF \
