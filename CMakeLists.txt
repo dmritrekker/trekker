@@ -83,7 +83,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     message(STATUS ">> Trekker::Building for MacOs")
-    add_compile_definitions(APPLE)
+    add_compile_definitions(APPLE __APPLE__ MACH __MACH__)
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
