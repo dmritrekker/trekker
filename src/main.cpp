@@ -44,7 +44,16 @@ int main(int argc, char *argv[]) {
     try {
 
         std::cout << "try parse \n" << std::flush;
-        app.parse(argc, argv);
+        std::cout << argc << " parameters \n" << std::flush;
+
+        if (argv[0] != nullptr) {
+            app.parse(argc, argv);
+        } else {
+            displayHelp(app.help());
+            NIBR::TERMINATE();
+            return EXIT_SUCCESS;
+        }
+            
         std::cout << "try done \n" << std::flush;
 
     } catch(const CLI::ParseError &e) {
