@@ -13,21 +13,33 @@
 #endif
 
 void displayHelp(const std::string& text) {
+
+    std::cout << "Print test display help\n" << std::flush;
+
     if (isatty(fileno(stdout))) {
+        
+        std::cout << "Print test display isatty\n" << std::flush;
+
         #ifdef BUILD_FOR_WINDOWS
         FILE* f = popen("more", "w");
         #else
+        std::cout << "Print test display popen start\n" << std::flush;
         FILE* f = popen("less", "w");
+        std::cout << "Print test display popen end\n" << std::flush;
         #endif
+
         if (f) {
+            std::cout << "Print test display pclose start\n" << std::flush;
             fwrite(text.c_str(), 1, text.size(), f);
             pclose(f);
+            std::cout << "Print test display pclose end\n" << std::flush;
         } else {
             std::cout << text << std::endl;
         }
     } else {
         std::cout << text << std::endl;
     }
+    std::cout << "Help done\n" << std::flush;
 }
 
 

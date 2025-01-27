@@ -10,6 +10,8 @@ int main(int argc, char *argv[]) {
     
     NIBR::INITIALIZE();
 
+    NIBR::disp(MSG_INFO, "Here!");
+
     std::cout << "Print test: 1\n" << std::flush;
 
     
@@ -41,9 +43,13 @@ int main(int argc, char *argv[]) {
     // If no option is used just display the help
     try {
 
+        std::cout << "try parse \n" << std::flush;
         app.parse(argc, argv);
+        std::cout << "try done \n" << std::flush;
 
     } catch(const CLI::ParseError &e) {
+
+        std::cout << "catch \n" << std::flush;
 
         // Check if a subcommand is run with no arguments/options, then display help
         CLI::App* subcmd = &app;
@@ -60,9 +66,15 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
+        std::cout << "app exit \n" << std::flush;
+
         auto q = app.exit(e);
 
+        std::cout << "TERMINATE \n" << std::flush;
+
         NIBR::TERMINATE();
+
+        std::cout << "TERMINATE done \n" << std::flush;
         return q;
 
     }
