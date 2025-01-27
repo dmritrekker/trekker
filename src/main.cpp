@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         std::cout << "try parse \n" << std::flush;
         std::cout << argc << " parameters \n" << std::flush;
 
-        if (argv[0] != nullptr) {
+        if (argc > 1) {
             app.parse(argc, argv);
         } else {
             displayHelp(app.help());
