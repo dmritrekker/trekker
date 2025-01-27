@@ -5,13 +5,20 @@ using namespace NIBR;
 
 int main(int argc, char *argv[]) {
 
+    std::cout << "Print test: 0\n" << std::flush;
+
+    
     NIBR::INITIALIZE();
 
+    std::cout << "Print test: 1\n" << std::flush;
+
+    
     // Parse input
     CLI::App app("Trekker v1.0.0-rc3");
     app.footer("----------Trekker v1.0.0-rc3---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
+    /*
     app.require_subcommand(1);
     
     info(app.add_subcommand("info", ""));
@@ -61,7 +68,11 @@ int main(int argc, char *argv[]) {
 
     }
 
+    */
+
     NIBR::TERMINATE();
+    std::cout << "Print test: 2\n" << std::flush;
+    
     return EXIT_SUCCESS;
 
 }
