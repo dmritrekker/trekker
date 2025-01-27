@@ -50,7 +50,7 @@ export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
 # echo 'export OpenMP_omp_LIBRARY="/opt/homebrew/opt/libomp/lib/libomp.dylib"' >> ~/.zshrc
 # ================
 
-
+: '
 cmakeExe=cmake
 buildType=Release #Release or Debug
 buildShared=OFF
@@ -121,5 +121,18 @@ if [[ -f ./${buildDir}/${trekkerExe} ]]; then
 else
   echo "Trekker executable not found!"
 fi
+'
 
+# Test universal binary
 
+chmod +x ./macosTest/trekker_macos
+
+./macosTest/trekker_macos
+
+./macosTest/trekker_macos info ./macosTest/100307_aparc+aseg.nii.gz
+
+./macosTest/trekker_macos track -f \
+./macosTest/100307_FOD_Order4.nii.gz \
+--seed ./macosTest/100307_lh_white.vtk \
+--seed_count 100 \
+--output ./macosTest/out.vtk
