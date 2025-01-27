@@ -100,14 +100,26 @@ ${cmakeExe} \
 num_cores=$(sysctl -n hw.ncpu)
 ${cmakeExe} --build . --config ${buildType} --target install --parallel "$num_cores"
 
+echo "Build completed."
 
-if [[ -f ./${trekkerExe} ]]; then
-  chmod +x ./${trekkerExe}
-  ./${trekkerExe}
+cd ..
+
+
+if [[ -f ./${buildDir}/${trekkerExe} ]]; then
+  chmod +x ./${buildDir}/${trekkerExe}
+
+  ./${buildDir}/${trekkerExe}
+
+  ./${buildDir}/${trekkerExe} info ./macosTest/100307_aparc+aseg.nii.gz
+
+  ./${buildDir}/${trekkerExe} track -f \
+  ./macosTest/100307_FOD_Order4.nii.gz \
+  --seed ./macosTest/100307_lh_white.vtk \
+  --seed_count 100 \
+  --output ./${buildDir}/out.vtk
+
 else
   echo "Trekker executable not found!"
 fi
 
-cd ..
 
-echo "Build and execution test completed."
