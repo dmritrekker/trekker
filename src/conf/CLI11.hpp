@@ -7383,17 +7383,28 @@ CLI11_INLINE void App::clear() {
 }
 
 CLI11_INLINE void App::parse(int argc, const char *const *argv) {
+
+    std::cout << "cli11 parse \n" << std::flush;
     // If the name is not set, read from command line
     if(name_.empty() || has_automatic_name_) {
+        std::cout << "if(name_.empty() || has_automatic_name_) \n" << std::flush;
         has_automatic_name_ = true;
+        std::cout << "Let's try to print argv[0] next \n" << std::flush;
+        std::cout << argv[0] << std::flush;
+        std::cout << "\n" << std::flush;
         name_ = argv[0];
     }
 
+    std::cout << "That part done \n" << std::flush;
+
     std::vector<std::string> args;
     args.reserve(static_cast<std::size_t>(argc) - 1U);
+    std::cout << "Now doing here \n" << std::flush;
     for(auto i = static_cast<std::size_t>(argc) - 1U; i > 0U; --i)
         args.emplace_back(argv[i]);
     parse(std::move(args));
+
+    std::cout << "All done \n" << std::flush;
 }
 
 CLI11_INLINE void App::parse(std::string commandline, bool program_name_included) {
