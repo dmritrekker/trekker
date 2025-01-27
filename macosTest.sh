@@ -58,8 +58,8 @@ buildDir=build-static
 trekkerExe=trekker_v1.0.0-rc3
 
 # If wanted use system nibrary
-inc_path=../nibr/include/nibrary_v0.3.0/include
-lib_path=../nibr/lib/nibrary_v0.3.0/lib
+inc_path="../nibr/include/nibrary_v0.3.0/include"
+lib_path="../nibr/lib/nibrary_v0.3.0/lib"
 use_system_nibrary=ON
 
 
@@ -73,19 +73,19 @@ system_arch=$(uname -m)
 echo "Running build script for ${system_arch}"
 
 ${cmakeExe} \
--DCMAKE_OSX_ARCHITECTURES=${system_arch} \
--DCMAKE_C_COMPILER=${c_compiler} \
--DCMAKE_CXX_COMPILER=${cxx_compiler} \
--DCMAKE_BUILD_TYPE=${buildType} \
--DBUILD_SHARED_LIBS=${buildShared} \
+-DCMAKE_OSX_ARCHITECTURES="${system_arch}" \
+-DCMAKE_C_COMPILER="${c_compiler}" \
+-DCMAKE_CXX_COMPILER="${cxx_compiler}" \
+-DCMAKE_BUILD_TYPE="${buildType}" \
+-DBUILD_SHARED_LIBS="${buildShared}" \
 -DOpenMP_C_FLAGS="${OpenMP_C_FLAGS}" \
 -DOpenMP_CXX_FLAGS="${OpenMP_CXX_FLAGS}" \
 -DOpenMP_C_LIB_NAMES="${OpenMP_C_LIB_NAMES}" \
 -DOpenMP_CXX_LIB_NAMES="${OpenMP_CXX_LIB_NAMES}" \
 -DOpenMP_omp_LIBRARY="${OpenMP_omp_LIBRARY}" \
--DCMAKE_INCLUDE_PATH=${inc_path} \
--DCMAKE_LIBRARY_PATH=${lib_path} \
--DUSE_SYSTEM_NIBRARY=${use_system_nibrary} \
+-DCMAKE_INCLUDE_PATH="${inc_path}" \
+-DCMAKE_LIBRARY_PATH="${lib_path}" \
+-DUSE_SYSTEM_NIBRARY="${use_system_nibrary}" \
 ..
 
 
