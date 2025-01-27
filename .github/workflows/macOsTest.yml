@@ -1,0 +1,61 @@
+name: MacOs test
+
+on:
+  push:
+    branches:
+      - macos-exe
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run_test:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Cache Homebrew
+      id: cache-homebrew
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/Homebrew/bin
+          /usr/local/Homebrew/lib
+          /usr/local/Homebrew/share
+          /usr/local/Homebrew/opt
+          /usr/local/Homebrew/Caskroom
+          /usr/local/Homebrew/Cellar
+          /opt/homebrew/bin
+          /opt/homebrew/lib
+          /opt/homebrew/share
+          /opt/homebrew/opt
+          /opt/homebrew/Caskroom
+          /opt/homebrew/Cellar
+        key: ${{ runner.os }}-homebrew-${{ hashFiles('**/macosTest.sh') }}
+        restore-keys: |
+          ${{ runner.os }}-homebrew-
+
+    - name: Install dependencies
+      run: |
+        brew update
+        if ! brew list | grep -q "llvm@18"; then
+          echo "Installing llvm@18"
+          brew install llvm@18
+        fi
+        if ! brew list | grep -q "libomp"; then
+          echo "Installing libomp"
+          brew install libomp
+        fi
+        if ! command -v cmake &> /dev/null; then
+          echo "Installing cmake"
+          brew install cmake
+        fi
+
+    - name: Run test script
+      shell: bash
+      run: |
+        chmod +x macosTest.sh
+        sh macosTest.sh
