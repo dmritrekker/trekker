@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
     app.require_subcommand(1);
     
-    // info(app.add_subcommand("info", ""));
+    info(app.add_subcommand("info", ""));
     // track(app.add_subcommand("track", ""));
     // filter(app.add_subcommand("filter", ""));
     // track2img(app.add_subcommand("track2img", ""));
