@@ -58,8 +58,8 @@ buildDir=build-static
 trekkerExe=trekker_v1.0.0-rc3
 
 # If wanted use system nibrary
-inc_path="../nibr/include/nibrary_v0.3.0"
-lib_path="../nibr/lib/nibrary_v0.3.0"
+inc_path="./nibr/include/nibrary_v0.3.0/include"
+lib_path="./nibr/lib/nibrary_v0.3.0/lib"
 use_system_nibrary=ON
 
 
