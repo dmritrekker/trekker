@@ -11,7 +11,7 @@
 llvm_prefix=$(brew --prefix llvm@18)
 libomp_prefix=$(brew --prefix libomp)
 
-: '
+
 # --- Check for required tools and install if necessary ---
 if ! command -v cmake &> /dev/null; then
   echo "Error: CMake not found. Please install it."
@@ -25,7 +25,7 @@ fi
 if ! brew list | grep -q "libomp"; then
   brew install libomp
 fi
-'
+
 
 # Set environment variables for this script
 export PATH="${llvm_prefix}/bin:$PATH"
@@ -78,11 +78,11 @@ ${cmakeExe} \
 -DCMAKE_CXX_COMPILER=${cxx_compiler} \
 -DCMAKE_BUILD_TYPE=${buildType} \
 -DBUILD_SHARED_LIBS=${buildShared} \
--DOpenMP_C_FLAGS=${OpenMP_C_FLAGS} \
--DOpenMP_CXX_FLAGS=${OpenMP_CXX_FLAGS} \
--DOpenMP_C_LIB_NAMES=${OpenMP_C_LIB_NAMES} \
--DOpenMP_CXX_LIB_NAMES=${OpenMP_CXX_LIB_NAMES} \
--DOpenMP_omp_LIBRARY=${OpenMP_omp_LIBRARY} \
+-DOpenMP_C_FLAGS="${OpenMP_C_FLAGS}" \
+-DOpenMP_CXX_FLAGS="${OpenMP_CXX_FLAGS}" \
+-DOpenMP_C_LIB_NAMES="${OpenMP_C_LIB_NAMES}" \
+-DOpenMP_CXX_LIB_NAMES="${OpenMP_CXX_LIB_NAMES}" \
+-DOpenMP_omp_LIBRARY="${OpenMP_omp_LIBRARY}" \
 -DCMAKE_INCLUDE_PATH=${inc_path} \
 -DCMAKE_LIBRARY_PATH=${lib_path} \
 -DUSE_SYSTEM_NIBRARY=${use_system_nibrary} \
