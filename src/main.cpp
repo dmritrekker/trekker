@@ -35,7 +35,13 @@ int main(int argc, char *argv[]) {
     // If no option is used just display the help
     try {
 
-        app.parse(argc, argv);
+        if (argc > 1) {
+            app.parse(argc, argv);
+        } else {
+            displayHelp(app.help());
+            NIBR::TERMINATE();
+            return EXIT_SUCCESS;
+        }
 
     } catch(const CLI::ParseError &e) {
 
