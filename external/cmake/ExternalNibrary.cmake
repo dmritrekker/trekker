@@ -94,4 +94,8 @@ if (NOT USE_SYSTEM_NIBRARY)
 
     endif()
 
+else()
+
+    message(STATUS "Using system nibrary")
+
 endif()

@@ -58,10 +58,18 @@ buildDir=build-static
 trekkerExe=trekker_v1.0.0-rc3
 
 # If wanted use system nibrary
-inc_path="/Users/runner/work/trekker/trekker/nibr/include/nibrary_v0.3.0/include"
-lib_path="/Users/runner/work/trekker/trekker/nibr/lib/nibrary_v0.3.0/lib"
+inc_path="/Users/runner/work/trekker/trekker/nibr/include/nibrary_v0.3.0"
+lib_path="/Users/runner/work/trekker/trekker/nibr/lib/nibrary_v0.3.0"
 use_system_nibrary=ON
 
+# --- nibrary settings ---
+use_system_nibrary=ON
+if [[ "$use_system_nibrary" == "ON" ]]; then
+  echo "Using system nibrary include: ${inc_path}"
+  echo "Using system nibrary libraries: ${lib_path}"
+else
+  echo "Not using system nibrary"
+fi
 
 mkdir -p ${buildDir}
 cd ${buildDir}
