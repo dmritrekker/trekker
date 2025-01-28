@@ -1,29 +1,14 @@
 #!/bin/bash
 
-# MacOS example
+# MacOS build example
+
 # Requires cmake
 # Requires llvm (tested with llvm@18, llvm@19 is not supported)
 # Requires libomp
 
-# ================
-# After successful installation, you may need to set the environment 
-# variables permanently in your system when running Trekker. 
-# For example using the following:
-#
-# echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> ~/.zshrc
-# echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"' >> ~/.zshrc
-# echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"' >> ~/.zshrc
-# echo 'export OpenMP_C_FLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp"' >> ~/.zshrc
-# echo 'export OpenMP_CXX_FLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp"' >> ~/.zshrc
-# echo 'export OpenMP_C_LIB_NAMES="omp"' >> ~/.zshrc
-# echo 'export OpenMP_CXX_LIB_NAMES="omp"' >> ~/.zshrc
-# echo 'export OpenMP_omp_LIBRARY="/opt/homebrew/opt/libomp/lib/libomp.dylib"' >> ~/.zshrc
-# ================
-
 # --- Find Homebrew-installed LLVM and libomp ---
 llvm_prefix=$(brew --prefix llvm@18)
 libomp_prefix=$(brew --prefix libomp)
-
 
 # --- Check for required tools and install if necessary ---
 if ! command -v cmake &> /dev/null; then
@@ -51,7 +36,19 @@ export OpenMP_CXX_LIB_NAMES="omp"
 export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
 # ================
 
-cmakeExe=cmake
+# ================
+# Later, if the script worked successfully, set environment variables permanently in the system using the following
+# echo 'export PATH="/opt/homebrew/opt/llvm@18/bin:$PATH"' >> ~/.zshrc
+# echo 'export LDFLAGS="-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib"' >> ~/.zshrc
+# echo 'export CPPFLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include"' >> ~/.zshrc
+# echo 'export OpenMP_C_FLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp"' >> ~/.zshrc
+# echo 'export OpenMP_CXX_FLAGS="-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp"' >> ~/.zshrc
+# echo 'export OpenMP_C_LIB_NAMES="omp"' >> ~/.zshrc
+# echo 'export OpenMP_CXX_LIB_NAMES="omp"' >> ~/.zshrc
+# echo 'export OpenMP_omp_LIBRARY="/opt/homebrew/opt/libomp/lib/libomp.dylib"' >> ~/.zshrc
+# ================
+
+
 buildType=Release
 buildShared=OFF
 buildDir=build-static
@@ -59,6 +56,7 @@ buildDir=build-static
 mkdir -p ${buildDir}
 cd ${buildDir}
 
+cmakeExe=cmake
 c_compiler=/opt/homebrew/opt/llvm@18/bin/clang
 cxx_compiler=/opt/homebrew/opt/llvm@18/bin/clang++
 
@@ -78,11 +76,6 @@ ${cmakeExe} \
 -DOpenMP_omp_LIBRARY="${OpenMP_omp_LIBRARY}" \
 ..
 
-num_cores=$(sysctl -n hw.ncpu)
-${cmakeExe} --build . --config ${buildType} --target install --parallel "$num_cores"
-
-echo "Build completed."
+${cmakeExe} --build . --config ${buildType} --target install --parallel $(sysctl -n hw.ncpu)
 
 cd ..
-
-
