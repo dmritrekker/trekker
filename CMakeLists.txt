@@ -8,8 +8,9 @@ message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
 
-option(BUILD_SHARED_LIBS    "Build shared libraries"            ON)
-option(USE_SYSTEM_NIBRARY   "Use system nibrary if exists"      OFF)
+option(BUILD_SHARED_LIBS    "Build shared libraries"                ON)
+option(USE_SYSTEM_NIBRARY   "Use system nibrary if exists"          OFF)
+option(BUILD_NATIVE         "Build with -march=native optimization" ON)
 
 # Using C++17 standard
 set(CMAKE_CXX_STANDARD 17)
@@ -27,7 +28,9 @@ include_directories(${NIBRARY_INCLUDE_DIR})
 link_directories(${NIBRARY_LIBRARY_DIR})
 
 # List source files
-file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.c*")
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} 
+    "src/*.c*")
+
 list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable
@@ -48,15 +51,22 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Cla
 endif()
 
 if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9"))
-    target_link_libraries(${libNibrary} PUBLIC stdc++fs)
+    target_link_libraries(${CMDNAME} PUBLIC stdc++fs)
 endif()
 
 if (UNIX)
+
+    # Optimize for native architecture
+    if (BUILD_NATIVE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    endif()
+
     # Debug messages
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
     endif()
+    
 endif()
 
 if (UNIX)
@@ -77,17 +87,22 @@ endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
     message(STATUS ">> Trekker::Building for Linux")
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     message(STATUS ">> Trekker::Building for MacOs")
-    add_compile_definitions(APPLE)
+    add_compile_definitions(APPLE __APPLE__ MACH __MACH__)
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     message(STATUS ">> Trekker::Building for Windows")
+
+    if (BUILD_SHARED_LIBS)
+        set_target_properties(${CMDNAME} PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+    else()
+        set_target_properties(${CMDNAME} PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    endif()
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17 /permissive- /bigobj")
 
@@ -99,10 +114,10 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DISABLED_WARNINGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${DISABLED_WARNINGS}")
 
-    set_target_properties(${libNibrary} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    set_target_properties(${CMDNAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 else()
-    message(FATAL_ERROR ">> Nibrary::This operating system is not supported")
+    message(FATAL_ERROR ">> Trekker::This operating system is not supported")
 endif()
 
 
