@@ -4,7 +4,11 @@ SET(NIBRARY_MIN_VERSION "0.3.0" CACHE STRING "Minimum nibrary version")
 
 include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
 
-set(NIBRARY_LIBRARIES Nibrary geogram z CACHE INTERNAL "Nibrary libraries to link against")
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(NIBRARY_LIBRARIES Nibrary geogram zlibstatic CACHE INTERNAL "Nibrary libraries to link against")
+else()
+    set(NIBRARY_LIBRARIES Nibrary geogram z CACHE INTERNAL "Nibrary libraries to link against")
+endif()
 
 if (NOT USE_SYSTEM_NIBRARY)
 
