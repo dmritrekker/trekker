@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cmakeExe=cmake
+# Linux build example
+
 buildType=Release
 buildShared=OFF
 buildDir=build-static
@@ -8,6 +9,7 @@ buildDir=build-static
 mkdir -p ${buildDir}
 cd ${buildDir}
 
+cmakeExe=cmake
 c_compiler=/bin/gcc
 cxx_compiler=/bin/g++
 
@@ -18,6 +20,6 @@ ${cmakeExe} \
 -DBUILD_SHARED_LIBS=${buildShared} \
 ..
 
-${cmakeExe} --build . --config ${buildType} --target install --parallel 16
+${cmakeExe} --build . --config ${buildType} --target install --parallel $(nproc)
 
 cd ..

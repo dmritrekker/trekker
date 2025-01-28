@@ -1,4 +1,4 @@
-#include "aux.h"
+#include "auxiliary.h"
 
 // Function to center a string within a given width, filling with '=' characters
 std::string center_text(std::string input, std::size_t width) {
