@@ -62,11 +62,11 @@ void resample(CLI::App* app)
 
     app->description("resamples streamlines in a tractogram");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
         ->required();    
     
     sizeOpt   = app->add_option("--stepSize, -s",  stepSize,  "Resampling is done based on the given step size. The last segment of a streamline might have a shorter step size.");

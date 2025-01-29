@@ -109,7 +109,7 @@ void transform(CLI::App* app)
 
     app->description("transform tractogram");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -117,7 +117,7 @@ void transform(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
         ->required();
 
     app->add_flag("--invert, -i",            invert,             "Apply inverse of the transform");

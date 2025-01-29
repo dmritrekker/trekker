@@ -71,11 +71,11 @@ void convert(CLI::App* app)
 
     app->description("converts tractogram file formats");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
         ->required()
         ->check(CLI::ExistingFile);
      
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
         ->required( );
 
     app->add_option("--reference,-r", reference, "Image to use as reference space (needed for converting .vtk/.tck to .trk, and vice versa)")

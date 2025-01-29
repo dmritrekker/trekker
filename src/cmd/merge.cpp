@@ -55,11 +55,11 @@ void merge(CLI::App* app)
 
     app->description("merges two tractograms, optionally ignoring duplicates");
 
-    app->add_option("<tractogram 1>", inp1_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<tractogram_1>", inp1_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<tractogram 2>", inp2_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<tractogram_2>", inp2_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
