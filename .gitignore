@@ -4,9 +4,6 @@
 releases/
 test/
 doc/build/
-NIBRmacos/
-NIBRwin/
-NIBR*
 build/
 build*/
 build_*/
