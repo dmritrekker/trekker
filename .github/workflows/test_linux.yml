@@ -16,6 +16,5 @@ jobs:
 
     - name: Run test script
       shell: bash
-      run: |
-        cd testScripts
-        sh test_linux.sh
+      working-directory: ./testScripts
+      run: sh test_linux.sh

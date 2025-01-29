@@ -1,14 +1,21 @@
 #!/bin/bash
 
-# Requires libomp
+# Requires LLVM and libomp
+llvm_prefix=$(brew --prefix llvm@18)
 libomp_prefix=$(brew --prefix libomp)
+
+if ! brew list | grep -q "llvm@18"; then
+  brew install llvm@18
+fi
 
 if ! brew list | grep -q "libomp"; then
   brew install libomp
 fi
 
+# Set environment variables for this script
+export PATH="${llvm_prefix}/bin:$PATH"
+export LDFLAGS="-L${llvm_prefix}/lib -L${libomp_prefix}/lib"
 export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
-echo "limomp path: $OpenMP_omp_LIBRARY"
 
 chmod +x ./trekker_mac
 
