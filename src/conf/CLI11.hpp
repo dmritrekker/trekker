@@ -5971,13 +5971,17 @@ CLI11_INLINE Option *Option::multi_option_policy(MultiOptionPolicy value) {
 }
 
 CLI11_NODISCARD CLI11_INLINE std::string Option::get_name(bool positional, bool all_options) const {
+
+    std::cout << "g1" << std::endl << std::flush;
     if(get_group().empty())
         return {};  // Hidden
 
+    std::cout << "g2" << std::endl << std::flush;
     if(all_options) {
 
         std::vector<std::string> name_list;
 
+        std::cout << "g3" << std::endl << std::flush;
         /// The all list will never include a positional unless asked or that's the only name.
         if((positional && (!pname_.empty())) || (snames_.empty() && lnames_.empty())) {
             name_list.push_back(pname_);
@@ -6004,22 +6008,30 @@ CLI11_NODISCARD CLI11_INLINE std::string Option::get_name(bool positional, bool 
                 name_list.push_back("--" + lname);
         }
 
+        std::cout << "g3a" << std::endl << std::flush;
         return detail::join(name_list);
     }
 
     // This returns the positional name no matter what
-    if(positional)
+    if(positional) {
+        std::cout << "g3b" << std::endl << std::flush;
         return pname_;
+    }
 
     // Prefer long name
-    if(!lnames_.empty())
+    if(!lnames_.empty()) {
+        std::cout << "g4" << std::endl << std::flush;
         return std::string(2, '-') + lnames_[0];
+    }
 
     // Or short name if no long name
-    if(!snames_.empty())
+    if(!snames_.empty()) {
+        std::cout << "g5" << std::endl << std::flush;
         return std::string(1, '-') + snames_[0];
+    }
 
     // If positional is the only name, it's okay to use that
+    std::cout << "g6" << std::endl << std::flush;
     return pname_;
 }
 
@@ -9073,21 +9085,34 @@ CLI11_INLINE void App::_process_requirements() {
     std::size_t used_options = 0;
     for(const Option_p &opt : options_) {
 
+        std::cout << "if(opt->count() != 0)" << std::endl << std::flush;
         if(opt->count() != 0) {
             ++used_options;
         }
+
         // Required but empty
+        std::cout << "if(opt->get_required() && opt->count() == 0) {" << std::endl << std::flush;
         if(opt->get_required() && opt->count() == 0) {
-            throw RequiredError(opt->get_name());
+            auto a1 = RequiredError(opt->get_name());
+            std::cout << "a1" << std::endl << std::flush;
+            throw a1;
         }
         // Requires
+        std::cout << "for(const Option *opt_req : opt->needs_)" << std::endl << std::flush;
         for(const Option *opt_req : opt->needs_)
-            if(opt->count() > 0 && opt_req->count() == 0)
-                throw RequiresError(opt->get_name(), opt_req->get_name());
+            if(opt->count() > 0 && opt_req->count() == 0) {
+                auto a2 = RequiresError(opt->get_name(), opt_req->get_name());
+                std::cout << "a2" << std::endl << std::flush;
+                throw a2;
+            }
         // Excludes
+        std::cout << "for(const Option *opt_ex : opt->excludes_)" << std::endl << std::flush;
         for(const Option *opt_ex : opt->excludes_)
-            if(opt->count() > 0 && opt_ex->count() != 0)
-                throw ExcludesError(opt->get_name(), opt_ex->get_name());
+            if(opt->count() > 0 && opt_ex->count() != 0) {
+                auto a3 = ExcludesError(opt->get_name(), opt_ex->get_name());
+                std::cout << "a3" << std::endl << std::flush;
+                throw a3;
+            }
     }
     std::cout << "check for the required number of;" << std::endl << std::flush;
     // check for the required number of subcommands
