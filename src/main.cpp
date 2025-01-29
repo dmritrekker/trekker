@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
             argCount = subcmd->count_all();
         }
 
-        if (argCount==1) { // Check if subcmd is run with no arguments/options
+        if (argCount<2) { // Check if subcmd is run with no arguments/options
             displayHelp(app.help());
             NIBR::TERMINATE();
             return EXIT_SUCCESS;
