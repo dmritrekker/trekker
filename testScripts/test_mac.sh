@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Requires libomp
+libomp_prefix=$(brew --prefix libomp)
+
+if ! brew list | grep -q "libomp"; then
+  brew install libomp
+fi
+
+export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
+echo "limomp path: $OpenMP_omp_LIBRARY"
+
 chmod +x ./trekker_mac
 
 # Display help
