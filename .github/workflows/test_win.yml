@@ -24,6 +24,24 @@ jobs:
             echo "dos2unix not found. You might need to install it."
         fi
 
+    - name: Check File Existence and Permissions
+      shell: cmd
+      working-directory: ./testScripts
+      run: |
+        dir
+        echo ---
+        icacls trekker_win.exe
+
+    - name: Run test script (simplified for debugging)
+      shell: cmd
+      working-directory: ./testScripts
+      run: |
+        echo Current Directory: %CD%
+        echo Batch File Directory: %~dp0
+
+        @REM Try running the executable directly (no call)
+        "%~dp0trekker_win.exe"
+
     - name: Run test script
       shell: cmd
       working-directory: ./testScripts
