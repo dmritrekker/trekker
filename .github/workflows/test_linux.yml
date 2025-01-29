@@ -1,0 +1,21 @@
+name: Linux test
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  run_test:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Run test script
+      shell: bash
+      run: |
+        cd testScripts
+        sh test_linux.sh

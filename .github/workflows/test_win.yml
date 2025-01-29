@@ -1,16 +1,13 @@
-name: MacOs test
+name: Win test
 
 on:
   push:
     branches:
-      - macos-exe
-  pull_request:
-    branches:
-      - main
+      - test
 
 jobs:
   run_test:
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -18,7 +15,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Run test script
-      shell: bash
+      shell: cmd
       run: |
-        chmod +x macosTest.sh
-        sh macosTest.sh
+        cd testScripts
+        call test_win.bat
