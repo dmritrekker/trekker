@@ -6,7 +6,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (BUILD_SHARED_LIBS)
-        set(NIBRARY_LIBRARIES Nibrary geogram z CACHE INTERNAL "Nibrary libraries to link against")
+        set(NIBRARY_LIBRARIES Nibrary geogram zlib CACHE INTERNAL "Nibrary libraries to link against")
     else()
         set(NIBRARY_LIBRARIES Nibrary geogram zlibstatic CACHE INTERNAL "Nibrary libraries to link against")
     endif()
