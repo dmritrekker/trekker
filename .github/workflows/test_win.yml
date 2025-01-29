@@ -14,6 +14,16 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
+    - name: Convert Line Endings to Windows (CRLF)
+      shell: bash
+      working-directory: ./testScripts
+      run: |
+        if command -v dos2unix &> /dev/null; then
+            dos2unix test_win.bat
+        else
+            echo "dos2unix not found. You might need to install it."
+        fi
+
     - name: Run test script
       shell: cmd
       working-directory: ./testScripts
