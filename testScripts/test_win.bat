@@ -11,4 +11,4 @@ trekker_win track -f ^
 --output out_linux.vtk
 
 @REM Display tractogram info
-trekker_win info out_linux.vtk
+trekker_win info out_win.vtk

@@ -13,4 +13,4 @@ chmod +x ./trekker_mac
 --output out_linux.vtk
 
 # Display tractogram info
-./trekker_mac info out_linux.vtk
+./trekker_mac info out_mac.vtk
