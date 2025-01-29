@@ -117,7 +117,7 @@ void dMRI_recon_transhi2015(CLI::App* app)
 
     app->description("dMRI signal reconstruction based on Tran & Shi IEEE TMI 2015 model");
     
-    app->add_option("<input dMRI image>", inp_dMRI_img, "Input diffusion MRI image (.nii, .nii.gz)")
+    app->add_option("<input_dMRI_image>", inp_dMRI_img, "Input diffusion MRI image (.nii, .nii.gz)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -146,10 +146,10 @@ void dMRI_recon_transhi2015(CLI::App* app)
     app->add_option("--maxCrossings,-c",            maxCrossings,               "Maximum number of fiber maxCrossings. Default: 4");
     app->add_option("--noiseFloor",                 noiseFloor,                 "Noise floor. Default: 0");
 
-    app->add_option("<output FOD>", out_FOD_img, "Output FOD image (.nii, .nii.gz)")
+    app->add_option("<output_FOD>", out_FOD_img, "Output FOD image (.nii, .nii.gz)")
         ->required();
 
-    app->add_option("<output tissue map>", out_TM_img, "Output tissue map image (.nii, .nii.gz)")
+    app->add_option("<output_tissue_map>", out_TM_img, "Output tissue map image (.nii, .nii.gz)")
         ->required();
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");

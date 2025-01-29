@@ -60,12 +60,12 @@ void fieldRemove(CLI::App* app)
 {
     app->description("removes a field from a tractogram (.vtk only)");
     
-    app->add_option("<input tractogram>", inp_tractogram, "Input tractogram")
+    app->add_option("<input_tractogram>", inp_tractogram, "Input tractogram")
         ->required()
         ->check(CLI::ExistingFile);
         
     
-    app->add_option("<field name>", field_name, "Field name to remove")
+    app->add_option("<field_name>", field_name, "Field name to remove")
         ->required();
 
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
