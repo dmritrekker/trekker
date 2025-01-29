@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-    } catch(const CLI::ParseError &e) {
+    } catch() {
 
         // Check if a subcommand is run with no arguments/options, then display help
         CLI::App* subcmd = &app;
