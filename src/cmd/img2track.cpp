@@ -245,15 +245,15 @@ void img2track(CLI::App* app)
 
     app->description("maps image values on a tractogram");
     
-    app->add_option("<input image>", inp_image, "Input image (.nii, .nii.gz)")
+    app->add_option("<input_image>", inp_image, "Input image (.nii, .nii.gz)")
         ->required()
         ->check(CLI::ExistingFile);
         
-    app->add_option("<input tractogram>", inp_tractogram, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_tractogram, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<output file name>", out_fname, "Output file name. Output is a float32 type binary file.")
+    app->add_option("<output_file_name>", out_fname, "Output file name. Output is a float32 type binary file.")
         ->required();
 
     app->add_flag("--SH", isSH, "Treat the image as a 4D spherical harmonics image.");

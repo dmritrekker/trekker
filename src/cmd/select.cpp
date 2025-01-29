@@ -130,11 +130,11 @@ void select(CLI::App* app)
 
     app->description("selects streamlines from a tractogram");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck.trk)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck.trk)")
         ->required();    
     
     selectOpt = app->add_option("--selection, -s", select_fname, "File with binary values that mark selected streamlines with 1 and others with 0");    

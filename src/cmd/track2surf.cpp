@@ -232,18 +232,18 @@ void track2surf(CLI::App* app)
 
     app->description("maps tractogram features on a surface");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<input surface mesh>", inp_surface, "Input surface mesh (.vtk,.gii)")
+    app->add_option("<input_surface_mesh>", inp_surface, "Input surface mesh (.vtk,.gii)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output surface mesh>", out_surface, "Output surface mesh (.vtk)")
+    app->add_option("<output_surface_mesh>", out_surface, "Output surface mesh (.vtk)")
         ->required();
         
-    app->add_option("<field name>", field_name, "Field name to use when writing the feature on the surface mesh")
+    app->add_option("<field_name>", field_name, "Field name to use when writing the feature on the surface mesh")
         ->required();
         
     app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineDensity\", \"streamlineCount\", \"contactAngle\" and \"contactDirection\".")

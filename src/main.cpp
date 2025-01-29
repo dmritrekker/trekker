@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-    } catch(...) {
+    } catch(const CLI::ParseError &e) {
 
         // Check if a subcommand is run with no arguments/options, then display help
         CLI::App* subcmd = &app;
@@ -60,8 +60,10 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
+        auto q = app.exit(e);
+
         NIBR::TERMINATE();
-        return EXIT_SUCCESS;
+        return q;
 
     }
 

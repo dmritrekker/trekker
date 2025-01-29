@@ -353,7 +353,7 @@ void track2img(CLI::App* app)
 
     app->description("maps tractogram features on an image");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -384,7 +384,7 @@ void track2img(CLI::App* app)
         
     mask_label_option = app->add_option("--maskLabel", mask_label, "Label to use in the mask image");
         
-    app->add_option("<output image>", out_fname, "Output image name (.nii, .nii.gz)")
+    app->add_option("<output_image>", out_fname, "Output image name (.nii, .nii.gz)")
         ->required();
         
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");

@@ -64,11 +64,11 @@ void diff(CLI::App* app)
 
     app->description("finds different streamlines between two tractograms");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<reference tractogram>", ref_fname, "Reference tractogram (.vtk, .tck)")
+    app->add_option("<reference_tractogram>", ref_fname, "Reference tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
