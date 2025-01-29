@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-    } catch() {
+    } catch(...) {
 
         // Check if a subcommand is run with no arguments/options, then display help
         CLI::App* subcmd = &app;
@@ -60,10 +60,8 @@ int main(int argc, char *argv[]) {
             return EXIT_SUCCESS;
         }
 
-        auto q = app.exit(e);
-
         NIBR::TERMINATE();
-        return q;
+        return EXIT_SUCCESS;
 
     }
 
