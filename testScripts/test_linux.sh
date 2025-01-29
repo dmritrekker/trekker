@@ -10,7 +10,19 @@ chmod +x ./trekker_linux
 ../testData/100307_FOD_Order4.nii.gz \
 --seed ../testData/100307_lh_white.vtk \
 --seed_count 100 \
---output out_linux.vtk
+--output out.vtk
 
 # Display tractogram info
-./trekker_linux info out_linux.vtk
+if [ -f "out.vtk" ]; then
+    file_size=$(ls -l "out.vtk" | awk '{print $5}')
+    echo "out.vtk size: $file_size bytes"
+    ./trekker_linux info out.vtk
+else
+    echo "out.vtk does not exist."
+fi
+
+# Display info help
+./trekker_linux info
+
+# Display track help
+./trekker_linux track
