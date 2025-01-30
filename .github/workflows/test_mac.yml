@@ -3,7 +3,7 @@ name: Mac test
 on:
   push:
     branches:
-      - test_skip
+      - test
 
 jobs:
   run_test:
