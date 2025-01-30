@@ -18,7 +18,8 @@ void run_info()
     parseCommon(numberOfThreads,verbose);
 
     std::string ext = getFileExtension(inp_fname);
-    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    disp(MSG_DETAIL, "File extension is: %s", ext.c_str());
 
     // Image
     if ((ext == "nii")    || 
@@ -27,11 +28,13 @@ void run_info()
         (ext == "mgz")    ||
         (ext == "dcm") ) {
         
+        disp(MSG_DETAIL, "Image");
         NIBR::Image<float> img(inp_fname);
         img.read();
         img.printInfo();
         return;
     }
+    disp(MSG_DETAIL, "Not an image");
 
     // Tractogram
     if ((ext == "vtk") ||
@@ -39,16 +42,30 @@ void run_info()
         (ext == "trk")) {
 
         NIBR::TractogramReader tractogram;
+        bool isTractogram = false;
+        
         if (tractogram.initReader(inp_fname)) {
-            if (((tractogram.numberOfPoints == 0) && (tractogram.numberOfStreamlines == 0)) ||
-                ((tractogram.numberOfPoints  > 0) && (tractogram.numberOfStreamlines  > 0))) {
-                    tractogram.printInfo();
-                    return;       
+            
+            if ((ext=="tck") || (ext == "trk")) {
+                 isTractogram = true;
+            } else {
+                if (((tractogram.numberOfPoints == 0) && (tractogram.numberOfStreamlines == 0)) ||
+                    ((tractogram.numberOfPoints  > 0) && (tractogram.numberOfStreamlines  > 0))) {
+                        isTractogram = true;
+                }
             }
+
+            
+        }
+
+        if (isTractogram) {
+            disp(MSG_DETAIL, "Tractogram");
+            tractogram.printInfo();
+            return;
         }
 
     }
-
+    disp(MSG_DETAIL, "Not a tractogram");
 
     // Surface
     if ((ext == "vtk")      ||
@@ -60,8 +77,9 @@ void run_info()
         (ext == "sphere")   || 
         (ext == "smoothwm")) {
         
+        disp(MSG_DETAIL, "Surface");
         NIBR::Surface surf(inp_fname);
-        surf.readMesh();     
+        surf.readMesh();
         surf.printInfo();
         return;
     }
