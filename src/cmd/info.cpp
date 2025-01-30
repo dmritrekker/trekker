@@ -39,15 +39,12 @@ void run_info()
         (ext == "trk")) {
 
         NIBR::TractogramReader tractogram;
-        if (!tractogram.initReader(inp_fname)) {
-            disp(MSG_ERROR,"Can't read %s",inp_fname.c_str());
-            return;
-        }
-
-        if (((tractogram.numberOfPoints == 0) && (tractogram.numberOfStreamlines == 0)) ||
-            ((tractogram.numberOfPoints  > 0) && (tractogram.numberOfStreamlines  > 0))) {
-            tractogram.printInfo();
-            return;
+        if (tractogram.initReader(inp_fname)) {
+            if (((tractogram.numberOfPoints == 0) && (tractogram.numberOfStreamlines == 0)) ||
+                ((tractogram.numberOfPoints  > 0) && (tractogram.numberOfStreamlines  > 0))) {
+                    tractogram.printInfo();
+                    return;       
+            }
         }
 
     }
