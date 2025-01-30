@@ -24,6 +24,17 @@ echo "Testing help"
 ./trekker_mac
 echo "Done"
 
+
+# Display image info
+echo "Display image info"
+./trekker_mac info ../testData/100307_FOD_Order4.nii.gz
+echo "Done"
+
+# Display surface info
+echo "Display surface info"
+./trekker_mac info ../testData/100307_lh_white.vtk
+echo "Done"
+
 # Run a simple fiber tracking script
 echo "Run a simple fiber tracking script"
 ./trekker_mac track -f \
