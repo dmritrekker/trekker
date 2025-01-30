@@ -38,8 +38,14 @@ else
     echo "out.vtk does not exist."
 fi
 
+echo "Testing info help"
 # Display info help
 ./trekker_mac info
+echo "Done"
 
+
+echo "Testing track help"
 # Display track help
 ./trekker_mac track
+echo "Done"
+
