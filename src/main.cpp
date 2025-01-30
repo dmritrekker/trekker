@@ -34,15 +34,7 @@ int main(int argc, char *argv[]) {
 
     // If no option is used just display the help
     try {
-
-        if (argc > 1) {
-            app.parse(argc, argv);
-        } else {
-            displayHelp(app.help());
-            NIBR::TERMINATE();
-            return EXIT_SUCCESS;
-        }
-
+        app.parse(argc, argv);
     } catch(const CLI::ParseError &e) {
 
         // Check if a subcommand is run with no arguments/options, then display help
