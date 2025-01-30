@@ -4,20 +4,30 @@
 set "batchDir=%~dp0"
 
 @REM Display help
+echo "Testing help"
 call "%batchDir%trekker_win.exe"
+echo "Done"
 
+@REM Display image info
+echo "Display image info"
+call "%batchDir%trekker_win.exe" info ..\testData\100307_FOD_Order4.nii.gz -v debug
+echo "Done"
 
-call "%batchDir%trekker_win.exe" info ..\testData\100307_FOD_Order4.nii.gz
+@REM Display surface info
+echo "Display surface info"
+call "%batchDir%trekker_win.exe" info ..\testData\100307_lh_white.vtk -v debug
+echo "Done"
 
-call "%batchDir%trekker_win.exe" info ..\testData\100307_lh_white.vtk
 
 @REM Run a simple fiber tracking script
+echo "Run a simple fiber tracking script"
 call "%batchDir%trekker_win.exe" track -f ^
 ..\testData\100307_FOD_Order4.nii.gz ^
 --seed ..\testData\100307_lh_white.vtk ^
 --seed_count 100 ^
 --output out.vtk ^
 -v detail
+echo "Done"
 
 @REM Display tractogram info
 if exist "out.vtk" (
@@ -29,8 +39,12 @@ if exist "out.vtk" (
 )
 
 @REM Display info help
+echo "Testing info help"
 call "%batchDir%trekker_win.exe" info
+echo "Done"
 
 @REM Display track help
+echo "Testing track help"
 call "%batchDir%trekker_win.exe" track
+echo "Done"
 
