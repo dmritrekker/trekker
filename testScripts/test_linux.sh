@@ -9,12 +9,12 @@ echo "Done"
 
 # Display image info
 echo "Display image info"
-./trekker_linux info ../testData/100307_FOD_Order4.nii.gz
+./trekker_linux info ../testData/100307_FOD_Order4.nii.gz -v debug
 echo "Done"
 
 # Display surface info
 echo "Display surface info"
-./trekker_linux info ../testData/100307_lh_white.vtk
+./trekker_linux info ../testData/100307_lh_white.vtk -v debug
 echo "Done"
 
 # Run a simple fiber tracking script

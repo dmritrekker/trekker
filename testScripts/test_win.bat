@@ -10,12 +10,12 @@ echo "Done"
 
 @REM Display image info
 echo "Display image info"
-call "%batchDir%trekker_win.exe" info ..\testData\100307_FOD_Order4.nii.gz
+call "%batchDir%trekker_win.exe" info ..\testData\100307_FOD_Order4.nii.gz -v debug
 echo "Done"
 
 @REM Display surface info
 echo "Display surface info"
-call "%batchDir%trekker_win.exe" info ..\testData\100307_lh_white.vtk
+call "%batchDir%trekker_win.exe" info ..\testData\100307_lh_white.vtk -v debug
 echo "Done"
 
 
