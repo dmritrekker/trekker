@@ -1441,12 +1441,9 @@ class RequiredError : public ParseError {
     CLI11_ERROR_DEF(ParseError, RequiredError)
     explicit RequiredError(std::string name) : RequiredError(name + " is required", ExitCodes::RequiredError) {}
     static RequiredError Subcommand(std::size_t min_subcom) {
-        std::cout << "if(min_subcom == 1)" << std::endl << std::flush;
         if(min_subcom == 1) {
-            std::cout << "RequiredError(A subcommand)" << std::endl << std::flush;
             return RequiredError("A subcommand");
         }
-        std::cout << "return {Requires at least" << std::endl << std::flush;
         return {"Requires at least " + std::to_string(min_subcom) + " subcommands", ExitCodes::RequiredError};
     }
     static RequiredError
@@ -5971,17 +5968,13 @@ CLI11_INLINE Option *Option::multi_option_policy(MultiOptionPolicy value) {
 }
 
 CLI11_NODISCARD CLI11_INLINE std::string Option::get_name(bool positional, bool all_options) const {
-
-    std::cout << "g1" << std::endl << std::flush;
     if(get_group().empty())
         return {};  // Hidden
 
-    std::cout << "g2" << std::endl << std::flush;
     if(all_options) {
 
         std::vector<std::string> name_list;
 
-        std::cout << "g3" << std::endl << std::flush;
         /// The all list will never include a positional unless asked or that's the only name.
         if((positional && (!pname_.empty())) || (snames_.empty() && lnames_.empty())) {
             name_list.push_back(pname_);
@@ -6008,30 +6001,22 @@ CLI11_NODISCARD CLI11_INLINE std::string Option::get_name(bool positional, bool 
                 name_list.push_back("--" + lname);
         }
 
-        std::cout << "g3a" << std::endl << std::flush;
         return detail::join(name_list);
     }
 
     // This returns the positional name no matter what
-    if(positional) {
-        std::cout << "g3b" << std::endl << std::flush;
+    if(positional)
         return pname_;
-    }
 
     // Prefer long name
-    if(!lnames_.empty()) {
-        std::cout << "g4" << std::endl << std::flush;
+    if(!lnames_.empty())
         return std::string(2, '-') + lnames_[0];
-    }
 
     // Or short name if no long name
-    if(!snames_.empty()) {
-        std::cout << "g5" << std::endl << std::flush;
+    if(!snames_.empty())
         return std::string(1, '-') + snames_[0];
-    }
 
     // If positional is the only name, it's okay to use that
-    std::cout << "g6" << std::endl << std::flush;
     return pname_;
 }
 
@@ -8370,8 +8355,6 @@ CLI11_INLINE std::string maybe_narrow(const wchar_t *str) { return narrow(str); 
 }  // namespace detail
 
 template <class CharT> CLI11_INLINE void App::parse_char_t(int argc, const CharT *const *argv) {
-
-    std::cout << "if(name_.empty() || has_automatic_name_)" << std::endl << std::flush;
     // If the name is not set, read from command line
     if(name_.empty() || has_automatic_name_) {
         has_automatic_name_ = true;
@@ -8383,7 +8366,6 @@ template <class CharT> CLI11_INLINE void App::parse_char_t(int argc, const CharT
     for(auto i = static_cast<std::size_t>(argc) - 1U; i > 0U; --i)
         args.emplace_back(detail::maybe_narrow(argv[i]));
 
-    std::cout << "parse(std::move(args))" << std::endl << std::flush;
     parse(std::move(args));
 }
 
@@ -8450,17 +8432,13 @@ CLI11_INLINE void App::parse(std::vector<std::string> &&args) {
     // but placed here to make sure this is cleared when
     // running parse after an error is thrown, even by _validate or _configure.
     parsed_ = 1;
-    std::cout << "_validate()" << std::endl << std::flush;
     _validate();
-    std::cout << "_configure();" << std::endl << std::flush;
     _configure();
     // set the parent as nullptr as this object should be the top now
     parent_ = nullptr;
     parsed_ = 0;
 
-    std::cout << "_parse(std::move(args))" << std::endl << std::flush;
     _parse(std::move(args));
-    std::cout << "run_callback()" << std::endl << std::flush;
     run_callback();
 }
 
@@ -8832,16 +8810,12 @@ CLI11_INLINE void App::run_callback(bool final_mode, bool suppress_final_callbac
     if(!final_mode && parse_complete_callback_) {
         parse_complete_callback_();
     }
-
-    std::cout << "app.parse(argc, argv)" << std::endl << std::flush;
     // run the callbacks for the received subcommands
     for(App *subc : get_subcommands()) {
         if(subc->parent_ == this) {
             subc->run_callback(true, suppress_final_callback);
         }
     }
-
-    std::cout << "for(auto &subc : subcommands_)" << std::endl << std::flush;
     // now run callbacks for option_groups
     for(auto &subc : subcommands_) {
         if(subc->name_.empty() && subc->count_all() > 0) {
@@ -8849,14 +8823,12 @@ CLI11_INLINE void App::run_callback(bool final_mode, bool suppress_final_callbac
         }
     }
 
-    std::cout << "if(final_callback_ && (parsed_ > 0) && (!suppress_final_callback)) {" << std::endl << std::flush;
     // finally run the main callback
     if(final_callback_ && (parsed_ > 0) && (!suppress_final_callback)) {
         if(!name_.empty() || count_all() > 0 || parent_ == nullptr) {
             final_callback_();
         }
     }
-    std::cout << "Done" << std::endl << std::flush;
 }
 
 CLI11_NODISCARD CLI11_INLINE bool App::_valid_subcommand(const std::string &current, bool ignore_used) const {
@@ -9055,8 +9027,6 @@ CLI11_INLINE void App::_process_requirements() {
         return;
     }
 
-
-    std::cout << "check excludes" << std::endl << std::flush;
     // check excludes
     bool missing_needed{false};
     std::string missing_need;
@@ -9080,52 +9050,30 @@ CLI11_INLINE void App::_process_requirements() {
         return;
     }
 
-    std::cout << "std::size_t used_options = 0;" << std::endl << std::flush;
-
     std::size_t used_options = 0;
     for(const Option_p &opt : options_) {
 
-        std::cout << "if(opt->count() != 0)" << std::endl << std::flush;
         if(opt->count() != 0) {
             ++used_options;
         }
-
         // Required but empty
-        std::cout << "if(opt->get_required() && opt->count() == 0) {" << std::endl << std::flush;
         if(opt->get_required() && opt->count() == 0) {
-            auto a1 = RequiredError(opt->get_name());
-            std::cout << "a1" << std::endl << std::flush;
-            throw a1;
+            throw RequiredError(opt->get_name());
         }
         // Requires
-        std::cout << "for(const Option *opt_req : opt->needs_)" << std::endl << std::flush;
         for(const Option *opt_req : opt->needs_)
-            if(opt->count() > 0 && opt_req->count() == 0) {
-                auto a2 = RequiresError(opt->get_name(), opt_req->get_name());
-                std::cout << "a2" << std::endl << std::flush;
-                throw a2;
-            }
+            if(opt->count() > 0 && opt_req->count() == 0)
+                throw RequiresError(opt->get_name(), opt_req->get_name());
         // Excludes
-        std::cout << "for(const Option *opt_ex : opt->excludes_)" << std::endl << std::flush;
         for(const Option *opt_ex : opt->excludes_)
-            if(opt->count() > 0 && opt_ex->count() != 0) {
-                auto a3 = ExcludesError(opt->get_name(), opt_ex->get_name());
-                std::cout << "a3" << std::endl << std::flush;
-                throw a3;
-            }
+            if(opt->count() > 0 && opt_ex->count() != 0)
+                throw ExcludesError(opt->get_name(), opt_ex->get_name());
     }
-    std::cout << "check for the required number of;" << std::endl << std::flush;
     // check for the required number of subcommands
     if(require_subcommand_min_ > 0) {
-        std::cout << "auto selected_subcommands = get_subcommands();" << std::endl << std::flush;
         auto selected_subcommands = get_subcommands();
-        std::cout << "auto selected_subcommands = get_subcommands();" << std::endl << std::flush;
-        if(require_subcommand_min_ > selected_subcommands.size()) {
-            std::cout << "RequiredError" << std::endl << std::flush;
-            auto a = RequiredError::Subcommand(require_subcommand_min_);
-            std::cout << "a" << std::endl << std::flush;
-            throw a;
-        }
+        if(require_subcommand_min_ > selected_subcommands.size())
+            throw RequiredError::Subcommand(require_subcommand_min_);
     }
 
     // Max error cannot occur, the extra subcommand will parse as an ExtrasError or a remaining item.
@@ -9178,7 +9126,6 @@ CLI11_INLINE void App::_process_requirements() {
         }
 
         if(sub->required_ && sub->count_all() == 0) {
-            std::cout << "throw(CLI::RequiredError(sub->get_display_name()))" << std::endl << std::flush;
             throw(CLI::RequiredError(sub->get_display_name()));
         }
     }
@@ -9188,37 +9135,25 @@ CLI11_INLINE void App::_process() {
     try {
         // the config file might generate a FileError but that should not be processed until later in the process
         // to allow for help, version and other errors to generate first.
-        std::cout << "_process_config_file()" << std::endl << std::flush;
         _process_config_file();
 
         // process env shouldn't throw but no reason to process it if config generated an error
-        std::cout << "_process_env()" << std::endl << std::flush;
         _process_env();
     } catch(const CLI::FileError &) {
         // callbacks and help_flags can generate exceptions which should take priority
         // over the config file error if one exists.
-
-        std::cout << "_process_callbacks()" << std::endl << std::flush;
         _process_callbacks();
-
-        std::cout << "_process_help_flags()" << std::endl << std::flush;
         _process_help_flags();
         throw;
     }
 
-    std::cout << "_process_callbacks()" << std::endl << std::flush;
     _process_callbacks();
-
-    std::cout << "_process_help_flags()" << std::endl << std::flush;
     _process_help_flags();
 
-    std::cout << "_process_requirements()" << std::endl << std::flush;
     _process_requirements();
 }
 
 CLI11_INLINE void App::_process_extras() {
-
-    std::cout << "if(!(allow_extras_ || prefix_command_))" << std::endl << std::flush;
     if(!(allow_extras_ || prefix_command_)) {
         std::size_t num_left_over = remaining_size();
         if(num_left_over > 0) {
@@ -9226,7 +9161,6 @@ CLI11_INLINE void App::_process_extras() {
         }
     }
 
-    std::cout << "for(App_p &sub : subcommands_) {" << std::endl << std::flush;
     for(App_p &sub : subcommands_) {
         if(sub->count() > 0)
             sub->_process_extras();
@@ -9287,25 +9221,16 @@ CLI11_INLINE void App::_parse(std::vector<std::string> &args) {
 CLI11_INLINE void App::_parse(std::vector<std::string> &&args) {
     // this can only be called by the top level in which case parent == nullptr by definition
     // operation is simplified
-
-    std::cout << "increment_parsed()" << std::endl << std::flush;
     increment_parsed();
-
-    std::cout << "_trigger_pre_parse(args.size());" << std::endl << std::flush;
     _trigger_pre_parse(args.size());
     bool positional_only = false;
 
-    std::cout << "while(!args.empty())" << std::endl << std::flush;
     while(!args.empty()) {
-        std::cout << "_parse_single(args, positional_only);" << std::endl << std::flush;
         _parse_single(args, positional_only);
     }
-
-    std::cout << "_process()" << std::endl << std::flush;
     _process();
 
     // Throw error if any items are left over (depending on settings)
-    std::cout << "_process_extras();" << std::endl << std::flush;
     _process_extras();
 }
 
