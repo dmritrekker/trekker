@@ -32,31 +32,70 @@ int main(int argc, char *argv[]) {
     fieldRemove(app.add_subcommand("fieldRemove", ""));
     dMRI_cmd(app.add_subcommand("dMRI", ""));
 
-    // If no option is used just display the help
-    try {
-        app.parse(argc, argv);
-    } catch(const CLI::ParseError &e) {
+    std::vector<std::string> subcommands = {
+        "info", 
+        "track", 
+        "filter",
+        "track2img",
+        "track2surf",
+        "img2track",
+        "select",
+        "resample",
+        "transform",
+        "diff",
+        "merge",
+        "addColor",
+        "fieldExport",
+        "fieldImport",
+        "fieldRemove",
+        "dMRI"};
 
-        // Check if a subcommand is run with no arguments/options, then display help
-        CLI::App* subcmd = &app;
-        int argCount = 1;
+    const std::string dMRI_name          = "dMRI";
+    const std::string recon_name         = "recon";
+    const std::string tran_shi_2015_name = "tran_shi_2015";
 
-        while (subcmd->get_subcommands().size()>0) {
-            subcmd   = subcmd->get_subcommands()[0];
-            argCount = subcmd->count_all();
+    // Trekker is called alone. Display help and terminate.
+    if (argc == 1) {
+        displayHelp(app.help());
+        NIBR::TERMINATE();
+        return EXIT_SUCCESS;
+    }
+
+    // If trekker is called with a single subcommand, display help and terminate.
+    if (argc == 2) {
+        for (int i = 1; i < argc; ++i) {
+            for (const std::string& name : subcommands) {
+                if ((argv[i] == name) && (i == (argc-1))) {
+                    displayHelp(app.get_subcommand(name)->help());
+                    NIBR::TERMINATE();
+                    return EXIT_SUCCESS;
+                }
+            }
         }
+    }
 
-        if (argCount<2) { // Check if subcmd is run with no arguments/options
-            displayHelp(app.help());
+    if (argc == 3) {
+        if ((argv[1] == dMRI_name ) && (argv[2] == recon_name)) {
+            displayHelp(app.get_subcommand(dMRI_name)->get_subcommand(recon_name)->help());
             NIBR::TERMINATE();
             return EXIT_SUCCESS;
         }
+    }
 
-        auto q = app.exit(e);
+    if (argc == 4) {
+        if ((argv[1] == dMRI_name) && (argv[2] == recon_name) && (argv[3] == tran_shi_2015_name)) {
+            displayHelp(app.get_subcommand(dMRI_name)->get_subcommand(recon_name)->get_subcommand(tran_shi_2015_name)->help());
+            NIBR::TERMINATE();
+            return EXIT_SUCCESS;
+        }
+    }
 
+    // Execute program
+    try {
+        CLI11_PARSE(app,argc,argv);
+    } catch (const CLI::ParseError &e) {
         NIBR::TERMINATE();
-        return q;
-
+        return EXIT_SUCCESS;
     }
 
     NIBR::TERMINATE();
