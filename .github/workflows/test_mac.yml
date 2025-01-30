@@ -18,3 +18,9 @@ jobs:
       shell: bash
       working-directory: ./testScripts
       run: sh test_mac.sh
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-mac
+        path: testScripts/testResults/
