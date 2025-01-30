@@ -17,7 +17,7 @@ call "%batchDir%trekker_win.exe" track -f ^
 --seed ..\testData\100307_lh_white.vtk ^
 --seed_count 100 ^
 --output out.vtk ^
--v debug
+-v detail
 
 @REM Display tractogram info
 if exist "out.vtk" (
