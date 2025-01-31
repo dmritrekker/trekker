@@ -20,6 +20,7 @@ jobs:
       run: |
         if command -v dos2unix &> /dev/null; then
             dos2unix test_win.bat
+            dos2unix test_win_disp_file_info.bat
         else
             echo "dos2unix not found. You might need to install it."
         fi
