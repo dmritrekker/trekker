@@ -6,7 +6,7 @@ on:
       - test
 
 jobs:
-  run_test:
+  run_test_linux:
     runs-on: ubuntu-20.04
 
     steps:
@@ -27,7 +27,7 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-  run_test:
+  run_test_mac:
     runs-on: macos-latest
 
     steps:
@@ -48,7 +48,7 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-  run_test:
+  run_test_win:
     runs-on: windows-latest
 
     steps:
