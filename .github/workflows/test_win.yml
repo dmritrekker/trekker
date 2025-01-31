@@ -29,6 +29,7 @@ jobs:
       working-directory: ./testScripts
       run: |
         type test_win.bat | findstr /v "^" > temp.bat
+        type temp.bat
         call temp.bat
 
     - name: Archive test results
