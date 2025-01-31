@@ -22,6 +22,7 @@ goto :main
 
 @REM --- Function to display file information ---
 :display_file_info
+
 set "file=%~1"
 
 if not exist "%file%" (
