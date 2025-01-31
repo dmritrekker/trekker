@@ -14,7 +14,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
-    - name: Convert Line Endings to Windows (CRLF)
+    - name: Convert Line Endings to Windows
       shell: bash
       working-directory: ./testScripts
       run: |
@@ -34,3 +34,5 @@ jobs:
       with:
         name: test-results-win
         path: testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5

@@ -24,3 +24,5 @@ jobs:
       with:
         name: test-results-linux
         path: testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5
