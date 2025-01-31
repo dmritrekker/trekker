@@ -1,21 +1,28 @@
 #!/bin/bash
 
 # Make sure trekker_linux is executable
-chmod +x ./trekker_linux
+trekker=./trekker_linux
+trekker=/home/baran/Work/code/trekker/build-static/trekker_v1.0.0-rc3
+
+chmod +x ${trekker}
 
 # --- Configuration ---
 test_data_dir="../testData"
 results_dir="testResults"
 
 # Input files
-fod_image="$test_data_dir/100307_FOD_Order4.nii.gz"
-surface_file="$test_data_dir/100307_lh_white.vtk"
-tractogram_file="$test_data_dir/100307_lh_50K.vtk"
+FOD="$test_data_dir/FOD.nii.gz"
+L_LGN="$test_data_dir/L_LGN.nii.gz"
+L_V1="$test_data_dir/L_V1.nii.gz"
+L_WM="$test_data_dir/L_WM.vtk"
+WBT="$test_data_dir/WBT.vtk"
 
 # Output files
-track2img_output="$results_dir/100307_lh_50K.nii.gz"
-track2surf_output="$results_dir/100307_lh_white_50K.vtk"
-fiber_tracking_output="$results_dir/out.vtk"
+out_track2img="$results_dir/track2img.nii.gz"
+out_track2surf="$results_dir/track2surf.vtk"
+out_track="$results_dir/track.vtk"
+out_filter_1="$results_dir/filter_1.vtk"
+out_filter_2="$results_dir/filter_2.vtk"
 
 # --- Function to display file information ---
 display_file_info() {
@@ -31,8 +38,8 @@ display_file_info() {
     file_size=$(stat -c%s "$file")
 
     echo
+    ${trekker} info "$file"
     echo "$file size: $file_size bytes"
-    ./trekker_linux info "$file"
     echo
 
     return 0
@@ -49,65 +56,134 @@ display_file_info() {
 # Create results directory if it doesn't exist
 mkdir -p "$results_dir"
 
-# Display help
-echo "Testing help"
-./trekker_linux
-echo "Done"
+
+echo "=========="
+echo "===Test 1: Display Trekker help"
+echo "=========="
 echo
+${trekker}
 
-# Display info help
-echo "Testing info help"
-./trekker_linux info
-echo "Done"
 echo
-
-# Display dMRI recon help
-echo "Testing dMRI recon help"
-./trekker_linux dMRI recon
-echo "Done"
 echo
-
-# Display image info
-echo "Display image info"
-./trekker_linux info "$fod_image" -v debug
-echo "Done"
+echo "=========="
+echo "===Test 2: Display info help"
+echo "=========="
 echo
+${trekker} info
 
-# Display surface info
-echo "Display surface info"
-./trekker_linux info "$surface_file" -v debug
-echo "Done"
+
 echo
-
-# Display tractogram info
-echo "Display tractogram info"
-./trekker_linux info "$tractogram_file" -v debug
-echo "Done"
 echo
-
-# track2img
-echo "track2img"
-./trekker_linux track2img -f "$tractogram_file" "$track2img_output"
-echo "Done"
+echo "=========="
+echo "===Test 3: Display dMRI recon help"
+echo "=========="
 echo
+${trekker} dMRI recon
 
-display_file_info "$track2img_output"
 
-# track2surf
-echo "track2surf"
-./trekker_linux track2surf -f "$tractogram_file" "$surface_file" "$track2surf_output" dens --feature streamlineDensity
-echo "Done"
 echo
+echo
+echo "=========="
+echo "===Test 4: Display FOD image info"
+echo "=========="
+echo
+${trekker} info "$FOD"
 
-display_file_info "$track2surf_output"
 
-# Run a simple fiber tracking script
-echo "Run a simple fiber tracking script"
-./trekker_linux track -f "$fod_image" \
-  --seed "$surface_file" \
+echo
+echo
+echo "=========="
+echo "===Test 5: Display L_WM surface info"
+echo "=========="
+echo
+${trekker} info "$L_WM"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 6: Display WBT tractogram info"
+echo "=========="
+echo
+${trekker} info "$WBT"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 7: track2img"
+echo "=========="
+echo
+${trekker} track2img -f "$WBT" "$out_track2img" -v quite
+
+display_file_info "$out_track2img"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 8: track2surf"
+echo "=========="
+echo
+${trekker} track2surf -f "$WBT" "$L_WM" "$out_track2surf" dens --feature streamlineDensity -v quite
+
+display_file_info "$out_track2surf"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 9: track"
+echo "=========="
+echo
+${trekker} track -f "$FOD" \
+  --seed "$L_WM" \
   --seed_count 100 \
-  --output "$fiber_tracking_output"
-echo "Done"
+  --output "$out_track" \
+  -v quite
+
+display_file_info "$out_track"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 10: filter #1"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  -p require_entry "$L_LGN" \
+  -p require_entry "$L_V1" \
+  -v quite \
+  "$out_filter_1"
+
+display_file_info "$out_filter_1"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 11: filter #2"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  -s "$L_LGN" \
+  --seed_trials 100 \
+  -p require_entry_B "$L_V1" \
+  -p stop_at_entry_B "$L_V1" \
+  -p stop_after_exit_A "$L_LGN" \
+  -v quite \
+  "$out_filter_2"
+
+display_file_info "$out_filter_2"
+
+
+echo
+echo
+echo "=========="
+echo "===Completed tests"
+echo "=========="
 echo
 
-display_file_info "$fiber_tracking_output"

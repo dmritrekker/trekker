@@ -45,7 +45,7 @@ display_file_info() {
   fi
 
   if [ -f "$file" ]; then
-    file_size=$(stat -c%s "$file")
+    file_size=$(stat -f %z "$file")
 
     echo
     echo "$file size: $file_size bytes"
