@@ -17,6 +17,9 @@ set "track2img_output=%results_dir%\100307_lh_50K.nii.gz"
 set "track2surf_output=%results_dir%\100307_lh_white_50K.vtk"
 set "fiber_tracking_output=%results_dir%\out.vtk"
 
+
+goto main
+
 @REM --- Function to display file information ---
 :display_file_info
 set "file=%~1"
@@ -47,6 +50,7 @@ echo.
 exit /b
 
 @REM --- Main Script ---
+:main
 
 @REM Create results directory if it doesn't exist
 if not exist "%results_dir%" mkdir "%results_dir%"
