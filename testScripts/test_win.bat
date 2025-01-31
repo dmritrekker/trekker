@@ -69,7 +69,7 @@ echo "===Test 6: track2img"
 echo "=========="
 echo.
 call "%batchDir%trekker_win.exe" track2img -f "%wbt_tractogram%" "%out_track2img%" -v quiet
-call :test_win_disp_file_info "%out_track2img%"
+call test_win_disp_file_info.bat "%out_track2img%"
 echo.
 
 echo "=========="
@@ -86,7 +86,7 @@ call "%batchDir%trekker_win.exe" track -f "%fod_image%" ^
   --maxlength 120 ^
   --output "%out_track%" ^
   --verbose quiet
-call :test_win_disp_file_info "%out_track%"
+call test_win_disp_file_info.bat "%out_track%"
 echo.
 
 echo "=========="
@@ -99,7 +99,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --maxlength 120 ^
   --output "%out_filter_1_img%" ^
   --verbose quiet
-call :test_win_disp_file_info "%out_filter_1_img%"
+call test_win_disp_file_info.bat "%out_filter_1_img%"
 echo.
 
 echo "=========="
@@ -112,7 +112,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --maxlength 120 ^
   --output "%out_filter_1_surf%" ^
   --verbose quiet
-call :test_win_disp_file_info "%out_filter_1_surf%"
+call test_win_disp_file_info.bat "%out_filter_1_surf%"
 echo.
 
 echo "=========="
@@ -128,7 +128,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --maxlength 120 ^
   --output "%out_filter_2_img%" ^
   --verbose quiet
-call :test_win_disp_file_info "%out_filter_2_img%"
+call test_win_disp_file_info.bat "%out_filter_2_img%"
 echo.
 
 echo "=========="
@@ -144,7 +144,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --maxlength 120 ^
   --output "%out_filter_2_surf%" ^
   --verbose quiet
-call :test_win_disp_file_info "%out_filter_2_surf%"
+call test_win_disp_file_info.bat "%out_filter_2_surf%"
 echo.
 
 echo "=========="
@@ -152,7 +152,7 @@ echo "===Test 12: track2surf"
 echo "=========="
 echo.
 call "%batchDir%trekker_win.exe" track2surf -f "%out_filter_2_surf%" "%l_v1_surf%" "%out_track2surf%" dens --feature streamlineDensity -v quiet
-call :test_win_disp_file_info "%out_track2surf%"
+call test_win_disp_file_info.bat "%out_track2surf%"
 echo.
 
 echo "=========="
