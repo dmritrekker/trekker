@@ -99,7 +99,7 @@ void info(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     
     app->callback(run_info);
     

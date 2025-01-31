@@ -68,7 +68,7 @@ void fieldRemove(CLI::App* app)
     app->add_option("<field_name>", field_name, "Field name to remove")
         ->required();
 
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     
     app->callback(run_fieldRemove);
 

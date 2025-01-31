@@ -286,7 +286,7 @@ void track(CLI::App *app)
     general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
     general->add_option ("--writeStepSize,-w",        writeStepSize,         "Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeStepSize enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally Trekker always walks with the specified --stepSize. --writeStepSize by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.");
     general->add_option("--numberOfThreads, -n",      numberOfThreads,       "Number of threads.");
-    general->add_option("--verbose, -v",              verbose,               "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    general->add_option("--verbose, -v",              verbose,               "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     general->add_flag("--force, -f",                  force,                 "Force overwriting of existing file");
 
 
