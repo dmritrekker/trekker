@@ -3,7 +3,7 @@ name: Linux test
 on:
   push:
     branches:
-      - test
+      - test_skip
 
 jobs:
   run_test:

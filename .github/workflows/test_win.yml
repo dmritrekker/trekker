@@ -27,10 +27,7 @@ jobs:
     - name: Run test script
       shell: cmd
       working-directory: ./testScripts
-      run: |
-        type test_win.bat | findstr /v "^" > temp.bat
-        type temp.bat
-        call temp.bat
+      run: call test_win.bat
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
