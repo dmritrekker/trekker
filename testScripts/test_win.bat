@@ -44,7 +44,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-goto :eof
+exit /b
 
 @REM --- Main Script ---
 
