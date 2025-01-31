@@ -104,7 +104,7 @@ void fieldImport(CLI::App* app)
     app->add_option("<field_name>", inp_field_name, "Field name to write in the surface")
         ->required();
 
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
     
     app->callback(run_fieldImport);
