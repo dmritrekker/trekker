@@ -2,7 +2,6 @@
 
 # Make sure trekker_linux is executable
 trekker=./trekker_linux
-trekker=/home/baran/Work/code/trekker/build-static/trekker_v1.0.0-rc3
 
 chmod +x ${trekker}
 
@@ -12,17 +11,20 @@ results_dir="testResults"
 
 # Input files
 FOD="$test_data_dir/FOD.nii.gz"
-L_LGN="$test_data_dir/L_LGN.nii.gz"
-L_V1="$test_data_dir/L_V1.nii.gz"
-L_WM="$test_data_dir/L_WM.vtk"
 WBT="$test_data_dir/WBT.vtk"
+L_LGN_IMG="$test_data_dir/L_LGN.nii.gz"
+L_LGN_SURF="$test_data_dir/L_LGN.vtk"
+L_V1_IMG="$test_data_dir/L_V1.nii.gz"
+L_V1_SURF="$test_data_dir/L_V1.vtk"
 
 # Output files
 out_track2img="$results_dir/track2img.nii.gz"
 out_track2surf="$results_dir/track2surf.vtk"
 out_track="$results_dir/track.vtk"
-out_filter_1="$results_dir/filter_1.vtk"
-out_filter_2="$results_dir/filter_2.vtk"
+out_filter_1_img="$results_dir/filter_1_img.vtk"
+out_filter_1_surf="$results_dir/filter_1_surf.vtk"
+out_filter_2_img="$results_dir/filter_2_img.vtk"
+out_filter_2_surf="$results_dir/filter_2_surf.vtk"
 
 # --- Function to display file information ---
 display_file_info() {
@@ -93,25 +95,17 @@ ${trekker} info "$FOD"
 echo
 echo
 echo "=========="
-echo "===Test 5: Display L_WM surface info"
-echo "=========="
-echo
-${trekker} info "$L_WM"
-
-
-echo
-echo
-echo "=========="
-echo "===Test 6: Display WBT tractogram info"
+echo "===Test 5: Display WBT tractogram info"
 echo "=========="
 echo
 ${trekker} info "$WBT"
 
 
+
 echo
 echo
 echo "=========="
-echo "===Test 7: track2img"
+echo "===Test 6: track2img"
 echo "=========="
 echo
 ${trekker} track2img -f "$WBT" "$out_track2img" -v quite
@@ -119,65 +113,118 @@ ${trekker} track2img -f "$WBT" "$out_track2img" -v quite
 display_file_info "$out_track2img"
 
 
+
+
+
 echo
 echo
 echo "=========="
-echo "===Test 8: track2surf"
+echo "===Test 7: track"
 echo "=========="
 echo
-${trekker} track2surf -f "$WBT" "$L_WM" "$out_track2surf" dens --feature streamlineDensity -v quite
+${trekker} track -f "$FOD" \
+  --seed "$L_LGN_SURF" \
+  --seed_trials 100 \
+  --seed_count 1000 \
+  --pathway stop_before_exit_A "$L_LGN_SURF" \
+  --pathway require_entry_B "$L_V1_SURF" \
+  --pathway stop_before_exit_B "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_track" \
+  --verbose quite
+
+display_file_info "$out_track"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 8: seedless filter with images"
+echo "=========="
+echo
+
+${trekker} filter -f "$WBT" \
+  --pathway require_entry "$L_LGN_IMG" \
+  --pathway require_entry "$L_V1_IMG" \
+  --maxlength 120 \
+  --output "$out_filter_1_img" \
+  --verbose quite
+
+display_file_info "$out_filter_1_img"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 9: seedless filter with surfaces"
+echo "=========="
+echo
+
+${trekker} filter -f "$WBT" \
+  --pathway require_entry "$L_LGN_SURF" \
+  --pathway require_entry "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_filter_1_surf" \
+  --verbose quite
+
+display_file_info "$out_filter_1_surf"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 10: seeded filter with images"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  --seed "$L_LGN_IMG" \
+  --seed_trials 100 \
+  --pathway stop_before_exit_A "$L_LGN_IMG" \
+  --pathway require_entry_B "$L_V1_IMG" \
+  --pathway stop_before_exit_B "$L_V1_IMG" \
+  --maxlength 120 \
+  --output "$out_filter_2_img" \
+  --verbose quite
+
+display_file_info "$out_filter_2_img"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 11: seeded filter with surfaces"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  --seed "$L_LGN_SURF" \
+  --seed_trials 100 \
+  --pathway stop_before_exit_A "$L_LGN_SURF" \
+  --pathway require_entry_B "$L_V1_SURF" \
+  --pathway stop_before_exit_B "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_filter_2_surf" \
+  --verbose quite
+
+display_file_info "$out_filter_2_surf"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 12: track2surf"
+echo "=========="
+echo
+${trekker} track2surf -f "$out_filter_2_surf" "$L_V1_SURF" "$out_track2surf" dens --feature streamlineDensity -v quite
 
 display_file_info "$out_track2surf"
 
 
 
-echo
-echo
-echo "=========="
-echo "===Test 9: track"
-echo "=========="
-echo
-${trekker} track -f "$FOD" \
-  --seed "$L_WM" \
-  --seed_count 100 \
-  --output "$out_track" \
-  -v quite
 
-display_file_info "$out_track"
-
-
-echo
-echo
-echo "=========="
-echo "===Test 10: filter #1"
-echo "=========="
-echo
-${trekker} filter -f "$WBT" \
-  -p require_entry "$L_LGN" \
-  -p require_entry "$L_V1" \
-  -v quite \
-  "$out_filter_1"
-
-display_file_info "$out_filter_1"
-
-
-
-echo
-echo
-echo "=========="
-echo "===Test 11: filter #2"
-echo "=========="
-echo
-${trekker} filter -f "$WBT" \
-  -s "$L_LGN" \
-  --seed_trials 100 \
-  -p require_entry_B "$L_V1" \
-  -p stop_at_entry_B "$L_V1" \
-  -p stop_after_exit_A "$L_LGN" \
-  -v quite \
-  "$out_filter_2"
-
-display_file_info "$out_filter_2"
 
 
 echo

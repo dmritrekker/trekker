@@ -17,22 +17,32 @@ export PATH="${llvm_prefix}/bin:$PATH"
 export LDFLAGS="-L${llvm_prefix}/lib -L${libomp_prefix}/lib"
 export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
 
+
 # Make sure trekker_linux is executable
-chmod +x ./trekker_mac
+trekker=./trekker_mac
+
+chmod +x ${trekker}
 
 # --- Configuration ---
 test_data_dir="../testData"
 results_dir="testResults"
 
 # Input files
-fod_image="$test_data_dir/100307_FOD_Order4.nii.gz"
-surface_file="$test_data_dir/100307_lh_white.vtk"
-tractogram_file="$test_data_dir/100307_lh_50K.vtk"
+FOD="$test_data_dir/FOD.nii.gz"
+WBT="$test_data_dir/WBT.vtk"
+L_LGN_IMG="$test_data_dir/L_LGN.nii.gz"
+L_LGN_SURF="$test_data_dir/L_LGN.vtk"
+L_V1_IMG="$test_data_dir/L_V1.nii.gz"
+L_V1_SURF="$test_data_dir/L_V1.vtk"
 
 # Output files
-track2img_output="$results_dir/100307_lh_50K.nii.gz"
-track2surf_output="$results_dir/100307_lh_white_50K.vtk"
-fiber_tracking_output="$results_dir/out.vtk"
+out_track2img="$results_dir/track2img.nii.gz"
+out_track2surf="$results_dir/track2surf.vtk"
+out_track="$results_dir/track.vtk"
+out_filter_1_img="$results_dir/filter_1_img.vtk"
+out_filter_1_surf="$results_dir/filter_1_surf.vtk"
+out_filter_2_img="$results_dir/filter_2_img.vtk"
+out_filter_2_surf="$results_dir/filter_2_surf.vtk"
 
 # --- Function to display file information ---
 display_file_info() {
@@ -48,8 +58,8 @@ display_file_info() {
     file_size=$(stat -f %z "$file")
 
     echo
+    ${trekker} info "$file"
     echo "$file size: $file_size bytes"
-    ./trekker_mac info "$file"
     echo
 
     return 0
@@ -66,66 +76,181 @@ display_file_info() {
 # Create results directory if it doesn't exist
 mkdir -p "$results_dir"
 
-# Display help
-echo "Testing help"
-./trekker_mac
-echo "Done"
+
+echo "=========="
+echo "===Test 1: Display Trekker help"
+echo "=========="
+echo
+${trekker}
+
+echo
+echo
+echo "=========="
+echo "===Test 2: Display info help"
+echo "=========="
+echo
+${trekker} info
+
+
+echo
+echo
+echo "=========="
+echo "===Test 3: Display dMRI recon help"
+echo "=========="
+echo
+${trekker} dMRI recon
+
+
+echo
+echo
+echo "=========="
+echo "===Test 4: Display FOD image info"
+echo "=========="
+echo
+${trekker} info "$FOD"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 5: Display WBT tractogram info"
+echo "=========="
+echo
+${trekker} info "$WBT"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 6: track2img"
+echo "=========="
+echo
+${trekker} track2img -f "$WBT" "$out_track2img" -v quite
+
+display_file_info "$out_track2img"
+
+
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 7: track"
+echo "=========="
+echo
+${trekker} track -f "$FOD" \
+  --seed "$L_LGN_SURF" \
+  --seed_trials 100 \
+  --seed_count 1000 \
+  --pathway stop_before_exit_A "$L_LGN_SURF" \
+  --pathway require_entry_B "$L_V1_SURF" \
+  --pathway stop_before_exit_B "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_track" \
+  --verbose quite
+
+display_file_info "$out_track"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 8: seedless filter with images"
+echo "=========="
 echo
 
-# Display info help
-echo "Testing info help"
-./trekker_mac info
-echo "Done"
+${trekker} filter -f "$WBT" \
+  --pathway require_entry "$L_LGN_IMG" \
+  --pathway require_entry "$L_V1_IMG" \
+  --maxlength 120 \
+  --output "$out_filter_1_img" \
+  --verbose quite
+
+display_file_info "$out_filter_1_img"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 9: seedless filter with surfaces"
+echo "=========="
 echo
 
-# Display dMRI recon help
-echo "Testing dMRI recon help"
-./trekker_mac dMRI recon
-echo "Done"
+${trekker} filter -f "$WBT" \
+  --pathway require_entry "$L_LGN_SURF" \
+  --pathway require_entry "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_filter_1_surf" \
+  --verbose quite
+
+display_file_info "$out_filter_1_surf"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 10: seeded filter with images"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  --seed "$L_LGN_IMG" \
+  --seed_trials 100 \
+  --pathway stop_before_exit_A "$L_LGN_IMG" \
+  --pathway require_entry_B "$L_V1_IMG" \
+  --pathway stop_before_exit_B "$L_V1_IMG" \
+  --maxlength 120 \
+  --output "$out_filter_2_img" \
+  --verbose quite
+
+display_file_info "$out_filter_2_img"
+
+
+
+echo
+echo
+echo "=========="
+echo "===Test 11: seeded filter with surfaces"
+echo "=========="
+echo
+${trekker} filter -f "$WBT" \
+  --seed "$L_LGN_SURF" \
+  --seed_trials 100 \
+  --pathway stop_before_exit_A "$L_LGN_SURF" \
+  --pathway require_entry_B "$L_V1_SURF" \
+  --pathway stop_before_exit_B "$L_V1_SURF" \
+  --maxlength 120 \
+  --output "$out_filter_2_surf" \
+  --verbose quite
+
+display_file_info "$out_filter_2_surf"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 12: track2surf"
+echo "=========="
+echo
+${trekker} track2surf -f "$out_filter_2_surf" "$L_V1_SURF" "$out_track2surf" dens --feature streamlineDensity -v quite
+
+display_file_info "$out_track2surf"
+
+
+
+
+
+
+echo
+echo
+echo "=========="
+echo "===Completed tests"
+echo "=========="
 echo
 
-# Display image info
-echo "Display image info"
-./trekker_mac info "$fod_image" -v debug
-echo "Done"
-echo
 
-# Display surface info
-echo "Display surface info"
-./trekker_mac info "$surface_file" -v debug
-echo "Done"
-echo
-
-# Display tractogram info
-echo "Display tractogram info"
-./trekker_mac info "$tractogram_file" -v debug
-echo "Done"
-echo
-
-# track2img
-echo "track2img"
-./trekker_mac track2img -f "$tractogram_file" "$track2img_output"
-echo "Done"
-echo
-
-display_file_info "$track2img_output"
-
-# track2surf
-echo "track2surf"
-./trekker_mac track2surf -f "$tractogram_file" "$surface_file" "$track2surf_output" dens --feature streamlineDensity
-echo "Done"
-echo
-
-display_file_info "$track2surf_output"
-
-# Run a simple fiber tracking script
-echo "Run a simple fiber tracking script"
-./trekker_mac track -f "$fod_image" \
-  --seed "$surface_file" \
-  --seed_count 100 \
-  --output "$fiber_tracking_output"
-echo "Done"
-echo
-
-display_file_info "$fiber_tracking_output"
 

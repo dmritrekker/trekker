@@ -17,7 +17,7 @@ jobs:
     - name: Run test script
       shell: bash
       working-directory: ./testScripts
-      run: sh test_linux.sh
+      run: sh test_linux.sh > testResults/log.txt
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
@@ -38,7 +38,7 @@ jobs:
     - name: Run test script
       shell: bash
       working-directory: ./testScripts
-      run: sh test_mac.sh
+      run: sh test_mac.sh > testResults/log.txt
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
@@ -70,7 +70,7 @@ jobs:
     - name: Run test script
       shell: cmd
       working-directory: ./testScripts
-      run: call test_win.bat
+      run: call test_win.bat > testResults/log.txt
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
