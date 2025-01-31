@@ -18,7 +18,7 @@ set "track2surf_output=%results_dir%\100307_lh_white_50K.vtk"
 set "fiber_tracking_output=%results_dir%\out.vtk"
 
 
-goto main
+goto :main
 
 @REM --- Function to display file information ---
 :display_file_info
