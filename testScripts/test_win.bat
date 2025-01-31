@@ -17,26 +17,34 @@ set "track2img_output=%results_dir%\100307_lh_50K.nii.gz"
 set "track2surf_output=%results_dir%\100307_lh_white_50K.vtk"
 set "fiber_tracking_output=%results_dir%\out.vtk"
 
-@REM @REM --- Function to display file information ---
-@REM :display_file_info
-@REM set "file=%~1"
+@REM --- Function to display file information ---
+:display_file_info
+set "file=%~1"
 
-@REM if not exist "%file%" (
-@REM     echo
-@REM     echo %file% does not exist.
-@REM     echo
-@REM     exit /b 1
-@REM )
+if not exist "%file%" (
+    echo.
+    echo %file% does not exist.
+    echo.
+    exit /b 1
+)
 
-@REM for %%a in ("%file%") do (
-@REM     echo
-@REM     echo %file% size: %%~za bytes
-@REM )
+for %%a in ("%file%") do (
+    echo.
+    echo %file% size: %%~za bytes
+)
 
-@REM call "%batchDir%trekker_win.exe" info "%file%"
-@REM echo
+call "%batchDir%trekker_win.exe" info "%file%"
 
-@REM goto :eof
+@REM Check for errors from trekker_win.exe
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Error: trekker_win.exe info command failed.
+    echo.
+    exit /b %ERRORLEVEL%
+)
+
+echo.
+goto :eof
 
 @REM --- Main Script ---
 
@@ -85,7 +93,7 @@ call "%batchDir%trekker_win.exe" track2img -f "%tractogram_file%" "%track2img_ou
 echo "Done"
 echo.
 
-@REM call :display_file_info "%track2img_output%"
+call :display_file_info "%track2img_output%"
 
 @REM track2surf
 echo "track2surf"
@@ -93,7 +101,7 @@ call "%batchDir%trekker_win.exe" track2surf -f "%tractogram_file%" "%surface_fil
 echo "Done"
 echo.
 
-@REM call :display_file_info "%track2surf_output%"
+call :display_file_info "%track2surf_output%"
 
 @REM Run a simple fiber tracking script
 echo "Run a simple fiber tracking script"
@@ -104,7 +112,7 @@ call "%batchDir%trekker_win.exe" track -f "%fod_image%" ^
 echo "Done"
 echo.
 
-@REM call :display_file_info "%fiber_tracking_output%"
+call :display_file_info "%fiber_tracking_output%"
 
 echo.
 
