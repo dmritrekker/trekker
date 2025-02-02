@@ -35,7 +35,6 @@ list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
-target_link_libraries(${CMDNAME} stdc++)
 
 find_package(OpenMP REQUIRED)
 
