@@ -39,7 +39,7 @@ void parseCommon(int& numberOfThreads, std::string verbose)
     numberOfThreads = NIBR::MT::MAXNUMBEROFTHREADS();
 
     if (verbose=="quiet") {
-        NIBR::VERBOSE() = VERBOSE_QUITE;
+        NIBR::VERBOSE() = VERBOSE_QUIET;
     } else if (verbose=="fatal") {
         NIBR::VERBOSE() = VERBOSE_FATAL;
     } else if (verbose=="error") {

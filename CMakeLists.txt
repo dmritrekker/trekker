@@ -35,6 +35,7 @@ list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
+target_link_libraries(${CMDNAME} stdc++)
 
 find_package(OpenMP REQUIRED)
 
@@ -51,7 +52,7 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Cla
 endif()
 
 if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9"))
-    target_link_libraries(${CMDNAME} PUBLIC stdc++fs)
+    target_link_libraries(${CMDNAME} stdc++fs)
 endif()
 
 if (UNIX)
