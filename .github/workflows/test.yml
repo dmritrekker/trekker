@@ -13,7 +13,7 @@ on:
 jobs:
   test_linux:
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == "Success" }}
+    if: ${{ github.event.workflow_run.conclusion == 'Success' }}
 
     steps:
     - uses: actions/checkout@v3
