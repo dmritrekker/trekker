@@ -68,7 +68,7 @@ echo "=========="
 echo "===Test 6: track2img"
 echo "=========="
 echo.
-call "%batchDir%trekker_win.exe" track2img -f "%wbt_tractogram%" "%out_track2img%" -v quite
+call "%batchDir%trekker_win.exe" track2img -f "%wbt_tractogram%" "%out_track2img%" -v quiet
 call test_win_disp_file_info.bat "%out_track2img%"
 echo.
 
@@ -85,7 +85,7 @@ call "%batchDir%trekker_win.exe" track -f "%fod_image%" ^
   --pathway stop_before_exit_B "%l_v1_surf%" ^
   --maxlength 120 ^
   --output "%out_track%" ^
-  --verbose quite
+  --verbose quiet
 call test_win_disp_file_info.bat "%out_track%"
 echo.
 
@@ -98,7 +98,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --pathway require_entry "%l_v1_img%" ^
   --maxlength 120 ^
   --output "%out_filter_1_img%" ^
-  --verbose quite
+  --verbose quiet
 call test_win_disp_file_info.bat "%out_filter_1_img%"
 echo.
 
@@ -111,7 +111,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --pathway require_entry "%l_v1_surf%" ^
   --maxlength 120 ^
   --output "%out_filter_1_surf%" ^
-  --verbose quite
+  --verbose quiet
 call test_win_disp_file_info.bat "%out_filter_1_surf%"
 echo.
 
@@ -127,7 +127,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --pathway stop_before_exit_B "%l_v1_img%" ^
   --maxlength 120 ^
   --output "%out_filter_2_img%" ^
-  --verbose quite
+  --verbose quiet
 call test_win_disp_file_info.bat "%out_filter_2_img%"
 echo.
 
@@ -143,7 +143,7 @@ call "%batchDir%trekker_win.exe" filter -f "%wbt_tractogram%" ^
   --pathway stop_before_exit_B "%l_v1_surf%" ^
   --maxlength 120 ^
   --output "%out_filter_2_surf%" ^
-  --verbose quite
+  --verbose quiet
 call test_win_disp_file_info.bat "%out_filter_2_surf%"
 echo.
 
@@ -151,7 +151,7 @@ echo "=========="
 echo "===Test 12: track2surf"
 echo "=========="
 echo.
-call "%batchDir%trekker_win.exe" track2surf -f "%out_filter_2_surf%" "%l_v1_surf%" "%out_track2surf%" dens --feature streamlineDensity -v quite
+call "%batchDir%trekker_win.exe" track2surf -f "%out_filter_2_surf%" "%l_v1_surf%" "%out_track2surf%" dens --feature streamlineDensity -v quiet
 call test_win_disp_file_info.bat "%out_track2surf%"
 echo.
 

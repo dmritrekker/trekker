@@ -126,7 +126,7 @@ echo "=========="
 echo "===Test 6: track2img"
 echo "=========="
 echo
-${trekker} track2img -f "$WBT" "$out_track2img" -v quite
+${trekker} track2img -f "$WBT" "$out_track2img" -v quiet
 
 display_file_info "$out_track2img"
 
@@ -149,7 +149,7 @@ ${trekker} track -f "$FOD" \
   --pathway stop_before_exit_B "$L_V1_SURF" \
   --maxlength 120 \
   --output "$out_track" \
-  --verbose quite
+  --verbose quiet
 
 display_file_info "$out_track"
 
@@ -167,7 +167,7 @@ ${trekker} filter -f "$WBT" \
   --pathway require_entry "$L_V1_IMG" \
   --maxlength 120 \
   --output "$out_filter_1_img" \
-  --verbose quite
+  --verbose quiet
 
 display_file_info "$out_filter_1_img"
 
@@ -185,7 +185,7 @@ ${trekker} filter -f "$WBT" \
   --pathway require_entry "$L_V1_SURF" \
   --maxlength 120 \
   --output "$out_filter_1_surf" \
-  --verbose quite
+  --verbose quiet
 
 display_file_info "$out_filter_1_surf"
 
@@ -205,7 +205,7 @@ ${trekker} filter -f "$WBT" \
   --pathway stop_before_exit_B "$L_V1_IMG" \
   --maxlength 120 \
   --output "$out_filter_2_img" \
-  --verbose quite
+  --verbose quiet
 
 display_file_info "$out_filter_2_img"
 
@@ -225,7 +225,7 @@ ${trekker} filter -f "$WBT" \
   --pathway stop_before_exit_B "$L_V1_SURF" \
   --maxlength 120 \
   --output "$out_filter_2_surf" \
-  --verbose quite
+  --verbose quiet
 
 display_file_info "$out_filter_2_surf"
 
@@ -236,7 +236,7 @@ echo "=========="
 echo "===Test 12: track2surf"
 echo "=========="
 echo
-${trekker} track2surf -f "$out_filter_2_surf" "$L_V1_SURF" "$out_track2surf" dens --feature streamlineDensity -v quite
+${trekker} track2surf -f "$out_filter_2_surf" "$L_V1_SURF" "$out_track2surf" dens --feature streamlineDensity -v quiet
 
 display_file_info "$out_track2surf"
 
