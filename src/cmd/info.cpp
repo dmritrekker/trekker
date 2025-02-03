@@ -26,12 +26,21 @@ void run_info()
         (ext == "nii.gz") || 
         (ext == "mgh")    || 
         (ext == "mgz")    ||
-        (ext == "dcm") ) {
+        (ext == "dcm")    ||
+        (ext == "")) {
         
         disp(MSG_DETAIL, "Image");
-        NIBR::Image<float> img(inp_fname);
-        img.read();
-        img.printInfo();
+        NIBR::Image<float> img;
+        img.setFilePath(inp_fname);
+        if (img.readHeader()) {
+            if (img.read()) {
+                img.printInfo();
+            } else {
+                disp(MSG_ERROR, "Error reading image");
+            }
+        } else {
+            disp(MSG_ERROR, "Error reading file header");
+        }
         return;
     }
     disp(MSG_DETAIL, "Not an image");
