@@ -13,7 +13,6 @@ on:
 jobs:
   test_linux:
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - uses: actions/checkout@v3
@@ -21,10 +20,16 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Download Trekker Executable
-        uses: actions/download-artifact@v3
-        with:
-          name: linux_binary
-          path: ./testScripts
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: linux_binary
+        path: ./testScripts
+
+    - name: Extract Trekker Executable
+      shell: bash
+      working-directory: ./testScripts
+      run: unzip linux_binary.zip -d .
 
     - name: Run test script
       shell: bash
@@ -41,7 +46,6 @@ jobs:
 
   test_mac:
     runs-on: macos-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - uses: actions/checkout@v3
@@ -49,10 +53,16 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Download Trekker Executable
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-universal_binary
-          path: ./testScripts
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: macOS-universal_binary
+        path: ./testScripts
+
+    - name: Extract Trekker Executable
+      shell: bash
+      working-directory: ./testScripts
+      run: unzip macOS-universal_binary.zip -d .
 
     - name: Run test script
       shell: bash
@@ -69,7 +79,6 @@ jobs:
 
   test_win:
     runs-on: windows-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - uses: actions/checkout@v3
@@ -77,12 +86,13 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Download Trekker Executable
-        uses: actions/download-artifact@v3
-        with:
-          name: windows_binary
-          path: ./testScripts
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: windows_binary
+        path: ./testScripts
 
-    - name: Extract Trekker Executable (Windows)
+    - name: Extract Trekker Executable
       shell: pwsh
       working-directory: ./testScripts
       run: Expand-Archive -Path windows_binary.zip -DestinationPath .
