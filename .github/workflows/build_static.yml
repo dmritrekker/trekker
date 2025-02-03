@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build_macOs_x86_64:
+  build_macOS_x86_64:
     runs-on: macos-latest
 
     steps:
@@ -43,11 +43,11 @@ jobs:
       shell: bash
       run: |
         echo "arch=x86_64" >> $GITHUB_ENV
-        echo "artifact_prefix=macos_x86_64" >> $GITHUB_ENV
-        echo "executable_name=trekker_macos_x86_64" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=macos-x86_64_binary" >> $GITHUB_ENV
+        echo "artifact_prefix=macOS_x86_64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macOS_x86_64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macOS-x86_64_binary" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_macos_x86_64" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macOS_x86_64" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -87,7 +87,7 @@ jobs:
 
 
 
-  build_macOs_arm64:
+  build_macOS_arm64:
     runs-on: macos-latest
 
     steps:
@@ -112,11 +112,11 @@ jobs:
       shell: bash
       run: |
         echo "arch=arm64" >> $GITHUB_ENV
-        echo "artifact_prefix=macos_arm64" >> $GITHUB_ENV
-        echo "executable_name=trekker_macos_arm64" >> $GITHUB_ENV
-        echo "ARTIFACT_NAME=macos-arm64_binary" >> $GITHUB_ENV
+        echo "artifact_prefix=macOS_arm64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macOS_arm64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macOS-arm64_binary" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_macos_arm64" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macOS_arm64" >> $GITHUB_ENV
         
 
     - name: Configure CMake
@@ -153,8 +153,8 @@ jobs:
         if-no-files-found: error
         retention-days: 5
 
-  create-universal-macOs-binary:
-    needs: [build_macOs_arm64, build_macOs_x86_64]
+  create-universal-macOS-binary:
+    needs: [build_macOS_arm64, build_macOS_x86_64]
     runs-on: macos-latest
     steps:
       - name: Set up build directory
@@ -164,24 +164,24 @@ jobs:
       - name: Download arm64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: macos-arm64_binary
+          name: macOS-arm64_binary
           path: ${{ env.build-output-dir }}/arm64
 
       - name: Download x86_64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: macos-x86_64_binary
+          name: macOS-x86_64_binary
           path: ${{ env.build-output-dir }}/x86_64
 
       - name: Create Universal Binary with lipo
         run: |
-          lipo -create ${{ env.build-output-dir }}/arm64/trekker_macos_arm64 ${{ env.build-output-dir }}/x86_64/trekker_macos_x86_64 -output ${{ env.build-output-dir }}/trekker_macos
+          lipo -create ${{ env.build-output-dir }}/arm64/trekker_macOS_arm64 ${{ env.build-output-dir }}/x86_64/trekker_macOS_x86_64 -output ${{ env.build-output-dir }}/trekker_macOS
 
       - name: Upload universal binary
         uses: actions/upload-artifact@v4
         with:
-          name: macos-universal_binary
-          path: ${{ env.build-output-dir }}/trekker_macos
+          name: macOS-universal_binary
+          path: ${{ env.build-output-dir }}/trekker_macOS
           if-no-files-found: error
           retention-days: 5
 
@@ -246,7 +246,7 @@ jobs:
         shell: cmd
         run: |
           echo artifact_prefix=windows>> %GITHUB_ENV%
-          echo executable_name=trekker_windows>> %GITHUB_ENV%
+          echo executable_name=trekker_win.exe>> %GITHUB_ENV%
           echo ARTIFACT_NAME=windows_binary>> %GITHUB_ENV%
           echo build_type=Release>> %GITHUB_ENV%
           echo build_output_dir=%GITHUB_WORKSPACE%\build_windows>> %GITHUB_ENV%

@@ -1,0 +1,112 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - test
+
+  workflow_run:
+    workflows: ["Static build"]
+    types:
+      - completed
+
+jobs:
+  test_linux:
+    runs-on: ubuntu-20.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Download Trekker Executable
+        uses: actions/download-artifact@v3
+        with:
+          name: linux_binary
+          path: ./testScripts
+
+    - name: Run test script
+      shell: bash
+      working-directory: ./testScripts
+      run: sh test_linux.sh
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-linux
+        path: testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5
+
+  test_mac:
+    runs-on: macos-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Download Trekker Executable
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-universal_binary
+          path: ./testScripts
+
+    - name: Run test script
+      shell: bash
+      working-directory: ./testScripts
+      run: sh test_mac.sh
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-mac
+        path: testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5
+
+  test_win:
+    runs-on: windows-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Download Trekker Executable
+        uses: actions/download-artifact@v3
+        with:
+          name: windows_binary
+          path: ./testScripts
+
+    - name: Extract Trekker Executable (Windows)
+      shell: pwsh
+      working-directory: ./testScripts
+      run: Expand-Archive -Path windows_binary.zip -DestinationPath .
+
+    - name: Convert Line Endings to Windows
+      shell: bash
+      working-directory: ./testScripts
+      run: |
+        if command -v dos2unix &> /dev/null; then
+            dos2unix test_win.bat
+            dos2unix test_win_disp_file_info.bat
+        else
+            echo "dos2unix not found. You might need to install it."
+        fi
+
+    - name: Run test script
+      shell: cmd
+      working-directory: ./testScripts
+      run: call test_win.bat
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-win
+        path: testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5

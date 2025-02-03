@@ -1,6 +1,8 @@
 # Trekker
 
-[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Shared build](https://github.com/baranaydogan/trekker/actions/workflows/build_shared.yml/badge.svg)](https://github.com/baranaydogan/trekker/actions/workflows/build_shared.yml) [![Static build](https://github.com/baranaydogan/trekker/actions/workflows/build_static.yml/badge.svg)](https://github.com/baranaydogan/trekker/actions/workflows/build_static.yml)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Shared build](https://github.com/dmritrekker/trekker/actions/workflows/build_shared.yml/badge.svg?branch=build)](https://github.com/dmritrekker/trekker/actions/workflows/build_shared.yml) [![Static build](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml/badge.svg?branch=build)](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml) 
+
+[![Test](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml/badge.svg?branch=build)](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml)
 
 
 <img src="doc/source/_static/logo_github.png" alt="Trekker Logo" align="center" width="150">

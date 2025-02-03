@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.15.0)
 
-PROJECT(trekker VERSION 1.0.0 LANGUAGES CXX C)
+set(trekker_VERSION_MAJOR 1)
+set(trekker_VERSION_MINOR 0)
+set(trekker_VERSION_PATCH 0)
+
+project(trekker VERSION ${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH} LANGUAGES CXX C)
 
 set(CMDNAME trekker_v${trekker_VERSION}-rc3)
-
 message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
@@ -35,6 +38,13 @@ list(REMOVE_ITEM SRCS "main.cpp")
 
 # Set executable
 add_executable(${CMDNAME} ${CMAKE_SOURCE_DIR}/src/main.cpp ${SRCS})
+
+# Add version information
+target_compile_definitions(${CMDNAME} PRIVATE
+    TREKKER_VERSION_MAJOR=${trekker_VERSION_MAJOR}
+    TREKKER_VERSION_MINOR=${trekker_VERSION_MINOR}
+    TREKKER_VERSION_PATCH=${trekker_VERSION_PATCH}
+)
 
 find_package(OpenMP REQUIRED)
 

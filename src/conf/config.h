@@ -13,6 +13,10 @@
 #pragma GCC diagnostic pop
 #endif
 
+static std::string TREKKER_EXE_STRING = "Trekker-v" + std::to_string(TREKKER_VERSION_MAJOR) + "." + 
+                                                      std::to_string(TREKKER_VERSION_MINOR) + "." + 
+                                                      std::to_string(TREKKER_VERSION_PATCH) + 
+                                        "-rc3";
 
 void parseCommon(int& numberOfThreads, std::string verbose);
 bool parseForceOutput(std::string out_fname, bool force);
