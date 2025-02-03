@@ -5,30 +5,65 @@ on:
     branches:
       - test
 
-  workflow_run:
-    workflows: ["Static build"]
-    branches:
-      - build
-    types:
-      - completed
-
 jobs:
   test_linux:
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
+    - name: Get Latest Artifact from "Static build" Workflow
+      id: get_artifact
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 1. Get the latest successful run of "Static build"
+        run_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success \
+          --jq '.workflow_runs[0].id')
+
+        # 2. Get the artifact ID from the run
+        artifact_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/runs/$run_id/artifacts \
+          --jq '.artifacts[] | select(.name == "linux_binary") | .id')
+
+        # 3. Set outputs for use in later steps
+        echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        echo "artifact_id=$artifact_id" >> $GITHUB_OUTPUT
+      
     - name: Download Trekker Executable
-      uses: actions/download-artifact@v4
+      uses: actions/github-script@v6
+      if: ${{ steps.get_artifact.outputs.artifact_id != '' }}
+      id: download
       with:
-        name: linux_binary
-        path: ./tests/testScripts
+        script: |
+          const fs = require('fs').promises;
+          const artifactId = ${{ steps.get_artifact.outputs.artifact_id }};
+          const artifactName = 'linux_binary';
+          const download = await github.rest.actions.downloadArtifact({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            artifact_id: artifactId,
+            archive_format: 'zip',
+          });
+          await fs.writeFile(`${process.env.GITHUB_WORKSPACE}/tests/testScripts/${artifactName}.zip`, Buffer.from(download.data));
+          return artifactName
 
-    - name: Extract Trekker Executable (if zip)
+    - name: Check if the artifact is a zip or a single file
+      id: check_artifact
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: |
+        if file linux_binary.zip | grep -q "Zip archive"; then
+          echo "artifact_type=zip" >> $GITHUB_OUTPUT
+        else
+          echo "artifact_type=file" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Extract Trekker Executable
       if: steps.check_artifact.outputs.artifact_type == 'zip'
       shell: bash
       working-directory: ./tests/testScripts
