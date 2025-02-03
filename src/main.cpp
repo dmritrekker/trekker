@@ -8,8 +8,8 @@ int main(int argc, char *argv[]) {
     NIBR::INITIALIZE();
 
     // Parse input
-    CLI::App app("Trekker v1.0.0-rc3");
-    app.footer("----------Trekker v1.0.0-rc3---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
+    CLI::App app(TREKKER_EXE_STRING);
+    app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
     app.require_subcommand(1);

@@ -39,7 +39,7 @@ void parseCommon(int& numberOfThreads, std::string verbose)
     numberOfThreads = NIBR::MT::MAXNUMBEROFTHREADS();
 
     if (verbose=="quiet") {
-        NIBR::VERBOSE() = VERBOSE_QUITE;
+        NIBR::VERBOSE() = VERBOSE_QUIET;
     } else if (verbose=="fatal") {
         NIBR::VERBOSE() = VERBOSE_FATAL;
     } else if (verbose=="error") {
@@ -71,5 +71,5 @@ bool parseForceOutput(std::string out_fname, bool force)
 
 void setInfo(CLI::App* app, const std::string& info) {
     std::string preamble = "\n------------------------------------------------------------\n\nDescription:\n\n";    
-    app->footer(preamble + info + "\n\n" + "----------Trekker v1.0.0-rc3---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
+    app->footer(preamble + info + "\n\n" + "----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
 }
