@@ -24,23 +24,23 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: linux_binary
-        path: ./testScripts
+        path: ./tests/testScripts
 
     - name: Extract Trekker Executable
       shell: bash
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: unzip linux_binary.zip -d .
 
     - name: Run test script
       shell: bash
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: sh test_linux.sh
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
       with:
         name: test-results-linux
-        path: testScripts/testResults/
+        path: tests/testScripts/testResults/
         if-no-files-found: error
         retention-days: 5
 
@@ -57,23 +57,23 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: macOS-universal_binary
-        path: ./testScripts
+        path: ./tests/testScripts
 
     - name: Extract Trekker Executable
       shell: bash
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: unzip macOS-universal_binary.zip -d .
 
     - name: Run test script
       shell: bash
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: sh test_mac.sh
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
       with:
         name: test-results-mac
-        path: testScripts/testResults/
+        path: tests/testScripts/testResults/
         if-no-files-found: error
         retention-days: 5
 
@@ -90,16 +90,16 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: windows_binary
-        path: ./testScripts
+        path: ./tests/testScripts
 
     - name: Extract Trekker Executable
       shell: pwsh
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: Expand-Archive -Path windows_binary.zip -DestinationPath .
 
     - name: Convert Line Endings to Windows
       shell: bash
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: |
         if command -v dos2unix &> /dev/null; then
             dos2unix test_win.bat
@@ -110,13 +110,13 @@ jobs:
 
     - name: Run test script
       shell: cmd
-      working-directory: ./testScripts
+      working-directory: ./tests/testScripts
       run: call test_win.bat
 
     - name: Archive test results
       uses: actions/upload-artifact@v4
       with:
         name: test-results-win
-        path: testScripts/testResults/
+        path: tests/testScripts/testResults/
         if-no-files-found: error
         retention-days: 5
