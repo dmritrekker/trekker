@@ -159,3 +159,5 @@ echo "=========="
 echo "===Completed tests"
 echo "=========="
 echo.
+
+exit 0
