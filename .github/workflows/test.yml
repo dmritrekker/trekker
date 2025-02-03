@@ -173,7 +173,7 @@ jobs:
         # 1. Get the latest successful run of "Static build"
         run_id=$(gh api \
           -H "Accept: application/vnd.github+json" \
-          /repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success \
+          "repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success" \
           --jq '.workflow_runs[0].id')
 
         if [[ -z "$run_id" ]]; then
@@ -184,7 +184,7 @@ jobs:
         # 2. Get the artifact ID from the run
         artifact_id=$(gh api \
           -H "Accept: application/vnd.github+json" \
-          /repos/{owner}/{repo}/actions/runs/$run_id/artifacts \
+          "repos/{owner}/{repo}/actions/runs/$run_id/artifacts" \
           --jq '.artifacts[] | select(.name == "windows_binary") | .id')
 
         if [[ -z "$artifact_id" ]]; then
