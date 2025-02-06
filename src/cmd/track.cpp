@@ -64,8 +64,9 @@ namespace CMDARGS_TRACK
 
     // Output options
     std::string out_fname;
-    float       writeStepSize   =  0;
-    bool        ascii           = false;
+    float       writeStepSize       =  0;
+    bool        ascii               = false;
+    bool        saveSeedIndexField  = false;
     
     // General options
     int numberOfThreads     =  0;
@@ -84,6 +85,11 @@ void run_track()
 
     if(!ensureVTKorTCK(out_fname)) return;
     std::string out_ext = getFileExtension(out_fname);
+
+    if (saveSeedIndexField) {
+        if (ascii)                  {disp(MSG_ERROR, "saveSeedIndexField is available only for binary vtk output"); return;}
+        if (!ensureVTK(out_fname))  {disp(MSG_ERROR, "saveSeedIndexField is available only for binary vtk output"); return;}
+    }
 
     // =======================
     // TREKKER
@@ -184,9 +190,6 @@ void run_track()
     if (!trekker->pathway_addRule(tmp))  return;
     // =======================
 
-
-
-
     // =======================
     // PATHWAY
     if (!trekker->pathway_minLength(minlength))         return;
@@ -199,13 +202,22 @@ void run_track()
     if (!trekker->pathway_addRule(pathway))             return;
     // =======================
 
+    // =======================
+    // OTHER
+    trekker->saveSeedIndex(saveSeedIndexField);
+    // =======================
 
     trekker->run();
 
     if (ascii && (out_ext=="vtk"))
         NIBR::writeTractogram_VTK_ascii(out_fname, TRACKER::getTractogram());
-    else 
+    else if (!saveSeedIndexField)
         NIBR::writeTractogram(out_fname, TRACKER::getTractogram());
+    else {
+        std::vector<TractogramField> seedIdx;
+        seedIdx.push_back(TRACKER::getSeedIndexField());
+        NIBR::writeTractogram(out_fname, TRACKER::getTractogram(), seedIdx);
+    }
 
     delete trekker;
 
@@ -270,10 +282,11 @@ void track(CLI::App *app)
     
     general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required()->check(CLI::ExistingFile)->type_name("FILE");
     general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    general->add_flag   ("--saveSeedIndexField",      saveSeedIndexField,    "Save seed indices as tractogram field. Available only for binary vtk output.");
     general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
     general->add_option ("--writeStepSize,-w",        writeStepSize,         "Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeStepSize enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally Trekker always walks with the specified --stepSize. --writeStepSize by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.");
     general->add_option("--numberOfThreads, -n",      numberOfThreads,       "Number of threads.");
-    general->add_option("--verbose, -v",              verbose,               "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    general->add_option("--verbose, -v",              verbose,               "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     general->add_flag("--force, -f",                  force,                 "Force overwriting of existing file");
 
 

@@ -1,5 +1,7 @@
 # Trekker
 
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) [![Shared build](https://github.com/dmritrekker/trekker/actions/workflows/build_shared.yml/badge.svg?branch=build)](https://github.com/dmritrekker/trekker/actions/workflows/build_shared.yml) [![Static build](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml/badge.svg?branch=build)](https://github.com/dmritrekker/trekker/actions/workflows/build_static.yml) [![Test](https://github.com/baranaydogan/trekker/actions/workflows/test.yml/badge.svg?branch=test)](https://github.com/baranaydogan/trekker/actions/workflows/test.yml)
+
 <img src="doc/source/_static/logo_github.png" alt="Trekker Logo" align="center" width="150">
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
@@ -18,56 +20,110 @@ For complete documentation, tutorials and examples, visit https://dmritrekker.gi
 
 ## Installation
 
-**Stand-alone executables:** Please find the stand-alone executables under [Releases](https://github.com/dmritrekker/trekker/releases).
+### Stand-alone executables
+
+Ready-to-run executables are available on the [Releases](https://github.com/dmritrekker/trekker/releases) page. 
+
+**Note 1:** Linux and macOS users may need to run `chmod +x <trekker_executable>` in their terminal after downloading to make the file executable.
+
+**Note 2:** The stand-alone executables are optimized to work on a wide range of platforms and do not leverage hardware optimization to improve performance. For best performance, executables can be built from source.
 
 
-### Building from Source
+### Building from source
 
-Trekker relies on [nibrary](https://github.com/nibrary/nibrary). To compile Trekker from source, ensure that nibrary is installed first. Then follow these steps to compile Trekker:
+Trekker is natively supported on Linux, Windows, and macOS. Trekker can be installed with a minimal set of standard development tools.
 
-#### Step 1: Download the Source Code
+*   **CMake**: min v3.15.0
+*   **OpenMP**
+*   **C/C++ Compiler**: The following compilers have been tested and are known to work:
+    *   **GCC** (min v9.0)
+    *   **Clang**: v18.0.0 (v19 is known not to work)
+    *   **Microsoft Visual C++ (MSVC)**: Visual Studio 2022
+
+To install Trekker, first clone the repository: 
 
 ```bash
-git clone https://github.com/dmritrekker/trekker
+git clone https://github.com/dmritrekker/trekker.git
 ```
 
-#### Step 2: Modify and run the build script
+Then follow the instructions below.
 
-- **For Linux:** Edit `build_Linux.sh`
 
-**Note:** Trekker binaries can be compiled using the following version matching with [nibrary](https://github.com/nibrary/nibrary):
+#
+#### Linux
 
-| Trekker version    | nibrary version|
-|--------------------|-------------|
-| [master](https://github.com/dmritrekker/trekker/tree/master)  | [main](https://github.com/nibrary/nibrary/tree/main) |
-| [v1.0.0-rc2](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc2)   | [v0.2.0](https://github.com/nibrary/nibrary/tree/v0.2.0) |
-| [v1.0.0-rc1](https://github.com/dmritrekker/trekker/tree/v1.0.0-rc1)   | [v0.1.0](https://github.com/nibrary/nibrary/tree/v0.1.0) |
-| [v1.0-beta](https://github.com/dmritrekker/trekker/tree/v1.0-beta)   | [v0.0.0](https://github.com/nibrary/nibrary/tree/v0.0.0) |
+#### 1. Install dependencies:
 
-## Usage
+Debian/Ubuntu:
+```bash
+sudo apt install cmake libomp-dev build-essential
+```
 
-Simply run `trekker` on the terminal. This will display help and the commands, which are listed below:
+Fedora/CentOS/RHEL:
+```bash
+sudo dnf install cmake openmp-devel
+sudo dnf group install "Development Tools"
+```
 
-| Command    | Description |
-|------------|-------------|
-| **info**  | displays information about input file |
-| **track**  | performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles |
-| **filter** | Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions. |
-|**track2img**| maps tractogram features on an image |
-|**track2surf**| maps tractogram features on a surface |
-|**img2track**| maps image values on a tractogram |
-|**select**| selects streamlines from a tractogram |
-|**resample**| resamples streamlines in a tractogram |
-|**convert**| converts tractogram file formats (.vtk, .tck, .trk) |
-|**transform**| applies a transform on an input tractogram |
-|**diff**| finds different streamlines between two tractograms |
-|**merge**| merges two tractograms, optionally ignoring duplicates |
-|**addColor**| adds colors to streamlines (.vtk only) |
-|**fieldExport**| exports a selected vtk field from a tractogram (.vtk only) |
-|**fieldImport**| adds a new vtk field with values read from a file (.vtk only) |
-|**fieldRemove**| removes a vtk field from a tractogram (.vtk only) |
-|**dMRI**| dMRI commands |
+Arch Linux/Manjaro:
+```bash
+sudo pacman -S cmake openmp
+sudo pacman -S base-devel
+```
 
+#### 2. Run the build script:
+
+The following will install a statically built executable under the `build-static` folder using the default compiler in the system.
+```bash
+cd trekker
+sh build_linux.sh
+```
+
+
+Edit the `build_linux.sh` script to customize your installation.
+
+#
+#### macOS
+
+The provided installation script for macOS, `build_mac.sh`, will install the dependencies, set the environment variables, compile and install trekker under the `build-static` folder.
+
+```bash
+cd trekker
+sh build_macOS.sh
+```
+
+Note that trekker requires `llvm` and `libomp` in macOS. We have successfully tested `llvm` v18 to build nibrary; however, compilation with the more recent version, v19, fails. The provided build script installs `llvm@18` and `libomp` in the system. However, it does not permanently set environment variables for future use. The `build_mac.sh` script contains information about how to permanently set these environment variables if needed.
+
+Edit the `build_mac.sh` script to customize your installation.
+
+#
+#### Windows
+
+Install Visual Studio 2022 (other versions might work too but they have not been tested). Open command window and use the following to install a statically built library under the `build-static` folder:
+
+```cmd
+cd trekker
+call build_win.bat
+```
+
+Edit the `build_win.bat` script to customize your installation.
+
+#
+### Testing
+
+You can test your executable using the test scripts and data provided under the `tests` folder. For that:
+
+1. copy paste your executable under the `tests/testScripts`
+2. rename your executable as:
+    - For Linux: `trekker_linux`
+    - For macOS: `trekker_macOS` 
+    - For Windows: `trekker_win.exe`
+3. Run the test script:
+    - For Linux: `sh test_linux.sh`
+    - For macOS: `sh test_macOS.sh`
+    - For Windows: `call test_win.bat`
+
+**Note:** The same testing protocol is used under the `test` branch of this repository before sharing the stand-alone-executables.
 
 ### Examples
 
@@ -92,7 +148,7 @@ Simply run `trekker` on the terminal. This will display help and the commands, w
           INP_TRACK.vtk \
           --seed WHITE_MATTER_SURFACE.gii \
           --pathway require_end_inside LEFT_THAL.nii.gz \
-          OUT_TRACK.vtk
+          --output OUT_TRACK.vtk
 ```
 
 

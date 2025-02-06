@@ -46,7 +46,10 @@ void run_dMRI_recon_transhi2015()
     // Check bval and bvec
     auto grad = NIBR::readGradTable(std::get<0>(grad_fnames), std::get<1>(grad_fnames));
 
-    if (!std::get<0>(grad)) return; // Errors related to reading of bvals and bvecs should be displayed in the above function
+    if (!std::get<0>(grad)) {
+        disp(MSG_ERROR,"Incorrect bvals/bvecs definition.");
+        return;
+    }
     
     // Read input image headers
     
@@ -57,11 +60,12 @@ void run_dMRI_recon_transhi2015()
     // This makes it faster to read the diffusion signal for each voxel separately when we do the reconstruction.
     // Then why do have 4,5,6 at the end? This is because the maximum image dimension supported with NIBR is 7, and an order needs to be set for all dimensions.
     int indexOrder[7] = {3,0,1,2,4,5,6};
+    
     NIBR::Image<float> dMRI(inp_dMRI_img,indexOrder);
-
     NIBR::Image<bool>  mask(inp_mask_img);
 
     // Read input images
+    disp(MSG_INFO,"Reading dMRI image: %s",inp_dMRI_img.c_str());
     dMRI.read();
     mask.read();
 
@@ -113,7 +117,7 @@ void dMRI_recon_transhi2015(CLI::App* app)
 
     app->description("dMRI signal reconstruction based on Tran & Shi IEEE TMI 2015 model");
     
-    app->add_option("<input dMRI image>", inp_dMRI_img, "Input diffusion MRI image (.nii, .nii.gz)")
+    app->add_option("<input_dMRI_image>", inp_dMRI_img, "Input diffusion MRI image (.nii, .nii.gz)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -142,14 +146,14 @@ void dMRI_recon_transhi2015(CLI::App* app)
     app->add_option("--maxCrossings,-c",            maxCrossings,               "Maximum number of fiber maxCrossings. Default: 4");
     app->add_option("--noiseFloor",                 noiseFloor,                 "Noise floor. Default: 0");
 
-    app->add_option("<output FOD>", out_FOD_img, "Output FOD image (.nii, .nii.gz)")
+    app->add_option("<output_FOD>", out_FOD_img, "Output FOD image (.nii, .nii.gz)")
         ->required();
 
-    app->add_option("<output tissue map>", out_TM_img, "Output tissue map image (.nii, .nii.gz)")
+    app->add_option("<output_tissue_map>", out_TM_img, "Output tissue map image (.nii, .nii.gz)")
         ->required();
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
     
     app->callback(run_dMRI_recon_transhi2015);

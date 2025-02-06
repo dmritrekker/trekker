@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "conf/config.h"
-#include "conf/aux.h"
+#include "conf/auxiliary.h"
 
 void info(CLI::App* app);
 void track(CLI::App* app);
