@@ -30,7 +30,35 @@ Installation
 
 Option 1: Stand-alone executables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Please find the stand-alone executables for Linux, Windows and macOS under `Releases <https://github.com/dmritrekker/trekker/releases>`_.
+
+Download the appropriate stand-alone executable for your operating system:
+
+*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/linux_binary.zip>`
+*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/macOS-universal_binary.zip>`
+*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/windows_binary.zip>`
+
+After downloading and extracting the archive, you can run the executable.
+
+**Testing:**
+
+- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/tests.zip>`_.
+- Copy paste your executable under the ``testScripts`` folder.
+- Run the provided test script for your operating system.
+
+
+**Troubleshooting:** 
+
+- *permission denied error*: If you encounter this when trying to run the executable on Linux or macOS, open a terminal, navigate to the directory where you extracted the file, and run the following command:
+
+.. code-block:: bash
+
+    chmod +x <executable name>
+
+Replace ``<executable name>`` with the actual name of the executable file (e.g., ``trekker_linux`` or ``trekker_macOS``).  Then, try running the executable again.
+
+- *macOS errors related to llvm and libomp*: If you encounter errors related to missing OpenMP or libomp, please see the provided test script for macOS in this `link <https://github.com/dmritrekker/trekker/blob/main/tests/testScripts/test_macOS.sh>`_, which gives an example for how to set these paths and install dependencies if needed.
+
+
 
 Option 2: Building from source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
