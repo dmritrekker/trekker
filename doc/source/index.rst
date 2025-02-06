@@ -3,7 +3,7 @@ Trekker
 
 .. note::
 
-    February 3\ :sup:`th`, 2025
+    February 6\ :sup:`th`, 2025
 
     **UPDATE:** Trekker v1.0.0-rc3 is out with major improvements and bug fixes! See below for a list of changes.
 
@@ -30,22 +30,30 @@ Installation
 
 Option 1: Stand-alone executables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Please find the stand-alone executables under `Releases <https://github.com/dmritrekker/trekker/releases>`_.
+Please find the stand-alone executables for Linux, Windows and macOS under `Releases <https://github.com/dmritrekker/trekker/releases>`_.
 
 Option 2: Building from source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Trekker relies on `nibrary <https://github.com/nibrary/nibrary>`_. To compile Trekker from source, ensure that nibrary is installed first. Then follow these steps to compile Trekker:
+Trekker is natively supported on Linux, Windows, and macOS. Trekker can be installed with a minimal set of standard development tools.
+
+For detailed instructions to build from source, please check the `Readme <https://github.com/dmritrekker/trekker/tree/main>`_ file in GitHub.
+
+Shortly, if your system has CMake (min version 3.15), OpenMP, and a modern compiler. The following should be sufficient for the compilation.
+
+*Note*: clang-v19 is known NOT to work with this version of Trekker due to a conflict with an internal dependency. Please use clang-v18 instead.
 
 **Step 1: Download the Source Code**
 
 .. code-block:: bash
 
-   git clone https://github.com/dmritrekker/trekker
+   git clone https://github.com/dmritrekker/trekker.git
 
 **Step 2: Modify and run the build script**
 
 - **For Linux:** Edit ``build_Linux.sh``
+- **For Windows:** Edit ``build_win.sh``
+- **For macOS:** Edit ``build_macOS.sh``
 
 
 
@@ -161,7 +169,7 @@ Examples
              INP_TRACK.vtk \
              --seed WHITE_MATTER_SURFACE.gii \
              --pathway require_end_inside LEFT_THAL.nii.gz \
-             OUT_TRACK.vtk
+             --output OUT_TRACK.vtk
 
 Release notes for Trekker-v1.0.0-rc3
 ------------------------------------
