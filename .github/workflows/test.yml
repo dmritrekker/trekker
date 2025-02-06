@@ -1,0 +1,256 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  test_linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get Latest Artifact from "Static build" Workflow
+      id: get_artifact
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 1. Get the latest successful run of "Static build"
+        run_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success \
+          --jq '.workflow_runs[0].id')
+
+        # 2. Get the artifact ID from the run
+        artifact_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/runs/$run_id/artifacts \
+          --jq '.artifacts[] | select(.name == "linux_binary") | .id')
+
+        # 3. Set outputs for use in later steps
+        echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        echo "artifact_id=$artifact_id" >> $GITHUB_OUTPUT
+      
+    - name: Download Trekker Executable
+      uses: actions/github-script@v6
+      if: ${{ steps.get_artifact.outputs.artifact_id != '' }}
+      id: download
+      with:
+        script: |
+          const fs = require('fs').promises;
+          const artifactId = ${{ steps.get_artifact.outputs.artifact_id }};
+          const artifactName = 'linux_binary';
+          const download = await github.rest.actions.downloadArtifact({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            artifact_id: artifactId,
+            archive_format: 'zip',
+          });
+          await fs.writeFile(`${process.env.GITHUB_WORKSPACE}/tests/testScripts/${artifactName}.zip`, Buffer.from(download.data));
+          return artifactName
+
+    - name: Check if the artifact is a zip or a single file
+      id: check_artifact
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: |
+        if file linux_binary.zip | grep -q "Zip archive"; then
+          echo "artifact_type=zip" >> $GITHUB_OUTPUT
+        else
+          echo "artifact_type=file" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Extract Trekker Executable
+      if: steps.check_artifact.outputs.artifact_type == 'zip'
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: unzip linux_binary.zip -d .
+
+    - name: Run test script
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: sh test_linux.sh
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-linux
+        path: tests/testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5
+
+  test_macOS:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get Latest Artifact from "Static build" Workflow
+      id: get_artifact
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 1. Get the latest successful run of "Static build"
+        run_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success \
+          --jq '.workflow_runs[0].id')
+
+        # 2. Get the artifact ID from the run
+        artifact_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          /repos/{owner}/{repo}/actions/runs/$run_id/artifacts \
+          --jq '.artifacts[] | select(.name == "macOS-universal_binary") | .id')
+
+        # 3. Set outputs for use in later steps
+        echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        echo "artifact_id=$artifact_id" >> $GITHUB_OUTPUT
+      
+    - name: Download Trekker Executable
+      uses: actions/github-script@v6
+      if: ${{ steps.get_artifact.outputs.artifact_id != '' }}
+      id: download
+      with:
+        script: |
+          const fs = require('fs').promises;
+          const artifactId = ${{ steps.get_artifact.outputs.artifact_id }};
+          const artifactName = 'macOS-universal_binary';
+          const download = await github.rest.actions.downloadArtifact({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            artifact_id: artifactId,
+            archive_format: 'zip',
+          });
+          await fs.writeFile(`${process.env.GITHUB_WORKSPACE}/tests/testScripts/${artifactName}.zip`, Buffer.from(download.data));
+          return artifactName
+
+    - name: Check if the artifact is a zip or a single file
+      id: check_artifact
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: |
+        if file macOS-universal_binary.zip | grep -q "Zip archive"; then
+          echo "artifact_type=zip" >> $GITHUB_OUTPUT
+        else
+          echo "artifact_type=file" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Extract Trekker Executable
+      if: steps.check_artifact.outputs.artifact_type == 'zip'
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: unzip macOS-universal_binary.zip -d .
+
+    - name: Run test script
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: sh test_macOS.sh
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-macOS
+        path: tests/testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5
+
+  test_win:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get Latest Artifact from "Static build" Workflow
+      id: get_artifact
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 1. Get the latest successful run of "Static build"
+        run_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          "repos/{owner}/{repo}/actions/workflows/build_static.yml/runs?status=success" \
+          --jq '.workflow_runs[0].id')
+
+        if [[ -z "$run_id" ]]; then
+          echo "Error: No successful runs found for 'Static build' workflow."
+          exit 1
+        fi
+
+        # 2. Get the artifact ID from the run
+        artifact_id=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          "repos/{owner}/{repo}/actions/runs/$run_id/artifacts" \
+          --jq '.artifacts[] | select(.name == "windows_binary") | .id')
+
+        if [[ -z "$artifact_id" ]]; then
+          echo "Error: No artifact named 'windows_binary' found in the latest successful run."
+          exit 1
+        fi
+
+        # 3. Set outputs for use in later steps
+        echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        echo "artifact_id=$artifact_id" >> $GITHUB_OUTPUT
+
+    - name: Download Trekker Executable
+      uses: actions/github-script@v6
+      if: ${{ steps.get_artifact.outputs.artifact_id != '' }}
+      id: download
+      with:
+        script: |
+          const fs = require('fs').promises;
+          const artifactId = ${{ steps.get_artifact.outputs.artifact_id }};
+          const artifactName = 'windows_binary';
+          const download = await github.rest.actions.downloadArtifact({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            artifact_id: artifactId,
+            archive_format: 'zip',
+          });
+          await fs.writeFile(`${process.env.GITHUB_WORKSPACE}\\tests\\testScripts\\${artifactName}.zip`, Buffer.from(download.data));
+          return artifactName
+
+    - name: Check if the artifact is a zip or a single file
+      id: check_artifact
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: |
+        if file windows_binary.zip | grep -q "Zip archive"; then
+          echo "artifact_type=zip" >> $GITHUB_OUTPUT
+        else
+          echo "artifact_type=file" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Extract Trekker Executable (if zip)
+      if: steps.check_artifact.outputs.artifact_type == 'zip'
+      shell: powershell
+      working-directory: ./tests/testScripts
+      run: Expand-Archive -Path windows_binary.zip -DestinationPath .
+
+    - name: Convert Line Endings to Windows
+      shell: bash
+      working-directory: ./tests/testScripts
+      run: |
+        if command -v dos2unix &> /dev/null; then
+            dos2unix test_win.bat
+            dos2unix test_win_disp_file_info.bat
+        else
+            echo "dos2unix not found. You might need to install it."
+        fi
+
+    - name: Run test script
+      shell: cmd
+      working-directory: ./tests/testScripts
+      run: call test_win.bat
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-win
+        path: tests/testScripts/testResults/
+        if-no-files-found: error
+        retention-days: 5

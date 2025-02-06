@@ -62,18 +62,18 @@ void resample(CLI::App* app)
 
     app->description("resamples streamlines in a tractogram");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
         ->required();    
     
     sizeOpt   = app->add_option("--stepSize, -s",  stepSize,  "Resampling is done based on the given step size. The last segment of a streamline might have a shorter step size.");
     countOpt  = app->add_option("--stepCount, -c", stepCount, "Resampling is done so each streamline has the same number of points.");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
 
     app->callback(run_resample);

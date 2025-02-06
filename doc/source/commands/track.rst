@@ -33,6 +33,10 @@ fiber tracker
            <td style="padding: 8px; font-weight: 500;">-o, --output FILE REQUIRED</td>
            <td style="padding: 8px;">Output tractogram (.vtk, .tck).</td>
        </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--saveSeedIndexField</td>
+           <td style="padding: 8px;">Save seed indices as tractogram field. Available only for binary vtk output.</td>
+       </tr>
        <tr>
            <td style="padding: 8px; font-weight: 500;">-a, --ascii</td>
            <td style="padding: 8px;">Write ASCII output (.vtk only).</td>

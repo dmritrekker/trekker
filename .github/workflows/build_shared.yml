@@ -1,0 +1,286 @@
+name: Shared build
+
+on:
+  push:
+    branches:
+      - build
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build_macOS_x86_64:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Install x86_64 Homebrew
+      shell: bash
+      run: |
+        arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        echo >> /Users/runner/.bash_profile
+        echo 'eval "$(/usr/local/bin/brew shellenv)"' >> /Users/runner/.bash_profile
+        eval "$(/usr/local/bin/brew shellenv)"
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        arch -x86_64 /usr/local/bin/brew install llvm@18 libomp cmake
+        echo "/usr/local/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "LDFLAGS=-L/usr/local/opt/llvm@18/lib -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include" >> $GITHUB_ENV
+        echo "OpenMP_C_FLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-I/usr/local/opt/llvm@18/include -I/usr/local/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
+
+    - name: Set up build directory and environment
+      shell: bash
+      run: |
+        echo "arch=x86_64" >> $GITHUB_ENV
+        echo "artifact_prefix=macOS_x86_64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macOS_x86_64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macOS-x86_64_binary" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macOS_x86_64" >> $GITHUB_ENV
+        
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        eval "$(/usr/local/bin/brew shellenv)"
+        arch -x86_64 /usr/local/bin/cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
+          -DCMAKE_C_COMPILER=/usr/local/opt/llvm@18/bin/clang \
+          -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm@18/bin/clang++ \
+          -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_NATIVE=OFF \
+          -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
+          -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
+          -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
+          -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
+          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
+          -S ${{ github.workspace }}
+
+
+    - name: Build
+      run: arch -x86_64 /usr/local/bin/cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+
+    - name: Rename executable
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+
+    - name: Upload binary as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+        if-no-files-found: error
+        retention-days: 5
+
+
+
+  build_macOS_arm64:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        brew install llvm@18 libomp
+        echo "PATH=/opt/homebrew/opt/llvm@18/bin:$PATH" >> $GITHUB_PATH
+        echo "LDFLAGS=-L/opt/homebrew/opt/llvm@18/lib -L/opt/homebrew/opt/libomp/lib -Wl,-rpath,/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
+        echo "OpenMP_C_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-I/opt/homebrew/opt/llvm@18/include -I/opt/homebrew/opt/libomp/include -Xclang -fopenmp" >> $GITHUB_ENV
+        echo "OpenMP_C_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=/opt/homebrew/opt/libomp/lib/libomp.dylib" >> $GITHUB_ENV
+
+    - name: Set up build directory and environment
+      shell: bash
+      run: |
+        echo "arch=arm64" >> $GITHUB_ENV
+        echo "artifact_prefix=macOS_arm64" >> $GITHUB_ENV
+        echo "executable_name=trekker_macOS_arm64" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=macOS-arm64_binary" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_macOS_arm64" >> $GITHUB_ENV
+        
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
+          -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang \
+          -DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm@18/bin/clang++ \
+          -DCMAKE_OSX_ARCHITECTURES=${{ env.arch }} \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_NATIVE=OFF \
+          -DOpenMP_C_FLAGS="${{ env.OpenMP_C_FLAGS }}" \
+          -DOpenMP_CXX_FLAGS="${{ env.OpenMP_CXX_FLAGS }}" \
+          -DOpenMP_C_LIB_NAMES="${{ env.OpenMP_C_LIB_NAMES }}" \
+          -DOpenMP_CXX_LIB_NAMES="${{ env.OpenMP_CXX_LIB_NAMES }}" \
+          -DOpenMP_omp_LIBRARY="${{ env.OpenMP_omp_LIBRARY }}" \
+          -S ${{ github.workspace }}
+
+
+    - name: Build
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+
+    - name: Rename executable
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+
+    - name: Upload binary as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+        if-no-files-found: error
+        retention-days: 5
+
+  create-universal-macOS-binary:
+    needs: [build_macOS_arm64, build_macOS_x86_64]
+    runs-on: macos-latest
+    steps:
+      - name: Set up build directory
+        shell: bash
+        run: echo "build-output-dir=${{ github.workspace }}/build_universal" >> $GITHUB_ENV
+
+      - name: Download arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macOS-arm64_binary
+          path: ${{ env.build-output-dir }}/arm64
+
+      - name: Download x86_64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macOS-x86_64_binary
+          path: ${{ env.build-output-dir }}/x86_64
+
+      - name: Create Universal Binary with lipo
+        run: |
+          lipo -create ${{ env.build-output-dir }}/arm64/trekker_macOS_arm64 ${{ env.build-output-dir }}/x86_64/trekker_macOS_x86_64 -output ${{ env.build-output-dir }}/trekker_macOS
+
+      - name: Upload universal binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-universal_binary
+          path: ${{ env.build-output-dir }}/trekker_macOS
+          if-no-files-found: error
+          retention-days: 5
+
+  build_ubuntu:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-9 g++-9 libomp-dev cmake
+        
+    - name: Set up build directory and environment
+      shell: bash
+      run: |
+        echo "artifact_prefix=linux" >> $GITHUB_ENV
+        echo "executable_name=trekker_linux" >> $GITHUB_ENV
+        echo "ARTIFACT_NAME=linux_binary" >> $GITHUB_ENV
+        echo "build_type=Release" >> $GITHUB_ENV
+        echo "build-output-dir=${{ github.workspace }}/build_linux" >> $GITHUB_ENV
+
+    - name: Configure CMake (Ubuntu)
+      shell: bash
+      run: |
+        cmake -B ${{ env.build-output-dir }} \
+          -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
+          -DCMAKE_C_COMPILER=gcc-9 \
+          -DCMAKE_CXX_COMPILER=g++-9 \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_NATIVE=OFF \
+          -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+
+    - name: Rename executable
+      shell: bash
+      run: |
+        mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+
+    - name: Upload binary as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
+        if-no-files-found: error
+        retention-days: 5
+
+  build_windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+      - name: Set up build directory and environment
+        shell: cmd
+        run: |
+          echo artifact_prefix=windows>> %GITHUB_ENV%
+          echo executable_name=trekker_windows>> %GITHUB_ENV%
+          echo ARTIFACT_NAME=windows_binary>> %GITHUB_ENV%
+          echo build_type=Release>> %GITHUB_ENV%
+          echo build_output_dir=%GITHUB_WORKSPACE%\build_windows>> %GITHUB_ENV%
+
+      - name: Create build directory
+        shell: cmd
+        run: |
+          mkdir %build_output_dir%
+
+      - name: Configure CMake
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake -B %build_output_dir% ^
+            -DCMAKE_BUILD_TYPE=%build_type% ^
+            -DBUILD_SHARED_LIBS=ON ^
+            -DBUILD_NATIVE=OFF ^
+            -S %GITHUB_WORKSPACE%
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake --build %build_output_dir% --config %build_type% --target install
+
+      - name: Rename executable
+        shell: pwsh
+        run: |
+          Rename-Item -Path "${{ env.build_output_dir }}/install/bin/trekker*" -NewName "${{ env.build_output_dir }}/install/bin/${{ env.executable_name }}"
+
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.build_output_dir }}/install/bin/${{ env.executable_name }}
+          if-no-files-found: error
+          retention-days: 5

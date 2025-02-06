@@ -108,7 +108,7 @@ void run_select()
         }
 
         for (int i = _ordered[0]; i < (_ordered[1]+1); i++)
-            select.push_back(i);
+            select.push_back(i-1);
 
         NIBR::writeTractogram(out_fname, &tractogram, select);
         
@@ -130,11 +130,11 @@ void select(CLI::App* app)
 
     app->description("selects streamlines from a tractogram");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk, .tck.trk)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck.trk)")
         ->required();    
     
     selectOpt = app->add_option("--selection, -s", select_fname, "File with binary values that mark selected streamlines with 1 and others with 0");    
@@ -142,7 +142,7 @@ void select(CLI::App* app)
     orderedOpt= app->add_option("--ordered, -o", _ordered, "Ordered tractogram file creating. Two input required, begin and end index")->expected(2);
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
 
     app->callback(run_select);
