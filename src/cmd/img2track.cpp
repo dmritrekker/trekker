@@ -245,15 +245,15 @@ void img2track(CLI::App* app)
 
     app->description("maps image values on a tractogram");
     
-    app->add_option("<input image>", inp_image, "Input image (.nii, .nii.gz)")
+    app->add_option("<input_image>", inp_image, "Input image (.nii, .nii.gz)")
         ->required()
         ->check(CLI::ExistingFile);
         
-    app->add_option("<input tractogram>", inp_tractogram, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_tractogram, "Input tractogram (.vtk, .tck)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<output file name>", out_fname, "Output file name. Output is a float32 type binary file.")
+    app->add_option("<output_file_name>", out_fname, "Output file name. Output is a float32 type binary file.")
         ->required();
 
     app->add_flag("--SH", isSH, "Treat the image as a 4D spherical harmonics image.");
@@ -263,7 +263,7 @@ void img2track(CLI::App* app)
     app->add_option("--SF_smoothing", smoothing, "Apply spherical smoothing before using the spherical function.");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
     
     app->callback(run_map2track);

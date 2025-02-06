@@ -286,8 +286,8 @@ void filter(CLI::App *app)
 
     app->description("filters tractograms");
 
-    app->add_option("<input tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck)")->required()->check(CLI::ExistingFile)->type_name("");   
-    app->add_option("<output tractogram>",   out_fname,          "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck)")->required()->check(CLI::ExistingFile)->type_name("");   
+    app->add_option ("--output,-o",          out_fname,          "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
 
     app->add_option("--pathway, -p",         pathway,            "Pathway rule")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
     app->add_option("--seed, -s",            seedList,           "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
@@ -309,7 +309,7 @@ void filter(CLI::App *app)
     app->add_option("--saveUncropped",       saveUncr,           "Path for saving uncropped versions of streamlines if they were cropped during filtering");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
 
     app->callback(run_filter);
