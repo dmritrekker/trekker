@@ -39,6 +39,10 @@ filters tractograms
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Description</th>
        </tr>
        <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">-o,--output FILE REQUIRED</td>
+           <td style="padding: 8px;">Output tractogram (.vtk, .tck)</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">-p, --pathway TEXT ...</td>
            <td style="padding: 8px;">Pathway rule.</td>
        </tr>
@@ -77,7 +81,7 @@ filters tractograms
        </tr>
        -->
        <tr>
-           <td style="padding: 8px; font-weight: 500;">--seedTrials INT</td>
+           <td style="padding: 8px; font-weight: 500;">--seed_trials INT</td>
            <td style="padding: 8px;">Number of random trials for assigning seed. Default: 0.</td>
        </tr>
        <tr style="background-color: #f2f2f2;">

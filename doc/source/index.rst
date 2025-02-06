@@ -180,13 +180,13 @@ Release notes for Trekker-v1.0.0-rc3
 
     - **Bug fix 6**: Fixed Windows support.
 
-    - **Bug fix 7**: transhi model no more gets stuck when running.
+    - **Bug fix 7**: `tran_shi_2015` model no more gets stuck when running.
 
-    - **Improvement 1**: Added stricter pathway rule validation check for track and filter.
+    - **Improvement 1**: Added stricter pathway rule validation for `track` and `filter`.
 
     - **Improvement 2**: In `filter`, changed option name `--seedTrials` to `--seed_trials` to be consistent with `track`. Also added `--output, -o` option for the same reason.
 
-    - **Improvement 3**: Seedless filtering works is now separated from online filtering and it works faster.
+    - **Improvement 3**: Seedless filtering now works independent from online filtering and it works faster.
 
     - **Improvement 4**: Upgraded to CLI11-v2.4.2
 

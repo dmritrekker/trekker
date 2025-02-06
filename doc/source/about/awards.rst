@@ -1,12 +1,6 @@
 Awards
 ======
 
-Young scientist award
----------------------
-
-Prior to Parallel Transport Tractography (PTT) [Aydogan2019]_, [Aydogan2021]_, Trekker was implementing an earlier version of the algorithm that was based on the Frenet-Serret frame [Aydogan2016]_. This work was ranked among the top five papers at MICCAI 2016, leading to a **Young Scientist Award**.
-
-
 Tractography challenges
 -----------------------
 
@@ -18,6 +12,10 @@ Pipelines using Trekker have earned awards in every international tractography c
 	:align: center
 	:height: 900px
 
+Young scientist award
+---------------------
+
+Prior to Parallel Transport Tractography (PTT) [Aydogan2019]_, [Aydogan2021]_, Trekker was implementing an earlier version of the algorithm that was based on the Frenet-Serret frame [Aydogan2016]_. This work was ranked among the top five papers at MICCAI 2016, leading to a **Young Scientist Award**.
 
 
 **References**

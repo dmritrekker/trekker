@@ -18,4 +18,12 @@ for %%a in ("%file%") do (
 
 call "%~dp0trekker_win.exe" info "%file%"
 
+@REM Check for errors from trekker_win.exe
+if %ERRORLEVEL% NEQ 0 (
+    echo.
+    echo Error: trekker_win.exe info command failed.
+    echo.
+    exit /b %ERRORLEVEL%
+)
+
 echo.
