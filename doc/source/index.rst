@@ -3,9 +3,9 @@ Trekker
 
 .. note::
 
-    December 19\ :sup:`th`, 2024
+    February 3\ :sup:`th`, 2025
 
-    **UPDATE:** Trekker v1.0.0-rc2 now out! See below for a list of major changes.
+    **UPDATE:** Trekker v1.0.0-rc3 is out with major improvements and bug fixes! See below for a list of changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -163,6 +163,38 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              OUT_TRACK.vtk
 
+Release notes for Trekker-v1.0.0-rc3
+------------------------------------
+
+    - **New feature:** `track` can now save seed indices as a vtk field.
+
+    - **Bug fix 1**: Fixed an issue when stopping rule was ignored when a seed was places on edges.
+
+    - **Bug fix 2**: Fixed an issue with segment surface intersection.
+    
+    - **Bug fix 3**: `select` indexing fixed.
+    
+    - **Bug fix 4**: Fixed an issue preventing streamline truncation at max length in some cases.
+
+    - **Bug fix 5**: Fixed MacOS support.
+
+    - **Bug fix 6**: Fixed Windows support.
+
+    - **Bug fix 7**: `tran_shi_2015` model no more gets stuck when running.
+
+    - **Improvement 1**: Added stricter pathway rule validation for `track` and `filter`.
+
+    - **Improvement 2**: In `filter`, changed option name `--seedTrials` to `--seed_trials` to be consistent with `track`. Also added `--output, -o` option for the same reason.
+
+    - **Improvement 3**: Seedless filtering now works independent from online filtering and it works faster.
+
+    - **Improvement 4**: Upgraded to CLI11-v2.4.2
+
+    - **Improvement 5**: Provided stand-alone executables for macOS and Windows.
+
+    - **Improvement 6**: Provided basic test routines.
+
+
 Release notes for Trekker-v1.0.0-rc2
 ------------------------------------
 
@@ -213,6 +245,10 @@ Release notes for Trekker-v1.0.0-rc1
     Enjoy the new Trekker!
 
     ..
+        December 19\ :sup:`th`, 2024
+
+        **UPDATE:** Trekker v1.0.0-rc2 now out! See below for a list of major changes.
+
         August 19\ :sup:`th`, 2024
 
         **UPDATE:** We are excited to announce the first release candidate. Trekker v1.0.0-rc1 includes bug fixes and improvements, particularly in surface handling. See below for a list of major changes.

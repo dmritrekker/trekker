@@ -64,15 +64,15 @@ void addColor(CLI::App* app)
 
     app->description("adds colors to streamlines (.vtk only)");
 
-    app->add_option("<input tractogram>", inp_fname, "Input tractogram (.vtk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk)")
         ->required()
         ->check(CLI::ExistingFile);
      
-    app->add_option("<output tractogram>", out_fname, "Output tractogram (.vtk)")
+    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk)")
         ->required( );
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
 
     app->callback(run_addColor);  
