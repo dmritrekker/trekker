@@ -9,7 +9,7 @@ filters tractograms
 
 .. code-block:: bash
 
-    ./trekker filter [OPTIONS] <input tractogram> <output tractogram>
+    ./trekker filter [OPTIONS] <input tractogram>
 
 |
 
@@ -17,9 +17,6 @@ filters tractograms
 
 - `<input tractogram> FILE REQUIRED`
   Input tractogram (.vtk, .tck)
-
-- `<output tractogram> FILE REQUIRED`
-  Output tractogram (.vtk, .tck)
 
 |
 

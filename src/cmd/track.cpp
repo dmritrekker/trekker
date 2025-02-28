@@ -280,7 +280,7 @@ void track(CLI::App *app)
     // General options
     auto general = app->add_option_group(center_text("GENERAL OPTIONS",45));
     
-    general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required()->check(CLI::ExistingFile)->type_name("FILE");
+    general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required();
     general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
     general->add_flag   ("--saveSeedIndexField",      saveSeedIndexField,    "Save seed indices as tractogram field. Available only for binary vtk output.");
     general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
@@ -327,7 +327,7 @@ void track(CLI::App *app)
 
     // Seeding options
     auto seeding = tracking->add_option_group("SEEDING PARAMETERS");
-    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
+    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw)->required();
     seeding->add_option ("--discard_seed",                          discardSeedInp,  "If a seed point falls into this region, it will be discarded")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_flag   ("--skipSeed",                              skipSeed,        "Does not output the points that are within seed region");
     // seeding->add_flag   ("--allowEdgeSeeds",                        allowEdgeSeeds,  "Allows seeding at the edges of pathway rules. Default: false");
