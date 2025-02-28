@@ -9,6 +9,9 @@ int main(int argc, char *argv[]) {
 
     // Parse input
     CLI::App app(TREKKER_EXE_STRING);
+    
+    argv = app.ensure_utf8(argv);
+
     app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
