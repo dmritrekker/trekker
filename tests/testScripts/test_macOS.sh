@@ -18,7 +18,7 @@ export LDFLAGS="-L${llvm_prefix}/lib -L${libomp_prefix}/lib"
 export OpenMP_omp_LIBRARY="${libomp_prefix}/lib/libomp.dylib"
 
 
-# Make sure trekker_linux is executable
+# Make sure trekker_macOS is executable
 trekker=./trekker_macOS
 
 chmod +x ${trekker}
