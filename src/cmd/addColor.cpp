@@ -46,7 +46,12 @@ void run_addColor()
 
     
     auto colors         = NIBR::colorTractogram(&tractogram);
-    auto allStreamlines = tractogram.read();
+    
+    std::vector<std::vector<std::vector<float>>> allStreamlines;
+    allStreamlines.reserve(tractogram.numberOfStreamlines);
+    for (size_t n = 0; n < tractogram.numberOfStreamlines; n++) {
+        allStreamlines.emplace_back(tractogram.readStreamlineVector(n));
+    }
 
     fields.push_back(colors);
 

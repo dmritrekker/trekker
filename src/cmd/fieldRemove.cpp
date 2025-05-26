@@ -45,7 +45,11 @@ void run_fieldRemove()
     clearField(fields[fieldId],tractogram);
     fields.erase(fields.begin()+fieldId);
     
-    auto tmp = tractogram.read();
+    std::vector<std::vector<std::vector<float>>> tmp;
+    tmp.reserve(tractogram.numberOfStreamlines);
+    for (size_t n = 0; n < tractogram.numberOfStreamlines; n++) {
+        tmp.emplace_back(tractogram.readStreamlineVector(n));
+    }
 
     writeTractogram(inp_tractogram,tmp,fields);
     
