@@ -39,19 +39,45 @@ void run_resample()
         return;
     }
     
-    NIBR::TractogramReader tractogram(inp_fname);
+    const size_t BATCH_SIZE = 100000;
 
-    std::vector<std::vector<std::vector<float>>> out;
-
-    
-    if (*sizeOpt) {
-        out = NIBR::resampleTractogram_withStepSize(&tractogram,stepSize);
-    } else {
-        out = NIBR::resampleTractogram_withStepCount(&tractogram,stepCount);
+    NIBR::TractogramReader reader(inp_fname, false); // Explicitly set preload to false
+    if (reader.file == NULL) {
+            disp(MSG_FATAL, "Failed to open input file: %s", inp_fname.c_str());
+            return;
     }
-    
+    // reader.printInfo();
 
-    NIBR::writeTractogram(out_fname, out);
+    NIBR::TractogramWriter writer(out_fname);
+    if (!writer.open()) {
+        disp(MSG_FATAL, "Failed to open output file: %s", out_fname.c_str());
+        return;
+    }
+
+    std::vector<std::vector<std::vector<float>>> input_batch;
+    std::vector<std::vector<std::vector<float>>> output_batch;
+    size_t batch_count = 0;
+
+    while (reader.readNextBatch(BATCH_SIZE, input_batch)) {
+
+        NIBR::MT::SET_DISP_RANGE(batch_count*BATCH_SIZE,reader.numberOfStreamlines);
+
+        output_batch = resampleBatch(input_batch, stepSize, stepCount, (*sizeOpt) ? true : false );
+
+        if (!writer.writeBatch(output_batch)) {
+            disp(MSG_ERROR, "Failed to write batch %d.", batch_count);
+            break;
+        }
+
+        batch_count++;
+        
+    }
+
+    if (!writer.close()) {
+        disp(MSG_ERROR, "Failed to finalize and close output file.");
+    } else {
+        disp(MSG_INFO, "Processing finished successfully.");
+    }
 
     return;
 }
