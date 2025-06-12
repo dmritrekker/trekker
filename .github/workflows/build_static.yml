@@ -193,7 +193,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apk add --no-cache cmake build-base git
+        apk add --no-cache cmake build-base git openmp
         
     - name: Set up build directory and environment
       run: |
@@ -208,11 +208,12 @@ jobs:
         cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
           -DBUILD_SHARED_LIBS=OFF \
+          -DCMAKE_EXE_LINKER_FLAGS="-static -static-libgcc -static-libstdc++ -lgomp" \
           -DBUILD_NATIVE=OFF \
           -S .
 
     - name: Build
-      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install -- -j$(nproc)
 
     - name: Rename executable
       run: |

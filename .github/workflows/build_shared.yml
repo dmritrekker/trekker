@@ -193,7 +193,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apk add --no-cache cmake build-base git
+        apk add --no-cache cmake build-base git openmp
         
     - name: Set up build directory and environment
       run: |
