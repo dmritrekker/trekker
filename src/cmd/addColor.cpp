@@ -19,20 +19,8 @@ void run_addColor()
 
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
+    if (!ensureVTK(inp_fname)) return;
     if (!ensureVTK(out_fname)) return;
-
-    std::string inp_ext = getFileExtension(inp_fname);
-    std::string out_ext = getFileExtension(out_fname);
-    
-    if (inp_ext != "vtk") {
-        std::cout << "Input has to be in .vtk format" << std::endl << std::flush;
-        return;
-    }
-    
-    if (out_ext != "vtk") {
-        std::cout << "Output has to be in .vtk format" << std::endl << std::flush;
-        return;
-    }
 
     NIBR::TractogramReader tractogram(inp_fname);
     if (!tractogram.isReady()) return;
