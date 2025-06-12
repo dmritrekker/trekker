@@ -212,7 +212,7 @@ jobs:
           -S .
 
     - name: Build
-      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install -- -j$(nproc)
 
     - name: Rename executable
       run: |
