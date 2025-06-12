@@ -71,6 +71,18 @@ if (NOT USE_SYSTEM_NIBRARY)
 
     if(BUILDING_NIBRARY_FROM_SOURCE)
 
+        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            if(BUILD_SHARED_LIBS)
+                # Shared builds MUST use the dynamic runtime (/MD)
+                set(NIBRARY_RELEASE_CXX_FLAGS "/MD /O2 /Ob2 /DNDEBUG")
+                set(NIBRARY_RELEASE_C_FLAGS   "/MD /O2 /Ob2 /DNDEBUG")
+            else()
+                # Static builds MUST use the static runtime (/MT)
+                set(NIBRARY_RELEASE_CXX_FLAGS "/MT /O2 /Ob2 /DNDEBUG")
+                set(NIBRARY_RELEASE_C_FLAGS   "/MT /O2 /Ob2 /DNDEBUG")
+            endif()
+        endif()
+
         include(ExternalProject)
         
         ExternalProject_Add(build_nibrary
@@ -85,6 +97,8 @@ if (NOT USE_SYSTEM_NIBRARY)
                 -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+                $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:-DCMAKE_CXX_FLAGS_RELEASE=${NIBRARY_RELEASE_CXX_FLAGS}>
+                $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Windows>:-DCMAKE_C_FLAGS_RELEASE=${NIBRARY_RELEASE_C_FLAGS}>
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_C_FLAGS=$ENV{OpenMP_C_FLAGS}>
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_CXX_FLAGS=$ENV{OpenMP_CXX_FLAGS}>
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_C_LIB_NAMES=$ENV{OpenMP_C_LIB_NAMES}>
