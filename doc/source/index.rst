@@ -3,9 +3,9 @@ Trekker
 
 .. note::
 
-    February 6\ :sup:`th`, 2025
+    June 12\ :sup:`th`, 2025
 
-    **UPDATE:** Trekker v1.0.0-rc4 is out with major improvements and bug fixes! See below for a list of changes.
+    **UPDATE:** Trekker v1.0.0-rc4 is now out! This update focused on major performance improvements that required a lot of work to implement. See below for a list of changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -211,9 +211,15 @@ Release notes for Trekker-v1.0.0-rc4
 
     - **Improvement 3**: `info` shows the histogram of streamline lengths for tractogram inputs.
 
-    - **Improvement 4**: Upgraded to geogram-v1.9.5
+    - **Improvement 4**: `merge` can now combine or exclude multiple tractograms defined using wildcards.
+
+    - **Improvement 5**: Upgraded to geogram-v1.9.5
     
-    - **Improvement 5**: Upgraded to nibrary-v0.4.0
+    - **Improvement 6**: Upgraded to nibrary-v0.4.0
+
+    - **Dropped feature 1:** Checking of dublicate streamlines during `merge` was removed. Same can be later by using `diff`.
+
+    - **Dropped feature 2:** Removed `--saveUncropped` option from `filter`. Similar can be done using a combination of `diff` and `filter`'s `--saveDiscarded` option.
 
 
 Release notes for Trekker-v1.0.0-rc3
