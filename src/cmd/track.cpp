@@ -210,6 +210,7 @@ void run_track()
     // =======================
     // PREPARE TRACTOGRAM WRITER
     NIBR::TractogramWriter writer(out_fname);
+    if (ascii) writer.setVTKIsAscii(true);
     if (!writer.open()) {
         disp(MSG_FATAL, "Failed to open output file: %s", out_fname.c_str());
         return;
