@@ -67,7 +67,7 @@ jobs:
 
 
     - name: Build
-      run: arch -x86_64 /usr/local/bin/cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+      run: arch -x86_64 /usr/local/bin/cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install --parallel
 
     - name: Rename executable
       shell: bash
@@ -135,7 +135,7 @@ jobs:
 
 
     - name: Build
-      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install --parallel
 
     - name: Rename executable
       shell: bash
@@ -212,7 +212,7 @@ jobs:
           -S .
 
     - name: Build
-      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install -- -j$(nproc)
+      run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install --parallel
 
     - name: Rename executable
       run: |
@@ -262,7 +262,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          cmake --build %build_output_dir% --config %build_type% --target install
+          cmake --build %build_output_dir% --config %build_type% --target install --parallel
 
       - name: Rename executable
         shell: pwsh
