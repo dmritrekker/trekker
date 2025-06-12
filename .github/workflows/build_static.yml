@@ -258,6 +258,8 @@ jobs:
             -DCMAKE_BUILD_TYPE=%build_type% ^
             -DBUILD_SHARED_LIBS=OFF ^
             -DBUILD_NATIVE=OFF ^
+            -DCMAKE_CXX_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG" ^
+            -DCMAKE_C_FLAGS_RELEASE="/MT /O2 /Ob2 /DNDEBUG" ^
             -S %GITHUB_WORKSPACE%
 
       - name: Build
