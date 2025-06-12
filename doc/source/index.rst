@@ -199,7 +199,24 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              --output OUT_TRACK.vtk
 
+
 Release notes for Trekker-v1.0.0-rc4
+------------------------------------
+
+    - **Bug fix 1**: Fixed an issue related to duplicate end points when using stop rules with filtering.
+
+    - **Improvement 1**: Better estimation of available threads in high-performance computing (HPC) platforms.
+
+    - **Improvement 2**: Implemented sequential reading and writing of streamlines, which is included nearly in all tractogram related functions. This new memory friendly approach better supports working with large tractograms, particularly in HPC environments.
+
+    - **Improvement 3**: `info` shows the histogram of streamline lengths for tractogram inputs.
+
+    - **Improvement 4**: Upgraded to geogram-v1.9.5
+    
+    - **Improvement 5**: Upgraded to nibrary-v0.4.0
+
+
+Release notes for Trekker-v1.0.0-rc3
 ------------------------------------
 
     - **New feature:** `track` can now save seed indices as a vtk field.
