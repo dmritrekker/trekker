@@ -183,43 +183,38 @@ jobs:
           retention-days: 5
 
   build_ubuntu:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-9 g++-9 libomp-dev cmake
+        apk add --no-cache cmake build-base git
         
     - name: Set up build directory and environment
-      shell: bash
       run: |
         echo "artifact_prefix=linux" >> $GITHUB_ENV
         echo "executable_name=trekker_linux" >> $GITHUB_ENV
         echo "ARTIFACT_NAME=linux_binary" >> $GITHUB_ENV
         echo "build_type=Release" >> $GITHUB_ENV
-        echo "build-output-dir=${{ github.workspace }}/build_linux" >> $GITHUB_ENV
+        echo "build-output-dir=./build_linux" >> $GITHUB_ENV
 
     - name: Configure CMake (Ubuntu)
-      shell: bash
       run: |
         cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
-          -DCMAKE_C_COMPILER=gcc-9 \
-          -DCMAKE_CXX_COMPILER=g++-9 \
           -DBUILD_SHARED_LIBS=OFF \
           -DBUILD_NATIVE=OFF \
-          -S ${{ github.workspace }}
+          -S .
 
     - name: Build
       run: cmake --build ${{ env.build-output-dir }} --config ${{ env.build_type }} --target install
 
     - name: Rename executable
-      shell: bash
       run: |
         mv ${{ env.build-output-dir }}/install/bin/trekker* ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
 
@@ -230,6 +225,7 @@ jobs:
         path: ${{ env.build-output-dir }}/install/bin/${{ env.executable_name }}
         if-no-files-found: error
         retention-days: 5
+
 
   build_windows:
     runs-on: windows-latest

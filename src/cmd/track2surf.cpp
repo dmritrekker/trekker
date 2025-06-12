@@ -32,10 +32,10 @@ void run_track2surf()
     
     // Initialize tractogram
     if(!ensureVTKorTCK(inp_fname)) return;
-    NIBR::TractogramReader* tractogram = new NIBR::TractogramReader();
-    tractogram->initReader(inp_fname);
+    NIBR::TractogramReader tractogram(inp_fname);
+    if(!tractogram.isReady()) return;
     
-    if (tractogram->numberOfStreamlines<1) {
+    if (tractogram.numberOfStreamlines<1) {
         std::cout << "Empty tractogram" << std::endl;
         std::cout << "0 streamlines are written."  << std::endl << std::flush;
         return;
@@ -78,8 +78,7 @@ void run_track2surf()
 
     // Create tractogram to surface map
     std::vector<std::vector<streamline2faceMap>> mapping;    
-    tractogram2surfaceMapper(tractogram, surf, mapping, true);
-    delete tractogram;
+    tractogram2surfaceMapper(&tractogram, surf, mapping, true);
 
     // Prepare and write selected feature on surface
 
@@ -232,21 +231,21 @@ void track2surf(CLI::App* app)
 
     app->description("maps tractogram features on a surface");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<input_surface_mesh>", inp_surface, "Input surface mesh (.vtk,.gii)")
+    app->add_option("<input_surface_mesh>",  inp_surface,        "Input surface mesh (.vtk, .gii)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output_surface_mesh>", out_surface, "Output surface mesh (.vtk)")
+    app->add_option("<output_surface_mesh>", out_surface,        "Output surface mesh (.vtk)")
         ->required();
         
-    app->add_option("<field_name>", field_name, "Field name to use when writing the feature on the surface mesh")
+    app->add_option("<field_name>",          field_name,         "Field name to use when writing the feature on the surface mesh")
         ->required();
         
-    app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineDensity\", \"streamlineCount\", \"contactAngle\" and \"contactDirection\".")
+    app->add_option("--feature",             feature,            "Name of output feature. Options are: \"streamlineDensity\", \"streamlineCount\", \"contactAngle\" and \"contactDirection\".")
         ->required();
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");

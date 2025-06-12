@@ -26,7 +26,7 @@ author = 'Dogu Baran Aydogan'
 # The short X.Y version
 version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-rc3'
+release = '1.0.0-rc4'
 
 
 # -- General configuration ---------------------------------------------------
