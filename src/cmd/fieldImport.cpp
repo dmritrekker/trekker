@@ -3,7 +3,7 @@
 using namespace NIBR;
 
 namespace CMDARGS_FIELDIMPORT {
-    std::string inp_fname;
+    std::string inp_tractogram_fname;
     std::string inp_field_fname;
 
     std::string inp_field_owner;
@@ -24,16 +24,12 @@ void run_fieldImport()
 {
  
     parseCommon(numberOfThreads,verbose);
+    if (!ensureVTK(inp_tractogram_fname)) return;
 
-    if(!ensureVTK(inp_fname))      return;
+    NIBR::TractogramReader tractogram(inp_tractogram_fname);
+    if (!tractogram.isReady()) return;
 
-    NIBR::TractogramReader tractogram;
-    if(!tractogram.initReader(inp_fname)){
-        std::cout << "Could not read the file!"<<std::endl;
-        return;
-    }
-
-    disp(MSG_DEBUG,"Streamline count: %d, Point count: %d", tractogram.numberOfStreamlines,tractogram.numberOfPoints);
+    disp(MSG_DEBUG,"Streamline count: %d", tractogram.numberOfStreamlines);
 
     // Check if this field already exists
     int fieldId = -1;
@@ -68,14 +64,8 @@ void run_fieldImport()
     }
 
     NIBR::disp(MSG_DETAIL,"Writing %d fields", fields.size());
-    
-    std::vector<std::vector<std::vector<float>>> tmp;
-    tmp.reserve(tractogram.numberOfStreamlines);
-    for (size_t n = 0; n < tractogram.numberOfStreamlines; n++) {
-        tmp.emplace_back(tractogram.readStreamlineVector(n));
-    }
 
-    writeTractogram(inp_fname,tmp,fields);
+    writeTractogram(inp_tractogram_fname,tractogram.getTractogram(),fields);
     
     for (size_t i=0; i< fields.size(); i++) {
         NIBR::disp(MSG_DETAIL,"Deleting field %d: %s", i, fields[i].name.c_str());
@@ -88,28 +78,28 @@ void fieldImport(CLI::App* app)
 {
     app->description("adds a new field with values read from a file (.vtk only)");
     
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram")
+    app->add_option("<input_tractogram>",           inp_tractogram_fname,   "Input tractogram")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<input_field_data>", inp_field_fname, "Input field data")
+    app->add_option("<input_field_data>",           inp_field_fname,        "Input field data")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<input_field_owner>", inp_field_owner, "Can be either \"POINT\" or \"STREAMLINE\"")
+    app->add_option("<input_field_owner>",          inp_field_owner,        "Can be either \"POINT\" or \"STREAMLINE\"")
         ->required();
         
-    app->add_option("<input_field_data_type>", inp_field_type, "Can be either \"float\" or \"int\"")
+    app->add_option("<input_field_data_type>",      inp_field_type,         "Can be either \"float\" or \"int\"")
         ->required();
         
-    app->add_option("<input_field_data_dimension>", inp_field_dimension, "Dimension of the field data")
+    app->add_option("<input_field_data_dimension>", inp_field_dimension,    "Dimension of the field data")
         ->required();
         
-    app->add_option("<field_name>", inp_field_name, "Field name to write in the surface")
+    app->add_option("<field_name>",                 inp_field_name,         "Field name to write in the surface")
         ->required();
 
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
-    app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
+    app->add_option("--verbose, -v",                verbose,                "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_flag("--force, -f",                    force,                  "Force overwriting of existing file");
     
     app->callback(run_fieldImport);
 

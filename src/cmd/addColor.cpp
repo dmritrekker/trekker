@@ -19,11 +19,23 @@ void run_addColor()
 
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
+    if (!ensureVTK(out_fname)) return;
 
-    if(!ensureVTK(inp_fname))      return;
-    if(!ensureVTK(out_fname))      return;
+    std::string inp_ext = getFileExtension(inp_fname);
+    std::string out_ext = getFileExtension(out_fname);
+    
+    if (inp_ext != "vtk") {
+        std::cout << "Input has to be in .vtk format" << std::endl << std::flush;
+        return;
+    }
+    
+    if (out_ext != "vtk") {
+        std::cout << "Output has to be in .vtk format" << std::endl << std::flush;
+        return;
+    }
 
     NIBR::TractogramReader tractogram(inp_fname);
+    if (!tractogram.isReady()) return;
 
     int fieldId = -1;
     std::vector<NIBR::TractogramField> tmpFields = findTractogramFields(tractogram);
@@ -45,17 +57,11 @@ void run_addColor()
     }
 
     
-    auto colors         = NIBR::colorTractogram(&tractogram);
-    
-    std::vector<std::vector<std::vector<float>>> allStreamlines;
-    allStreamlines.reserve(tractogram.numberOfStreamlines);
-    for (size_t n = 0; n < tractogram.numberOfStreamlines; n++) {
-        allStreamlines.emplace_back(tractogram.readStreamlineVector(n));
-    }
+    auto colors = NIBR::colorTractogram(&tractogram);
 
     fields.push_back(colors);
 
-    writeTractogram(out_fname,allStreamlines,fields);
+    writeTractogram(out_fname,tractogram.getTractogram(),fields);
 
     for (size_t i=0; i< fields.size(); i++) {
         clearField(fields[i],tractogram);

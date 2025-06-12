@@ -17,13 +17,10 @@ void run_fieldRemove()
  
     parseCommon(numberOfThreads,verbose);
 
-    if(!ensureVTK(inp_tractogram))      return;
+    if (!ensureVTK(inp_tractogram)) return;
 
-    NIBR::TractogramReader tractogram;
-    if(!tractogram.initReader(inp_tractogram)){
-        std::cout << "Could not read the file!"<<std::endl;
-        return;
-    }
+    NIBR::TractogramReader tractogram(inp_tractogram);
+    if (!tractogram.isReady()) return;
 
     // Check if this field already exists
     int fieldId = -1;
@@ -44,14 +41,8 @@ void run_fieldRemove()
 
     clearField(fields[fieldId],tractogram);
     fields.erase(fields.begin()+fieldId);
-    
-    std::vector<std::vector<std::vector<float>>> tmp;
-    tmp.reserve(tractogram.numberOfStreamlines);
-    for (size_t n = 0; n < tractogram.numberOfStreamlines; n++) {
-        tmp.emplace_back(tractogram.readStreamlineVector(n));
-    }
 
-    writeTractogram(inp_tractogram,tmp,fields);
+    writeTractogram(inp_tractogram,tractogram.getTractogram(),fields);
     
     for (size_t i=0; i< fields.size(); i++) {
         NIBR::disp(MSG_DETAIL,"Deleting field %d: %s", i, fields[i].name.c_str());
@@ -64,12 +55,12 @@ void fieldRemove(CLI::App* app)
 {
     app->description("removes a field from a tractogram (.vtk only)");
     
-    app->add_option("<input_tractogram>", inp_tractogram, "Input tractogram")
+    app->add_option("<input_tractogram>",    inp_tractogram,     "Input tractogram")
         ->required()
         ->check(CLI::ExistingFile);
         
     
-    app->add_option("<field_name>", field_name, "Field name to remove")
+    app->add_option("<field_name>",          field_name,         "Field name to remove")
         ->required();
 
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
