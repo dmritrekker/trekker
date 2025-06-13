@@ -3,9 +3,9 @@ Trekker
 
 .. note::
 
-    February 6\ :sup:`th`, 2025
+    June 12\ :sup:`th`, 2025
 
-    **UPDATE:** Trekker v1.0.0-rc3 is out with major improvements and bug fixes! See below for a list of changes.
+    **UPDATE:** Trekker v1.0.0-rc4 is now out! This update focused on major performance improvements that required a lot of work to implement. See below for a list of changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -33,15 +33,15 @@ Option 1: Stand-alone executables
 
 Download the appropriate stand-alone executable for your operating system:
 
-*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/linux_binary.zip>`
-*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/macOS-universal_binary.zip>`
-*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/windows_binary.zip>`
+*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/linux_binary.zip>`
+*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/macOS-universal_binary.zip>`
+*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/windows_binary.zip>`
 
 After downloading and extracting the archive, you can run the executable.
 
 **Testing:**
 
-- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc3/tests.zip>`_.
+- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/tests.zip>`_.
 - Copy paste your executable under the ``testScripts`` folder.
 - Run the provided test script for your operating system.
 
@@ -198,6 +198,29 @@ Examples
              --seed WHITE_MATTER_SURFACE.gii \
              --pathway require_end_inside LEFT_THAL.nii.gz \
              --output OUT_TRACK.vtk
+
+
+Release notes for Trekker-v1.0.0-rc4
+------------------------------------
+
+    - **Bug fix 1**: Fixed an issue related to duplicate end points when using stop rules with filtering.
+
+    - **Improvement 1**: Better estimation of available threads in high-performance computing (HPC) platforms.
+
+    - **Improvement 2**: Implemented sequential reading and writing of streamlines, which is included nearly in all tractogram related functions. This new memory friendly approach better supports working with large tractograms, particularly in HPC environments.
+
+    - **Improvement 3**: `info` shows the histogram of streamline lengths for tractogram inputs.
+
+    - **Improvement 4**: `merge` can now combine or exclude multiple tractograms defined using wildcards.
+
+    - **Improvement 5**: Upgraded to geogram-v1.9.5
+    
+    - **Improvement 6**: Upgraded to nibrary-v0.4.0
+
+    - **Dropped feature 1:** Checking of dublicate streamlines during `merge` was removed. Same can be later by using `diff`.
+
+    - **Dropped feature 2:** Removed `--saveUncropped` option from `filter`. Similar can be done using a combination of `diff` and `filter`'s `--saveDiscarded` option.
+
 
 Release notes for Trekker-v1.0.0-rc3
 ------------------------------------
