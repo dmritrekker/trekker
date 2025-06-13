@@ -207,20 +207,39 @@ void run_track()
     trekker->saveSeedIndex(saveSeedIndexField);
     // =======================
 
-    trekker->run();
+    // =======================
+    // PREPARE TRACTOGRAM WRITER
+    NIBR::TractogramWriter writer(out_fname);
+    if (ascii) writer.setVTKIsAscii(true);
+    if (!writer.open()) {
+        disp(MSG_FATAL, "Failed to open output file: %s", out_fname.c_str());
+        return;
+    }
+    // =======================
 
-    if (ascii && (out_ext=="vtk"))
-        NIBR::writeTractogram_VTK_ascii(out_fname, TRACKER::getTractogram());
-    else if (!saveSeedIndexField)
-        NIBR::writeTractogram(out_fname, TRACKER::getTractogram());
-    else {
+
+
+    // =======================
+    // RUN TREKKER
+    trekker->run(&writer);
+    disp(MSG_DEBUG,"Tracking finished");
+
+    disp(MSG_DEBUG,"Writing output");
+    if (saveSeedIndexField) {
         std::vector<TractogramField> seedIdx;
         seedIdx.push_back(TRACKER::getSeedIndexField());
-        NIBR::writeTractogram(out_fname, TRACKER::getTractogram(), seedIdx);
+        writer.setVTKFields(seedIdx);
+    }
+
+    if (!writer.close()) {
+        disp(MSG_ERROR, "Failed to finalize and close output file.");
+    } else {
+        disp(MSG_DEBUG, "Processing finished successfully.");
     }
 
     delete trekker;
 
+    disp(MSG_INFO,"Done.");
     return;
 } 
 
@@ -280,7 +299,7 @@ void track(CLI::App *app)
     // General options
     auto general = app->add_option_group(center_text("GENERAL OPTIONS",45));
     
-    general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required()->check(CLI::ExistingFile)->type_name("FILE");
+    general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required();
     general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
     general->add_flag   ("--saveSeedIndexField",      saveSeedIndexField,    "Save seed indices as tractogram field. Available only for binary vtk output.");
     general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
@@ -327,7 +346,7 @@ void track(CLI::App *app)
 
     // Seeding options
     auto seeding = tracking->add_option_group("SEEDING PARAMETERS");
-    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
+    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw)->required();
     seeding->add_option ("--discard_seed",                          discardSeedInp,  "If a seed point falls into this region, it will be discarded")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_flag   ("--skipSeed",                              skipSeed,        "Does not output the points that are within seed region");
     // seeding->add_flag   ("--allowEdgeSeeds",                        allowEdgeSeeds,  "Allows seeding at the edges of pathway rules. Default: false");

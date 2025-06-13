@@ -1,6 +1,6 @@
 # NIBRARY
 
-SET(NIBRARY_MIN_VERSION "0.3.0" CACHE STRING "Minimum nibrary version") 
+SET(NIBRARY_MIN_VERSION "0.4.0" CACHE STRING "Minimum nibrary version") 
 
 include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
 

@@ -35,8 +35,6 @@ void run_track2img()
 
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
-
-    if(!ensureVTKorTCK(inp_fname)) return;
     
     if ((feature!="streamlineCount") && (feature!="segmentLength") && (feature!="DEC_segmentLength") ) {
         std::cout << "Feature can be \"streamlineCount\", \"segmentLength\" or \"DEC_segmentLength\" " << std::endl << std::flush;
@@ -353,7 +351,7 @@ void track2img(CLI::App* app)
 
     app->description("maps tractogram features on an image");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -379,7 +377,7 @@ void track2img(CLI::App* app)
 
     app->add_option("--voxDim", voxDim, "Voxel dimension of the output image. \nOptions are: \n    (i) a single value that will be used for all dimensions \n   (ii) one value for each three dimensions seperated space");
 
-    mask_option = app->add_option("--mask,", mask_image, "Input mask image (.nii/.nii.gz)")
+    mask_option = app->add_option("--mask,", mask_image, "Input mask image (.nii, .nii.gz)")
         ->check(CLI::ExistingFile);
         
     mask_label_option = app->add_option("--maskLabel", mask_label, "Label to use in the mask image");
