@@ -1,7 +1,7 @@
 merge
 =====
 
-merges two tractograms, optionally ignoring duplicates
+merges tractograms
 
 |
 
@@ -9,17 +9,11 @@ merges two tractograms, optionally ignoring duplicates
 
 .. code-block:: bash
 
-    ./trekker merge [OPTIONS] <tractogram 1> <tractogram 2> <output>
+    ./trekker merge [OPTIONS] <output>
 
 |
 
 **Positionals**
-
-- `<tractogram 1> TEXT:FILE REQUIRED`
-  Input tractogram (.vtk, .tck)
-
-- `<tractogram 2> TEXT:FILE REQUIRED`
-  Input tractogram (.vtk, .tck)
 
 - `<output> TEXT REQUIRED`
   Output tractogram (.vtk, .tck)
@@ -36,8 +30,12 @@ merges two tractograms, optionally ignoring duplicates
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Description</th>
        </tr>
        <tr>
-           <td style="padding: 8px; font-weight: 500;">-c, --checkDuplicates</td>
-           <td style="padding: 8px;">Checks for duplicates and ignores them when merging.</td>
+           <td style="padding: 8px; font-weight: 500;">-i,--include</td>
+           <td style="padding: 8px;">List of tractograms or wildcards (.vtk, .tck, .trk) to include in the output, e.g.1. inp1.vtk inp2.tck, e.g.2. inp*.vtk, e.g.3. inp1*.tck inp2*.vtk</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">-e,--exclude</td>
+           <td style="padding: 8px;">List of tractograms or wildcards to exclude. These files are excluded even if they match the input wildcards</td>
        </tr>
    </table>
 
