@@ -7,7 +7,6 @@ namespace CMDARGS_FILTER
     std::string out_fname;
     
     int maxOut              = -1;
-    bool ascii              = false;
     bool inOrder            = false;
     bool skipSeed           = false;
     // bool allowEdgeSeeds     = false;
@@ -23,7 +22,6 @@ namespace CMDARGS_FILTER
     std::vector<std::string> discardSeedList;
 
     std::string saveDisc    = "";
-    std::string saveUncr    = "";
 
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -41,28 +39,21 @@ void run_filter()
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
     if (saveDisc!="") { if (!parseForceOutput(saveDisc,force)) return; }
-    if (saveUncr!="") { if (!parseForceOutput(saveUncr,force)) return; }
 
-    std::string out_ext = getFileExtension(out_fname);
-    
-    if(!ensureVTKorTCK(inp_fname)) return;
-    if(!ensureVTKorTCK(out_fname)) return; 
+    if (!ensureVTKorTCK(out_fname)) return;
 
     // Initialize tractogram
-    NIBR::TractogramReader tractogram(inp_fname);
+    NIBR::TractogramReader reader(inp_fname);
+    if (!reader.isReady()) return;
 
-    if (tractogram.numberOfStreamlines < 1) {
-        std::vector<std::vector<std::vector<float>>> track;
+    if (reader.numberOfStreamlines < 1) {
+        NIBR::Tractogram track;
         disp(MSG_ERROR,"Empty tractogram file.");
-         
-        if (ascii && (out_ext=="vtk"))
-            NIBR::writeTractogram_VTK_ascii(out_fname, track);
-        else 
-            NIBR::writeTractogram(out_fname, track);
-
+        NIBR::writeTractogram(out_fname, track);
         return;
     }  
  
+    // Prepare pathway rules
     Pathway pw;
     pw.enableTracking(false); // This will prevent seeders to be created when a seed rule is defined
 
@@ -94,142 +85,91 @@ void run_filter()
     if(!pw.skipSeed(skipSeed))          return;
     // if((!seedList.empty()) && (!pw.noEdgeSeed(!allowEdgeSeeds))) return;
     if(!pw.setSeedTrials(seedTrials))   return;
-
+ 
     auto rules = parsePathwayInput(pathway);
     if ((!pathway.empty()) && rules.empty())
         return;
     for (auto r : rules) {
         if(!pw.add(r)) return;
     }
- 
+
     pw.print();
 
-    auto filtOut = pathFilter(&tractogram, &pw, numberOfThreads, maxOut);
 
-    std::vector<size_t> idx     = std::get<0>(filtOut);
-    std::vector<float>  begIdx  = std::get<1>(filtOut);
-    std::vector<float>  endIdx  = std::get<2>(filtOut);      
-      
-    bool followIndx = oneSided; 
- 
-    if (followIndx==false) { 
-        for (int i = 0; i < (int)pw.prules.size(); i++)
-        { 
-            if (pw.prules[i].type == stop_before_entry || pw.prules[i].type == stop_at_entry || pw.prules[i].type == stop_after_entry || 
-                pw.prules[i].type == stop_before_exit  || pw.prules[i].type == stop_at_exit  || pw.prules[i].type == stop_after_exit  || 
-                stopAtMax) 
-            { 
-                followIndx = true;  
-                break;  
-            }     
-        } 
+    // Run pathFilter
+
+    NIBR::TractogramWriter keepWriter(out_fname);
+    if (!keepWriter.open()) {
+        disp(MSG_FATAL, "Failed to open output file: %s", out_fname.c_str());
+        return;
     }
 
-    disp(MSG_INFO, "Filtering completed.");
- 
-    if (!followIndx) {  
+    std::unique_ptr<NIBR::TractogramWriter> discWriter = nullptr;
 
-        disp(MSG_INFO, "Writing selected streamlines.");
-
-        if (ascii && (out_ext=="vtk")) {
-            NIBR::TractogramReader inp_tractogram(inp_fname);
-            NIBR::writeTractogram_VTK_ascii(out_fname, &inp_tractogram, idx);
+    if (saveDisc != "") {
+        discWriter = std::make_unique<NIBR::TractogramWriter>(saveDisc);
+        if (!discWriter->open()) {
+            disp(MSG_FATAL, "Failed to open output file: %s", saveDisc.c_str());
+            return;
         }
-        else {
-            NIBR::writeTractogram(out_fname, inp_fname, idx);
-        }
-
-    }  else { 
-
-        disp(MSG_INFO, "Cropping and writing streamlines.");
-  
-        std::vector<std::vector<std::vector<float>>> track;
-
-        track.resize(idx.size());
-
-        for (size_t i = 0; i < idx.size(); i++)
-        {     
-            
-            std::vector<Point> st = tractogram.readStreamlinePoints(idx[i]);
-
-            // Reverse the begin and end indexes
-            if(endIdx[i]<begIdx[i]) std::swap(begIdx[i],endIdx[i]);
-
-            int   intBeg   = (int)begIdx[i];
-            float fractBeg = begIdx[i]-intBeg;
-
-            int   intEnd   = (int)endIdx[i];
-            float fractEnd = endIdx[i]-intEnd;
-
-            // disp(MSG_DEBUG,"streamline %d - begIdx,endIdx:[%.2f,%.2f]",idx[i],begIdx[i],endIdx[i]);
-            // disp(MSG_DEBUG,"intBeg %d - fractBeg %.2f",intBeg,fractBeg);
-            // disp(MSG_DEBUG,"intEnd %d - fractEnd %.2f",intEnd,fractEnd);
-
-            // Handle first point
-            if (fractBeg!=0) {
-                std::vector<float> p(3);
-                p[0] = st[intBeg].x * (1 - fractBeg) + st[intBeg + 1].x * (fractBeg);
-                p[1] = st[intBeg].y * (1 - fractBeg) + st[intBeg + 1].y * (fractBeg);
-                p[2] = st[intBeg].z * (1 - fractBeg) + st[intBeg + 1].z * (fractBeg);
-                track[i].push_back(p);
-                intBeg++;
-            }
-
-            // Handle middle points
-            for (int j=intBeg; j<=intEnd; j++) {
-                track[i].push_back({st[j].x,st[j].y,st[j].z});
-            }
-
-            // Handle last point
-            if (fractEnd!=0) {
-                std::vector<float> p(3);
-                p[0] = st[intEnd].x * (1 - fractEnd) + st[intEnd + 1].x * (fractEnd);
-                p[1] = st[intEnd].y * (1 - fractEnd) + st[intEnd + 1].y * (fractEnd);
-                p[2] = st[intEnd].z * (1 - fractEnd) + st[intEnd + 1].z * (fractEnd);
-                track[i].push_back(p);
-            } else {
-                track[i].push_back({st[intEnd].x,st[intEnd].y,st[intEnd].z});
-            }
-            
-        }
-        if (ascii && (out_ext=="vtk"))
-            NIBR::writeTractogram_VTK_ascii(out_fname, track);
-        else
-            NIBR::writeTractogram(out_fname, track);
     }
 
 
-    if (followIndx && (saveUncr!="")) {
+    
+    int batch_size  = 50000;
+    int batch_count = 0;
+    int success     = 0;
 
-        disp(MSG_INFO, "Writing uncropped streamlines.");
+    pw.startLogger(reader.numberOfStreamlines);
+    pw.showLogger();
 
-        if (ascii && (getFileExtension(saveUncr)=="vtk")) {
-            NIBR::TractogramReader inp_tractogram(inp_fname);
-            NIBR::writeTractogram_VTK_ascii(saveUncr, &inp_tractogram, idx);
-        } else {
-            NIBR::writeTractogram(saveUncr, inp_fname, idx);
+    while (true) {
+
+        if (maxOut >= 0) {
+            batch_size = std::min(maxOut-success,50000);
+            if (batch_size <= 0) break;
         }
-    }
 
-    if (saveDisc!="") {
+        NIBR::StreamlineBatch input_batch = reader.getNextStreamlineBatch(batch_size);
 
-        disp(MSG_INFO, "Writing discarded streamlines.");
+        if (input_batch.empty()) break;
+
+        auto out = pw.apply(input_batch, (saveDisc != "") );
+
+        success += std::get<0>(out).size();
+
+        if (!std::get<0>(out).empty()) {
+            if (!keepWriter.writeBatch(std::move(std::get<0>(out)))) {
+                disp(MSG_ERROR, "Failed to write kept batch %d.", batch_count);
+                break;
+            }
+        }
+
+        if (!std::get<2>(out).empty()) {
+            if (!discWriter->writeBatch(std::move(std::get<2>(out)))) {
+                disp(MSG_ERROR, "Failed to write discarded batch %d.", batch_count);
+                break;
+            }
+        }
+
+        batch_count++;
         
-        NIBR::TractogramReader inp_tractogram(inp_fname);
-        std::vector<size_t> discIdx;
-        
-        discIdx.reserve(inp_tractogram.numberOfStreamlines);
-        for (size_t n = 0; n < inp_tractogram.numberOfStreamlines; n++) {
-            discIdx.push_back(n);
-        }
-        NIBR::removeIdx(discIdx,idx);
+    }
 
-        if (ascii && (getFileExtension(saveDisc)=="vtk")) {
-            NIBR::writeTractogram_VTK_ascii(saveDisc, &inp_tractogram, discIdx);
+    pw.stopLogger();
+
+    if (!keepWriter.close()) {
+        disp(MSG_ERROR, "Failed to finalize and close output file.");
+    } else {
+        disp(MSG_INFO, "Output streamlines written.");
+    }
+
+    if (saveDisc != "") {
+        if (!discWriter->close()) {
+            disp(MSG_ERROR, "Failed to finalize and close output file.");
         } else {
-            NIBR::writeTractogram(saveDisc, inp_fname, discIdx);
+            disp(MSG_INFO, "Discarded streamlines written.");
         }
-
     }
 
     disp(MSG_INFO, "Done.");
@@ -286,7 +226,7 @@ void filter(CLI::App *app)
 
     app->description("filters tractograms");
 
-    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck)")->required()->check(CLI::ExistingFile)->type_name("");   
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");   
     app->add_option ("--output,-o",          out_fname,          "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
 
     app->add_option("--pathway, -p",         pathway,            "Pathway rule")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
@@ -303,10 +243,8 @@ void filter(CLI::App *app)
     app->add_flag("--inOrder",               inOrder,            "If enabled all pathway requirements are going to be satisfied in the order that they are given. All pathway options should be defined for pathway_A/pathway_B in order to use this option");
 
     app->add_option("--maxOut",              maxOut,             "Maximum number of output streamlines.");
-    app->add_flag("--ascii,-a",              ascii,              "Write ASCII output (.vtk only).");
 
     app->add_option("--saveDiscarded",       saveDisc,           "Path for saving discarded streamlines");
-    app->add_option("--saveUncropped",       saveUncr,           "Path for saving uncropped versions of streamlines if they were cropped during filtering");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

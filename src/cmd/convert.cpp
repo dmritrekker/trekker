@@ -7,7 +7,7 @@ namespace CMDARGS_CONVERT {
     std::string  out_fname;
     std::string  reference = "";
 
-    bool ascii = false;
+    bool ascii              = false;
     
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -44,17 +44,74 @@ void run_convert()
     }
 
 
-    NIBR::TractogramReader tractogram(inp_fname);
-
-    if (reference != "") {
-        NIBR::Image<bool> img(reference);
-        tractogram.setReferenceImage(&img);
+    // === Initialize TractogramReader ===
+    NIBR::TractogramReader reader(inp_fname);
+    if (!reader.isReady()) {
+        disp(MSG_FATAL, "Failed to initialize TractogramReader for input file: %s", inp_fname.c_str());
+        return;
     }
+    disp(MSG_DEBUG, "Successfully initialized reader for %s. Streamlines found: %lu", inp_fname.c_str(), reader.numberOfStreamlines);
+
+    // === Create and Configure TractogramWriter ===
+    NIBR::TractogramWriter writer(out_fname);
+    if (ascii) writer.setVTKIsAscii(true);
+    if (!writer.isValid()) return;
+
+    // === Handle trk specific reference image ===
+    if (out_ext == "trk") {
+        if (!reference.empty()) {
+            NIBR::Image<bool> refImgForTrkHeader(reference);
+            writer.setTRKReference(refImgForTrkHeader);
+        } else {
+            disp(MSG_FATAL, "trk output requires a reference image when input is not .trk, but reference is empty.");
+            return;
+        }
+    }
+
+    // === Perform Conversion ===
+    disp(MSG_DEBUG, "Starting tractogram conversion from .%s to .%s...", inp_ext.c_str(), out_ext.c_str());
     
-    if (ascii && (out_ext=="vtk"))
-        NIBR::writeTractogram_VTK_ascii(out_fname,&tractogram);
-    else
-        NIBR::writeTractogram(out_fname,&tractogram);
+    if (!writer.open()) {
+        disp(MSG_FATAL, "Failed to open output file for writing: %s", out_fname.c_str());
+        return;
+    }
+
+    long totalStreamlinesProcessed  = 0;
+    int  batch_size                 = 50000;
+    int  batch_count                = 0;
+    int  streamlines_in_batch       = 0;
+
+    reader.reset();
+
+    while (true) {
+
+        NIBR::StreamlineBatch batch = reader.getNextStreamlineBatch(batch_size);
+
+        streamlines_in_batch  = batch.size();
+
+        if (streamlines_in_batch == 0) break;
+
+        if (!writer.writeBatch(std::move(batch))) {
+            disp(MSG_ERROR, "Failed to write batch %d to %s.", batch_count, out_fname.c_str());
+            writer.close(); // Attempt to close to salvage what's written
+            return; 
+        }
+        totalStreamlinesProcessed += streamlines_in_batch;
+        batch_count++;
+        if (batch_count > 0 && batch_count % 20 == 0) { // Progress update every 20 batches
+            disp(MSG_DEBUG, "Processed %d batches, %ld streamlines written...", batch_count, totalStreamlinesProcessed);
+        }
+    }
+    disp(MSG_DEBUG, "Finished reading input. Total batches processed: %d.", batch_count);
+
+    if (!writer.close()) {
+        disp(MSG_DEBUG, "Failed to finalize and close output tractogram: %s", out_fname.c_str());
+    } else {
+        disp(MSG_INFO, "Tractogram conversion successful!");
+        disp(MSG_INFO, "Output written to: %s", out_fname.c_str());
+        disp(MSG_INFO, "Total streamlines written: %ld", writer.getFinalStreamlineCount());
+        disp(MSG_INFO, "Total points written: %ld", writer.getFinalPointCount());
+    }
        
 }          
     
@@ -71,17 +128,17 @@ void convert(CLI::App* app)
 
     app->description("converts tractogram file formats");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
      
-    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck)")
+    app->add_option("<output_tractogram>",   out_fname,          "Output tractogram (.vtk, .tck, .trk)")
         ->required( );
 
-    app->add_option("--reference,-r", reference, "Image to use as reference space (needed for converting .vtk/.tck to .trk, and vice versa)")
+    app->add_option("--reference,-r",        reference,          "Image to use as reference space. Required for converting .vtk/.tck to .trk.")
         ->check(CLI::ExistingFile);
     
-    app->add_flag("--ascii,-a", ascii, "Write ASCII output. Only available when the output is .vtk.");
+    app->add_flag("--ascii,-a",              ascii,              "Write ASCII output. Only available when the output is .vtk.");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

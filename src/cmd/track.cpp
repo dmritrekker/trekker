@@ -207,20 +207,39 @@ void run_track()
     trekker->saveSeedIndex(saveSeedIndexField);
     // =======================
 
-    trekker->run();
+    // =======================
+    // PREPARE TRACTOGRAM WRITER
+    NIBR::TractogramWriter writer(out_fname);
+    if (ascii) writer.setVTKIsAscii(true);
+    if (!writer.open()) {
+        disp(MSG_FATAL, "Failed to open output file: %s", out_fname.c_str());
+        return;
+    }
+    // =======================
 
-    if (ascii && (out_ext=="vtk"))
-        NIBR::writeTractogram_VTK_ascii(out_fname, TRACKER::getTractogram());
-    else if (!saveSeedIndexField)
-        NIBR::writeTractogram(out_fname, TRACKER::getTractogram());
-    else {
+
+
+    // =======================
+    // RUN TREKKER
+    trekker->run(&writer);
+    disp(MSG_DEBUG,"Tracking finished");
+
+    disp(MSG_DEBUG,"Writing output");
+    if (saveSeedIndexField) {
         std::vector<TractogramField> seedIdx;
         seedIdx.push_back(TRACKER::getSeedIndexField());
-        NIBR::writeTractogram(out_fname, TRACKER::getTractogram(), seedIdx);
+        writer.setVTKFields(seedIdx);
+    }
+
+    if (!writer.close()) {
+        disp(MSG_ERROR, "Failed to finalize and close output file.");
+    } else {
+        disp(MSG_DEBUG, "Processing finished successfully.");
     }
 
     delete trekker;
 
+    disp(MSG_INFO,"Done.");
     return;
 } 
 
