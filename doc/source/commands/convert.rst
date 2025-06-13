@@ -19,7 +19,7 @@ converts tractogram file formats
   Input tractogram (.vtk, .tck, .trk)
 
 - `<output tractogram> TEXT REQUIRED`
-  Output tractogram (.vtk, .tck)
+  Output tractogram (.vtk, .tck, .trk)
 
 |
 

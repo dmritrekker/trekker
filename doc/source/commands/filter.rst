@@ -97,10 +97,6 @@ filters tractograms
            <td style="padding: 8px; font-weight: 500;">--saveDiscarded TEXT</td>
            <td style="padding: 8px;">Path for saving discarded streamlines.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500; border-bottom: 1px solid #000;">--saveUncropped TEXT</td>
-           <td style="padding: 8px; border-bottom: 1px solid #000;">Path for saving uncropped versions of streamlines if they were cropped during filtering.</td>
-       </tr>
    </table>
 
 |
