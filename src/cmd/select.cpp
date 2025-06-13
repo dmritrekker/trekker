@@ -12,8 +12,8 @@ namespace CMDARGS_SELECT {
     CLI::Option* orderedOpt = NULL;
 
     std::string select_fname ="";
-    int _random = 0;
-    std::vector<int> _ordered = {0,0};
+    int select_random = 0;
+    std::vector<int> select_ordered = {0,0};
 
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -28,6 +28,7 @@ void run_select()
 
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
+    if (!ensureVTKorTCK(out_fname)) return;
 
     int optCounter = 0;
     if (*selectOpt)  optCounter++;
@@ -38,11 +39,10 @@ void run_select()
         std::cout << "Need one option. Use either \"random\", \"ordered\" or \"selection\"." << std::endl << std::flush;
         return;
     }
-
-    if(!ensureVTKorTCK(inp_fname))      return;
-    if(!ensureVTKorTCK(out_fname))      return;
     
     NIBR::TractogramReader tractogram(inp_fname);
+    if (!tractogram.isReady()) return;
+
     int N = tractogram.numberOfStreamlines;
 
     std::vector<size_t> select;
@@ -69,8 +69,8 @@ void run_select()
 
     } else if(*randomOpt){
 
-        if (_random<0) _random = 0;
-        if (_random>N) _random = N;
+        if (select_random<0) select_random = 0;
+        if (select_random>N) select_random = N;
 
         RandomDoer r;
 
@@ -80,34 +80,33 @@ void run_select()
             allInd[i] = i;
         
         std::shuffle(std::begin(allInd), std::end(allInd), r.getGen());
-        select.insert(select.begin(),allInd.begin(),allInd.begin()+_random);
+        select.insert(select.begin(),allInd.begin(),allInd.begin()+select_random);
 
         NIBR::writeTractogram(out_fname, &tractogram, select);
 
     } else {
 
-        if (_ordered[0] <= 0) {
+        if (select_ordered[0] <= 0) {
             NIBR::disp(MSG_WARN, "Index can't be 0 or smaller. We will use 1 instead.");
-            _ordered[0] = 1;
+            select_ordered[0] = 1;
         }
 
-
-        if (_ordered[1] <= 0) {
+        if (select_ordered[1] <= 0) {
             NIBR::disp(MSG_WARN, "Index can't be 0 or smaller. We will use 1 instead.");
-            _ordered[1] = 1;
+            select_ordered[1] = 1;
         }
 
-        if (_ordered[0]  > N) {
+        if (select_ordered[0]  > N) {
             NIBR::disp(MSG_WARN, "Index can't be larger than %d. We will use %d instead.", N, N);
-            _ordered[0] = N;
+            select_ordered[0] = N;
         }
 
-        if (_ordered[1]  > N) {
+        if (select_ordered[1]  > N) {
             NIBR::disp(MSG_WARN, "Index can't be larger than %d. We will use %d instead.", N, N);
-            _ordered[1] = N;
+            select_ordered[1] = N;
         }
 
-        for (int i = _ordered[0]; i < (_ordered[1]+1); i++)
+        for (int i = select_ordered[0]; i < (select_ordered[1]+1); i++)
             select.push_back(i-1);
 
         NIBR::writeTractogram(out_fname, &tractogram, select);
@@ -130,20 +129,20 @@ void select(CLI::App* app)
 
     app->description("selects streamlines from a tractogram");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck,.trk)")
+    app->add_option("<input_tractogram>",           inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output_tractogram>", out_fname, "Output tractogram (.vtk, .tck.trk)")
+    app->add_option("<output_tractogram>",          out_fname,          "Output tractogram (.vtk, .tck)")
         ->required();    
     
-    selectOpt = app->add_option("--selection, -s", select_fname, "File with binary values that mark selected streamlines with 1 and others with 0");    
-    randomOpt = app->add_option("--random, -r", _random, "Random tractogram file creating. One input required, total count for random lines")->expected(1);
-    orderedOpt= app->add_option("--ordered, -o", _ordered, "Ordered tractogram file creating. Two input required, begin and end index")->expected(2);
+    selectOpt = app->add_option("--selection, -s",  select_fname,       "File with binary values that mark selected streamlines with 1 and others with 0");    
+    randomOpt = app->add_option("--random, -r",     select_random,      "Random tractogram file creating. One input required, total count for random lines")->expected(1);
+    orderedOpt= app->add_option("--ordered, -o",    select_ordered,     "Ordered tractogram file creating. Two input required, begin and end index")->expected(2)->delimiter(' ');
 
-    app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
-    app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
-    app->add_flag("--force, -f",             force,              "Force overwriting of existing file");
+    app->add_option("--numberOfThreads, -n",        numberOfThreads,    "Number of threads.");
+    app->add_option("--verbose, -v",                verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
+    app->add_flag("--force, -f",                    force,              "Force overwriting of existing file");
 
     app->callback(run_select);
     

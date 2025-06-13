@@ -50,26 +50,49 @@ void run_info()
         (ext == "tck") || 
         (ext == "trk")) {
 
-        NIBR::TractogramReader tractogram;
         bool isTractogram = false;
+
+        NIBR::disableTerminalOutput();
+        NIBR::TractogramReader tractogram(inp_fname);
+        NIBR::enableTerminalOutput();
         
-        if (tractogram.initReader(inp_fname)) {
+        if (tractogram.isReady()) {
             
             if ((ext=="tck") || (ext == "trk")) {
                  isTractogram = true;
             } else {
-                if (((tractogram.numberOfPoints == 0) && (tractogram.numberOfStreamlines == 0)) ||
-                    ((tractogram.numberOfPoints  > 0) && (tractogram.numberOfStreamlines  > 0))) {
-                        isTractogram = true;
+                if (tractogram.numberOfStreamlines  > 0) {
+                    isTractogram = true;
                 }
             }
-
             
         }
 
         if (isTractogram) {
             disp(MSG_DETAIL, "Tractogram");
             tractogram.printInfo();
+
+            disp(MSG_DETAIL,"Computing and plotting streamline length histogram.");
+
+            int N = 13;
+            std::vector<float> bins(N);
+            for (int n = 0; n < N; n++) {
+                bins[n] = 20.0f * float(n);
+            }
+
+            std::cout << std::endl;
+            auto [isCorrupted,streamlineLengths,numberOfPoints,aveStepSize,stdStepSize] = getTractogramStats(&tractogram);
+
+            if (isCorrupted) {
+                disp(MSG_INFO,"Corrupted streamline detected.");
+            } else {
+                disp(MSG_INFO,"No corruption detected.");
+                disp(MSG_INFO,"Number of points: %lu",numberOfPoints);
+                disp(MSG_INFO,"Mean±Std of step size: %.4f±%.4f",aveStepSize,stdStepSize);
+                auto binCounts = create_histogram(streamlineLengths,bins);
+                NIBR::plot_histogram("Streamline length histogram",bins,binCounts);
+            }
+
             return;
         }
 
@@ -93,7 +116,13 @@ void run_info()
         return;
     }
 
-    std::cout << "Unknown file format" << std::endl << std::flush;
+    if (ext == "vtk") {
+        disp(MSG_INFO,"Unknown or corrupt .vtk format.");
+        return;
+    }
+
+    disp(MSG_INFO,"Unknown file format.");
+    
     return;
 
 }
@@ -104,10 +133,11 @@ void info(CLI::App* app)
 
     app->description("displays information about input file");
 
-    app->add_option("<input>", inp_fname, "Input file")
+    app->add_option("<input>",              inp_fname,           "Input file")
         ->required()
         ->check(CLI::ExistingFile);
 
+    app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
     
     app->callback(run_info);
