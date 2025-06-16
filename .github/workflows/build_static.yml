@@ -206,6 +206,8 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
     - name: Install dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
       run: |
         apt-get update
         apt-get install -y gcc-9 g++-9 libomp-dev cmake git  
