@@ -208,7 +208,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update
-        apt-get install -y gcc-9 g++-9 libomp-dev cmake  
+        apt-get install -y gcc-9 g++-9 libomp-dev cmake git  
   
     - name: Set up build directory and environment
       run: |
