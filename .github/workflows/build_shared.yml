@@ -227,8 +227,6 @@ jobs:
           -DCMAKE_C_COMPILER=gcc-9 \
           -DCMAKE_CXX_COMPILER=g++-9 \
           -DBUILD_SHARED_LIBS=ON \
-          -DCMAKE_CXX_FLAGS="-fopenmp" \
-          -DCMAKE_EXE_LINKER_FLAGS="-static -static-libgcc -static-libstdc++ -fopenmp" \
           -DBUILD_NATIVE=OFF \
           -S .
 
