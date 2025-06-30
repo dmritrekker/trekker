@@ -3,9 +3,9 @@ Trekker
 
 .. note::
 
-    June 12\ :sup:`th`, 2025
+    June 30\ :sup:`th`, 2025
 
-    **UPDATE:** Trekker v1.0.0-rc4 is now out! This update focused on major performance improvements that required a lot of work to implement. See below for a list of changes.
+    **UPDATE:** Trekker v1.0.0-rc5 is now out! This quick update fine tuned a few issues related to our major changes in release candidate 4 (rc4). See below for a list of changes.
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -33,15 +33,15 @@ Option 1: Stand-alone executables
 
 Download the appropriate stand-alone executable for your operating system:
 
-*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/linux_binary.zip>`
-*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/macOS-universal_binary.zip>`
-*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/windows_binary.zip>`
+*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/linux_binary.zip>`
+*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/macOS-universal_binary.zip>`
+*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/windows_binary.zip>`
 
 After downloading and extracting the archive, you can run the executable.
 
 **Testing:**
 
-- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/tests.zip>`_.
+- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/tests.zip>`_.
 - Copy paste your executable under the ``testScripts`` folder.
 - Run the provided test script for your operating system.
 
@@ -199,6 +199,14 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              --output OUT_TRACK.vtk
 
+Release notes for Trekker-v1.0.0-rc5
+------------------------------------
+
+    - **Bug fix 1**: Fixed a minor issue with preloaded tractogram reading.
+    
+    - **Improvement 1**: Switched to glib based Linux executable.
+
+Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
 Release notes for Trekker-v1.0.0-rc4
 ------------------------------------
