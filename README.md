@@ -24,15 +24,15 @@ For complete documentation, tutorials and examples, visit https://dmritrekker.gi
 
 Download the appropriate stand-alone executable for your operating system:
 
-*   **Linux:** :download: [linux_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/linux_binary.zip)
-*   **macOS:** :download: [macOS-universal_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/macOS-universal_binary.zip)
-*   **Windows:** :download: [windows_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/windows_binary.zip)
+*   **Linux:** :download: [linux_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/linux_binary.zip)
+*   **macOS:** :download: [macOS-universal_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/macOS-universal_binary.zip)
+*   **Windows:** :download: [windows_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/windows_binary.zip)
 
 After downloading and extracting the archive, you can run the executable.
 
 **Testing:**
 
-- Download and extract the datasets and scripts we prepared for testing by clicking here, [tests.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc4/tests.zip).
+- Download and extract the datasets and scripts we prepared for testing by clicking here, [tests.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/tests.zip).
 - Copy paste your executable under the ``testScripts`` folder.
 - Run the provided test script for your operating system.
 
