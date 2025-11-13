@@ -6,7 +6,7 @@ set(trekker_VERSION_PATCH 0)
 
 project(trekker VERSION ${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH} LANGUAGES CXX C)
 
-set(CMDNAME trekker_v${trekker_VERSION}-rc4)
+set(CMDNAME trekker_v${trekker_VERSION}-rc5)
 message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
