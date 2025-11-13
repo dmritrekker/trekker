@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
     info(app.add_subcommand("info", ""));
     track(app.add_subcommand("track", ""));
     filter(app.add_subcommand("filter", ""));
+    purifibre(app.add_subcommand("purifibre", ""));
     track2img(app.add_subcommand("track2img", ""));
     track2surf(app.add_subcommand("track2surf", ""));
     img2track(app.add_subcommand("img2track", ""));
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
         "info", 
         "track", 
         "filter",
+        "purifibre",
         "track2img",
         "track2surf",
         "img2track",
