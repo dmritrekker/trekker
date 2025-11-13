@@ -152,6 +152,13 @@ void run_purifibre()
 
 void purifibre(CLI::App* app) 
 {  
+    app->formatter(std::make_shared<CustomHelpFormatter>());
+
+    const std::string info = "Purifibre computes a smoothed Track Orientation Density Image (TODI) to measure how well each streamline aligns with the collective organization of its neighbors, assigning a Fiber Coupling (FICO) score based on the streamline's least aligned segment (minimum SECO). It then filters the tractogram by removing a user-defined percentage of streamlines with the lowest FICO scores, thereby eliminating spatially incoherent \"spurious\" fibers."
+        "\n\n\033[1mREFERENCES\033[0m:"
+        "\n\n[Aydogan2022] Aydogan D.B., “Fiber coupling (FICO) measure using anisotropic smoothing of track orientation density images for tractogram filtering”, ISMRM 2022";
+
+    setInfo(app,info);
     
     app->description("purifibre removes spurious streamlines from tractograms");
     
