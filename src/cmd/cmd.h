@@ -6,6 +6,7 @@
 void info(CLI::App* app);
 void track(CLI::App* app);
 void filter(CLI::App* app);
+void purifibre(CLI::App* app);
 void track2img(CLI::App* app);
 void track2surf(CLI::App* app);
 void img2track(CLI::App* app);

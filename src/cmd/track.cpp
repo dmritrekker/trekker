@@ -1,4 +1,5 @@
 #include "cmd.h"
+#include <fstream>
 
 
 using namespace NIBR;
@@ -224,7 +225,12 @@ void run_track()
     trekker->run(&writer);
     disp(MSG_DEBUG,"Tracking finished");
 
+    // =======================
+
+    // =======================
+    // FINALIZE OUTPUT
     disp(MSG_DEBUG,"Writing output");
+
     if (saveSeedIndexField) {
         std::vector<TractogramField> seedIdx;
         seedIdx.push_back(TRACKER::getSeedIndexField());
@@ -236,6 +242,147 @@ void run_track()
     } else {
         disp(MSG_DEBUG, "Processing finished successfully.");
     }
+
+    // =======================
+    // Write the log file
+
+    TRACKER::Logger& logger = TRACKER::getLogger();
+
+    size_t success = logger.log_success_REACHED_MAXLENGTH_LIMIT +
+                     logger.log_success_REACHED_MINDATASUPPORT_LIMIT +
+                     logger.log_success_SATISFIED_PATHWAY_RULES;
+
+    size_t discard = logger.log_discard_TOO_SHORT +
+                     logger.log_discard_TOO_LONG +
+                     logger.log_discard_DISCARD_ROI_REACHED +
+                     logger.log_discard_REQUIRED_ROI_NOT_MET +
+                     logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET +
+                     logger.log_discard_CANT_MEET_STOP_CONDITION +
+                     logger.log_discard_ENDED_INSIDE_DISCARD_ROI +
+                     logger.log_discard_REACHED_TIME_LIMIT;
+
+    size_t fail = logger.log_failed_UNKNOWN_REASON +
+                  logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION +
+                  logger.log_failed_BY_THE_ALGORITHM;
+    
+    size_t total = success + discard + fail;
+
+    std::string json_fname = removeFileExtension(out_fname) + ".json";
+    std::ofstream json_file(json_fname);
+    if (json_file.is_open()) {
+        json_file << "{\n";
+
+        json_file << "  \"GENERAL OPTIONS\": {\n";
+        json_file << "    \"numberOfThreads\": " << numberOfThreads << ",\n";
+        if (runTimeLimit == 0)
+            json_file << "    \"runTimeLimit\": \"infinite\",\n";
+        else
+            json_file << "    \"runTimeLimit\": \"" << runTimeLimit << " min\",\n";
+        
+        if (idleTimeLimit == 0)
+            json_file << "    \"idleTimeLimit\": \"infinite\"\n";
+        else
+            json_file << "    \"idleTimeLimit\": \"" << idleTimeLimit << " min\"\n";
+        json_file << "  },\n";
+
+        json_file << "  \"SEEDING OPTIONS\": {\n";
+        json_file << "    \"seed_count\": " << seedCount << ",\n";
+        json_file << "    \"seed_density\": " << seedDensity << ",\n";
+        json_file << "    \"seed_trials\": " << seedTrials << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"PTT OPTIONS\": {\n";
+        json_file << "    \"algorithm\": \"" << ((alg == "" || alg == "ptt") ? "parallel transport tracker (ptt)" : alg) << "\",\n";
+        json_file << "    \"fod\": \"" << (fod.empty() ? "" : fod[0]) << "\",\n";
+        json_file << "    \"fodDiscretization\": \"" << (dontDiscretizeFod ? "OFF" : "ON") << "\",\n";
+        json_file << "    \"stepSize\": " << stepSize << ",\n";
+        json_file << "    \"writeStepSize\": " << writeStepSize << ",\n";
+        json_file << "    \"minRadiusOfCurvature\": " << minRadiusOfCurvature << ",\n";
+        json_file << "    \"minDataSupport\": " << minDataSupport << ",\n";
+        json_file << "    \"dataSupportExponent\": " << dataSupportExponent << ",\n";
+        json_file << "    \"ignoreWeakLinks\": " << ignoreWeakLinks << ",\n";
+        json_file << "    \"maxEstInterval\": " << maxEstInterval << ",\n";
+        json_file << "    \"maxSamplingPerStep\": " << maxSamplingPerStep << ",\n";
+        json_file << "    \"initMaxEstTrials\": " << initMaxEstTrials << ",\n";
+        json_file << "    \"propMaxEstTrials\": " << propMaxEstTrials << ",\n";
+        json_file << "    \"useBestAtInit\": \"" << (useBestAtInit ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"useLegacySampling\": \"" << (useLegacySampling ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"samplingQuality\": " << samplingQuality << ",\n";
+        json_file << "    \"probeLength\": " << probeLength << ",\n";
+        json_file << "    \"probeRadius\": " << probeRadius << ",\n";
+        json_file << "    \"probeCount\": " << probeCount << ",\n";
+        json_file << "    \"probeQuality\": " << probeQuality << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"PATHWAY OPTIONS\": {\n";
+        json_file << "    \"minlength\": " << minlength << ",\n";
+        if (maxlength == FLT_MAX)
+             json_file << "    \"maxlength\": \"infinite\",\n";
+        else
+             json_file << "    \"maxlength\": " << maxlength << ",\n";
+        
+        json_file << "    \"stopAtMax\": \"" << (stopAtMax ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"oneSided\": \"" << (oneSided ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"skipSeed\": \"" << (skipSeed ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"inOrder\": \"" << (inOrder ? "ON" : "OFF") << "\",\n";
+
+        json_file << "    \"Rules\": [\n";
+        bool first_rule = true;
+        for (const auto& s : seedInp) {
+            if (!first_rule) json_file << ",\n";
+            json_file << "      \"seed " << s << "\"";
+            first_rule = false;
+        }
+        for (const auto& s : discardSeedInp) {
+            if (!first_rule) json_file << ",\n";
+            json_file << "      \"discard_seed " << s << "\"";
+            first_rule = false;
+        }
+        for (const auto& p : pathway) {
+            if (!first_rule) json_file << ",\n";
+            json_file << "      \"" << p << "\"";
+            first_rule = false;
+        }
+        json_file << "\n    ]\n";
+        json_file << "  },\n";
+        
+        json_file << "  \"Success report\": {\n";
+        json_file << "    \"Reached max length\": " << logger.log_success_REACHED_MAXLENGTH_LIMIT << ",\n";
+        json_file << "    \"Reached min data support\": " << logger.log_success_REACHED_MINDATASUPPORT_LIMIT << ",\n";
+        json_file << "    \"Satisfied pathway rules\": " << logger.log_success_SATISFIED_PATHWAY_RULES << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Discard report\": {\n";
+        json_file << "    \"Too short\": " << logger.log_discard_TOO_SHORT << ",\n";
+        json_file << "    \"Too long\": " << logger.log_discard_TOO_LONG << ",\n";
+        json_file << "    \"Reached discard region\": " << logger.log_discard_DISCARD_ROI_REACHED << ",\n";
+        json_file << "    \"Required region not found\": " << logger.log_discard_REQUIRED_ROI_NOT_MET << ",\n";
+        json_file << "    \"Required order not satisfied\": " << logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET << ",\n";
+        json_file << "    \"Can't meet stop condition\": " << logger.log_discard_CANT_MEET_STOP_CONDITION << ",\n";
+        json_file << "    \"Ended inside discard region\": " << logger.log_discard_ENDED_INSIDE_DISCARD_ROI << ",\n";
+        json_file << "    \"Reached time limit\": " << logger.log_discard_REACHED_TIME_LIMIT << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Fail report\": {\n";
+        json_file << "    \"Initialization at the seed failed\": " << logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION << ",\n";
+        json_file << "    \"Algorithm failed to propagate\": " << logger.log_failed_BY_THE_ALGORITHM << ",\n";
+        json_file << "    \"Unknown reason\": " << logger.log_failed_UNKNOWN_REASON << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Summary\": {\n";
+        json_file << "    \"Success\": " << success << ",\n";
+        json_file << "    \"Discard\": " << discard << ",\n";
+        json_file << "    \"Fail\": " << fail << ",\n";
+        json_file << "    \"Total\": " << total << ",\n";
+        json_file << "    \"Duration\": \"" << TRACKER::runTime() << " sec\"\n";
+        json_file << "  }\n";
+
+        json_file << "}\n";
+        json_file.close();
+    } else {
+        disp(MSG_ERROR, "Failed to open json output file: %s", json_fname.c_str());
+    }
+    // ======================
 
     delete trekker;
 
