@@ -32,121 +32,42 @@ void run_purifibre()
     if (!parseForceOutput(out_tractogram_fname,force)) return;
     if (!parseForceOutput(out_fico,force)) return;
 
-    if (voxDim<=0) voxDim=4.0f;
+    if (!ensureVTKorTCK(out_tractogram_fname)) return;
+    if ((out_fico!="") && !ensureVTK(out_fico)) return;
 
-    // Initialize tractogram and make copies for multithreader
+    
+    // Load tractogram
     NIBR::TractogramReader tractogram(inp_tractogram_fname);
-
-    int N = tractogram.numberOfStreamlines;
-
-    if (N<1) {
-        NIBR::disp(MSG_WARN,"Empty tractogram");
+    if (!tractogram.isReady()) {
+        disp(MSG_FATAL, "Failed to open input tractogram: %s", inp_tractogram_fname.c_str());
         return;
     }
 
-    // Save FICO
-    if ((out_fico!="") && !ensureVTK(out_fico)) return;
+    // Compute FICO values
+    std::vector<float> fico = NIBR::getFico(&tractogram,trimFactor,voxDim,anisotropicSmoothing,sphericalSmoothing);
 
-    // Compute sTODI
-    NIBR::SF::init(true,17);
-
-    NIBR::SF_Image img;
-    std::vector<float> bb = getTractogramBBox(&tractogram);
-    bb.push_back(-0.5);
-    bb.push_back(int64_t(SF::getSFCoords().size())-0.5);
-    img.createFromBoundingBox(4,bb,voxDim,false);
-
-    NIBR::Tractogram2ImageMapper<float> gridder(&tractogram,&img);
-    gridder.anisotropicSmoothing(anisotropicSmoothing);
-    allocateGrid_4segmentLength_sf(&gridder);
-    gridder.run(processor_4segmentLength_sf<float>, outputCompiler_4segmentLength_sf<float>);
-    deallocateGrid_4segmentLength_sf(&gridder);
-
-    img.smooth(sphericalSmoothing);
-
-    
-    // Compute SECO and FICO
-    std::vector<std::tuple<uint64_t,float>> fico;
-    fico.resize(N);
-
-    tractogram.reset();
-
-    auto run = [&]()->void {
-
-        auto [success,streamline,streamlineId] = tractogram.getNextStreamline();
-
-        int len = streamline.size();
-        if (len<2) {
-            fico[streamlineId] = std::make_tuple(streamlineId,0.0f);
-            return;
-        }
-
-        float T[3];
-
-        int trim = int(len*trimFactor*0.5*0.01);
-        if (trim>=int(len/2-1)) trim = int(len/2)-1;
-        if (trim<=0) trim  = 0;
-
-        float minSeco   = std::numeric_limits<float>::infinity();
-
-        for (int l=trim; l<(len-trim-1); l++) {
-            vec3sub(T,streamline[l+1],streamline[l]);
-            normalize(T);
-
-            float seco = img.getSFval(streamline[l].data(),T); // segment-to-bundle coupling (SECO)
-            if (seco < minSeco)
-                minSeco = seco;
-            
-        }
-        float seco = img.getSFval(streamline[len-trim-1].data(),T);
-        if (seco < minSeco)
-            minSeco = seco;
-
-        fico[streamlineId] = std::make_tuple(streamlineId,std::log(minSeco+1));
-
-    };
-    NIBR::MT::MTRUN(N, "Computing FICO", run);
-
-    NIBR::SF::clean();
-    
-    // Save FICO
-    if (out_fico!="") {
-        writeTractogram(out_fico,&tractogram);
-
-        FILE *out;
-	    out = fopen(out_fico.c_str(),"ab+");
-
-        char buffer[256];
-
-        sprintf(buffer,"CELL_DATA %lu\n",size_t(N)); 	
-        fwrite(buffer, sizeof(char), strlen(buffer), out);
-
-        sprintf(buffer,"SCALARS FICO float 1\n");
-        fwrite(buffer, sizeof(char), strlen(buffer), out);
-        
-        sprintf(buffer,"LOOKUP_TABLE default\n"); 				
-        fwrite(buffer, sizeof(char), strlen(buffer), out);
-
-        for (int n=0; n<N; n++) {
-            float tmp = std::get<1>(fico[n]);
-            swapByteOrder(tmp);
-            fwrite(&tmp, sizeof(float), 1, out);
-        }
-
-        fclose(out);
+    if (fico.size()!=tractogram.numberOfStreamlines) {
+        disp(MSG_FATAL, "FICO computation failed.");
+        return;
     }
 
-    // Remove remN amount of smallest ones
-    std::sort(fico.begin(), fico.end(), [](auto a, auto b) {return std::get<1>(a) < std::get<1>(b);} );
+    // Purify tractogram
+    std::vector<size_t> idx = NIBR::purify(fico, puriFactor);
 
-    std::vector<size_t> idx;
-    int remN = std::floor(float(fico.size())*puriFactor*0.01);
-
-    for (int n=remN; n<N; n++)
-        idx.push_back(std::get<0>(fico[n]));
-
-    // Write feature values
+    // Write output tractogram
     writeTractogram(out_tractogram_fname,inp_tractogram_fname,idx);
+
+    // Write a tractogram with FICO values as a field
+    if (out_fico!="") {
+
+        TractogramField ficoField = NIBR::makeTractogramFieldFromVector(tractogram, "FICO", fico);
+        std::vector<TractogramField> fields;
+        fields.emplace_back(ficoField);
+
+        tractogram.reset();
+        Tractogram allStreamlines = tractogram.getTractogram();
+        writeTractogram(out_fico, allStreamlines, fields);
+    }
     
 }
 
@@ -174,7 +95,7 @@ void purifibre(CLI::App* app)
 
     app->add_option("--anisotropicSmoothing", anisotropicSmoothing, "Standard deviation of the Gaussian kernel (in mm), and computation density for anisotropic smoothing (number of streamlines). E.g. when set to 2 100, smoothing is done using 100 streamlines randomly distributed around each streamline using a Gaussion distribution with standard deviation of 2 mm. Default=0 0.");
 
-    app->add_option("--sphericalSmoothing", sphericalSmoothing, "Amount of sTODI spherical smoothing. Default: 30.");
+    app->add_option("--sphericalSmoothing", sphericalSmoothing, "Amount of sTODI spherical smoothing. Default: 15.");
 
     app->add_option("--save_fico", out_fico, "Saves a .vtk formatted copy of input tractogram with FICO values written as a field.");
 

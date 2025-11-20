@@ -3,9 +3,15 @@
 
 using namespace NIBR;
 
+std::string TREKKER_CMD_LINE;
+
 int main(int argc, char *argv[]) {
 
     NIBR::INITIALIZE();
+
+    for(int i=0; i<argc; i++) {
+        TREKKER_CMD_LINE += std::string(argv[i]) + " ";
+    }
 
     // Parse input
     CLI::App app(TREKKER_EXE_STRING);

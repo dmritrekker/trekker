@@ -1,5 +1,6 @@
 #include "cmd.h"
 #include <fstream>
+#include <sstream>
 
 
 using namespace NIBR;
@@ -267,10 +268,19 @@ void run_track()
     
     size_t total = success + discard + fail;
 
-    std::string json_fname = removeFileExtension(out_fname) + ".json";
+    
+    std::string json_fname = replaceFileExtension(out_fname, ".json");
+
+    disp(MSG_INFO, "Output path: %s", out_fname.c_str());
+    disp(MSG_INFO, "Output log: %s",  json_fname.c_str());
+
+
+
     std::ofstream json_file(json_fname);
     if (json_file.is_open()) {
         json_file << "{\n";
+        json_file << "  \"Trekker version\": \"" << TREKKER_EXE_STRING << "\",\n";
+        json_file << "  \"Command\": \"" << TREKKER_CMD_LINE << "\",\n";
 
         json_file << "  \"GENERAL OPTIONS\": {\n";
         json_file << "    \"numberOfThreads\": " << numberOfThreads << ",\n";
@@ -286,94 +296,153 @@ void run_track()
         json_file << "  },\n";
 
         json_file << "  \"SEEDING OPTIONS\": {\n";
-        json_file << "    \"seed_count\": " << seedCount << ",\n";
-        json_file << "    \"seed_density\": " << seedDensity << ",\n";
-        json_file << "    \"seed_trials\": " << seedTrials << "\n";
+        json_file << "    \"seed_count\": "     << TRACKER::seed.sCount << ",\n";
+        json_file << "    \"seed_density\": "   << TRACKER::seed.sDensity << ",\n";
+        json_file << "    \"seed_trials\": "    << TRACKER::seed.trials << "\n";
         json_file << "  },\n";
 
         json_file << "  \"PTT OPTIONS\": {\n";
-        json_file << "    \"algorithm\": \"" << ((alg == "" || alg == "ptt") ? "parallel transport tracker (ptt)" : alg) << "\",\n";
-        json_file << "    \"fod\": \"" << (fod.empty() ? "" : fod[0]) << "\",\n";
-        json_file << "    \"fodDiscretization\": \"" << (dontDiscretizeFod ? "OFF" : "ON") << "\",\n";
-        json_file << "    \"stepSize\": " << stepSize << ",\n";
-        json_file << "    \"writeStepSize\": " << writeStepSize << ",\n";
-        json_file << "    \"minRadiusOfCurvature\": " << minRadiusOfCurvature << ",\n";
-        json_file << "    \"minDataSupport\": " << minDataSupport << ",\n";
-        json_file << "    \"dataSupportExponent\": " << dataSupportExponent << ",\n";
-        json_file << "    \"ignoreWeakLinks\": " << ignoreWeakLinks << ",\n";
-        json_file << "    \"maxEstInterval\": " << maxEstInterval << ",\n";
-        json_file << "    \"maxSamplingPerStep\": " << maxSamplingPerStep << ",\n";
-        json_file << "    \"initMaxEstTrials\": " << initMaxEstTrials << ",\n";
-        json_file << "    \"propMaxEstTrials\": " << propMaxEstTrials << ",\n";
-        json_file << "    \"useBestAtInit\": \"" << (useBestAtInit ? "ON" : "OFF") << "\",\n";
-        json_file << "    \"useLegacySampling\": \"" << (useLegacySampling ? "ON" : "OFF") << "\",\n";
-        json_file << "    \"samplingQuality\": " << samplingQuality << ",\n";
-        json_file << "    \"probeLength\": " << probeLength << ",\n";
-        json_file << "    \"probeRadius\": " << probeRadius << ",\n";
-        json_file << "    \"probeCount\": " << probeCount << ",\n";
-        json_file << "    \"probeQuality\": " << probeQuality << "\n";
+        json_file << "    \"algorithm\": \""            << ((alg == "" || alg == "ptt") ? "parallel transport tracker (ptt)" : alg) << "\",\n";
+        json_file << "    \"fod\": \""                  << (fod.empty() ? "" : fod[0]) << "\",\n";
+        json_file << "    \"fodDiscretization\": \""    << (TRACKER::params_ptt.fodDiscretization ? "ON" : "OFF") << "\",\n";
+
+        auto writeParamF = [&](std::string pstr, Image<float>* img, float pval, int precision) {
+            json_file << pstr << to_string_with_precision(pval,precision);
+            if (img != NULL)
+                json_file << "," << img->filePath;
+        };
+
+        auto writeParamI = [&](std::string pstr, Image<int>* img, float pval) {
+            json_file << pstr << pval;
+            if (img != NULL)
+                json_file << "," << img->filePath;
+        };
+
+        auto writeOnOff = [&](std::string pstr, bool pval) {
+            json_file << pstr << "\"" << (pval ? "ON" : "OFF") << "\"";
+        };
+
+        writeParamF("    \"stepSize\": ",                TRACKER::params_ptt.stepSize_img,               TRACKER::params_ptt.stepSize_global,                4); json_file << ",\n";
+        writeParamF("    \"writeStepSize\": ",           TRACKER::params_ptt.outputStep_img,             TRACKER::params_ptt.outputStep_global,              4); json_file << ",\n";
+        
+        writeParamF("    \"minRadiusOfCurvature\": ",    TRACKER::params_ptt.minRadiusOfCurvature_img,   TRACKER::params_ptt.minRadiusOfCurvature_global,    4); json_file << ",\n";
+        writeParamF("    \"minDataSupport\": ",          TRACKER::params_ptt.minDataSupport_img,         TRACKER::params_ptt.minDataSupport_global,          4); json_file << ",\n";
+        writeParamF("    \"dataSupportExponent\": ",     TRACKER::params_ptt.dataSupportExponent_img,    TRACKER::params_ptt.dataSupportExponent_global,     4); json_file << ",\n";
+
+        writeParamF("    \"ignoreWeakLinks\": ",         NULL,                                           TRACKER::params_ptt.weakLinkThresh,                 4); json_file << ",\n";
+
+        writeParamI("    \"maxEstInterval\": ",          TRACKER::params_ptt.maxEstInterval_img,         TRACKER::params_ptt.maxEstInterval_global); json_file << ",\n";
+        writeParamI("    \"maxSamplingPerStep\": ",      TRACKER::params_ptt.triesPerRejectionSampling_img,     TRACKER::params_ptt.triesPerRejectionSampling_global); json_file << ",\n";
+        writeParamI("    \"initMaxEstTrials\": ",        TRACKER::params_ptt.initMaxEstTrials_img,       TRACKER::params_ptt.initMaxEstTrials_global); json_file << ",\n";
+        writeParamI("    \"propMaxEstTrials\": ",        TRACKER::params_ptt.propMaxEstTrials_img,       TRACKER::params_ptt.propMaxEstTrials_global); json_file << ",\n";
+
+        writeOnOff ("    \"useBestAtInit\": ",           TRACKER::params_ptt.useBestAtInit); json_file << ",\n";
+        writeOnOff ("    \"useLegacySampling\": ",       TRACKER::params_ptt.useLegacySampling); json_file << ",\n";
+        writeParamI("    \"samplingQuality\": ",         NULL,                                           TRACKER::params_ptt.samplingQuality); json_file << ",\n";
+
+
+        writeParamF("    \"probeLength\": ",            TRACKER::params_ptt.probeLength_img,           TRACKER::params_ptt.probeLength_global,               4); json_file << ",\n";
+        writeParamF("    \"probeRadius\": ",            TRACKER::params_ptt.probeRadius_img,           TRACKER::params_ptt.probeRadius_global,               4); json_file << ",\n";
+        writeParamF("    \"probeCount\": ",             TRACKER::params_ptt.probeCount_img,            TRACKER::params_ptt.probeCount_global,                0); json_file << ",\n";
+        writeParamF("    \"probeQuality\": ",           TRACKER::params_ptt.probeQuality_img,          TRACKER::params_ptt.probeQuality_global,              0); json_file << "\n";
         json_file << "  },\n";
 
         json_file << "  \"PATHWAY OPTIONS\": {\n";
-        json_file << "    \"minlength\": " << minlength << ",\n";
-        if (maxlength == FLT_MAX)
+        json_file << "    \"minlength\": "      << TRACKER::pw.minLength << ",\n";
+        if (TRACKER::pw.maxLength == FLT_MAX)
              json_file << "    \"maxlength\": \"infinite\",\n";
         else
-             json_file << "    \"maxlength\": " << maxlength << ",\n";
+             json_file << "    \"maxlength\": " << TRACKER::pw.maxLength << ",\n";
         
-        json_file << "    \"stopAtMax\": \"" << (stopAtMax ? "ON" : "OFF") << "\",\n";
-        json_file << "    \"oneSided\": \"" << (oneSided ? "ON" : "OFF") << "\",\n";
-        json_file << "    \"skipSeed\": \"" << (skipSeed ? "ON" : "OFF") << "\",\n";
-        json_file << "    \"inOrder\": \"" << (inOrder ? "ON" : "OFF") << "\",\n";
+        writeOnOff ("    \"stopAtMax\": ",    TRACKER::pw.atMaxLength == ATMAXLENGTH_STOP); json_file << ",\n";
+        writeOnOff ("    \"oneSided\": ",     TRACKER::pw.directionality == NIBR::Directionality::ONE_SIDED); json_file << ",\n";
+        writeOnOff ("    \"skipSeed\": ",     TRACKER::pw.skipSeedROI); json_file << ",\n";
+        writeOnOff ("    \"inOrder\": ",      TRACKER::pw.satisfy_requirements_in_order == NIBR::RequirementOrder::IN_ORDER); json_file << ",\n";
 
         json_file << "    \"Rules\": [\n";
+        
+        auto getRuleString = [&](const PathwayRule& r) -> std::string {
+            std::stringstream ss;
+            
+            switch (r.type) {
+                case NIBR::seed:                   ss << "seed"; break;
+                case NIBR::discard_seed:           ss << "discard_seed"; break;
+                case NIBR::req_entry:              ss << "require_entry"; break;
+                case NIBR::req_exit:               ss << "require_exit"; break;
+                case NIBR::req_end_inside:         ss << "require_end_inside"; break;
+                case NIBR::discard_if_enters:      ss << "discard_if_enters"; break;
+                case NIBR::discard_if_exits:       ss << "discard_if_exits"; break;
+                case NIBR::discard_if_ends_inside: ss << "discard_if_ends_inside"; break;
+                case NIBR::stop_at_entry:          ss << "stop_at_entry"; break;
+                case NIBR::stop_at_exit:           ss << "stop_at_exit"; break;
+                case NIBR::stop_after_entry:       ss << "stop_after_entry"; break;
+                case NIBR::stop_after_exit:        ss << "stop_after_exit"; break;
+                case NIBR::stop_before_entry:      ss << "stop_before_entry"; break;
+                case NIBR::stop_before_exit:       ss << "stop_before_exit"; break;
+                default: break;
+            }
+
+            if (r.side == NIBR::side_A) ss << "_A";
+            if (r.side == NIBR::side_B) ss << "_B";
+
+            ss << " ";
+
+            if (r.src == NIBR::img_mask_src) {
+                ss << r.imageMaskSource;
+            } else if (r.src == NIBR::img_label_src) {
+                ss << r.imageLabelSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::img_pvf_src) {
+                ss << r.imagePvfSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::surf_src) {
+                ss << r.surfaceSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::sph_src) {
+                ss << r.center[0] << "," << r.center[1] << "," << r.center[2] << "," << r.radius;
+            }
+
+            return ss.str();
+        };
+
         bool first_rule = true;
-        for (const auto& s : seedInp) {
+        for (const auto& rule : TRACKER::pw.prules) {
             if (!first_rule) json_file << ",\n";
-            json_file << "      \"seed " << s << "\"";
+            json_file << "      \"" << getRuleString(rule) << "\"";
             first_rule = false;
         }
-        for (const auto& s : discardSeedInp) {
-            if (!first_rule) json_file << ",\n";
-            json_file << "      \"discard_seed " << s << "\"";
-            first_rule = false;
-        }
-        for (const auto& p : pathway) {
-            if (!first_rule) json_file << ",\n";
-            json_file << "      \"" << p << "\"";
-            first_rule = false;
-        }
+        
         json_file << "\n    ]\n";
         json_file << "  },\n";
         
         json_file << "  \"Success report\": {\n";
-        json_file << "    \"Reached max length\": " << logger.log_success_REACHED_MAXLENGTH_LIMIT << ",\n";
-        json_file << "    \"Reached min data support\": " << logger.log_success_REACHED_MINDATASUPPORT_LIMIT << ",\n";
-        json_file << "    \"Satisfied pathway rules\": " << logger.log_success_SATISFIED_PATHWAY_RULES << "\n";
+        json_file << "    \"Reached max length\": "                 << logger.log_success_REACHED_MAXLENGTH_LIMIT << ",\n";
+        json_file << "    \"Reached min data support\": "           << logger.log_success_REACHED_MINDATASUPPORT_LIMIT << ",\n";
+        json_file << "    \"Satisfied pathway rules\": "            << logger.log_success_SATISFIED_PATHWAY_RULES << "\n";
         json_file << "  },\n";
 
         json_file << "  \"Discard report\": {\n";
-        json_file << "    \"Too short\": " << logger.log_discard_TOO_SHORT << ",\n";
-        json_file << "    \"Too long\": " << logger.log_discard_TOO_LONG << ",\n";
-        json_file << "    \"Reached discard region\": " << logger.log_discard_DISCARD_ROI_REACHED << ",\n";
-        json_file << "    \"Required region not found\": " << logger.log_discard_REQUIRED_ROI_NOT_MET << ",\n";
-        json_file << "    \"Required order not satisfied\": " << logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET << ",\n";
-        json_file << "    \"Can't meet stop condition\": " << logger.log_discard_CANT_MEET_STOP_CONDITION << ",\n";
-        json_file << "    \"Ended inside discard region\": " << logger.log_discard_ENDED_INSIDE_DISCARD_ROI << ",\n";
-        json_file << "    \"Reached time limit\": " << logger.log_discard_REACHED_TIME_LIMIT << "\n";
+        json_file << "    \"Too short\": "                          << logger.log_discard_TOO_SHORT << ",\n";
+        json_file << "    \"Too long\": "                           << logger.log_discard_TOO_LONG << ",\n";
+        json_file << "    \"Reached discard region\": "             << logger.log_discard_DISCARD_ROI_REACHED << ",\n";
+        json_file << "    \"Required region not found\": "          << logger.log_discard_REQUIRED_ROI_NOT_MET << ",\n";
+        json_file << "    \"Required order not satisfied\": "       << logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET << ",\n";
+        json_file << "    \"Can't meet stop condition\": "          << logger.log_discard_CANT_MEET_STOP_CONDITION << ",\n";
+        json_file << "    \"Ended inside discard region\": "        << logger.log_discard_ENDED_INSIDE_DISCARD_ROI << ",\n";
+        json_file << "    \"Reached time limit\": "                 << logger.log_discard_REACHED_TIME_LIMIT << "\n";
         json_file << "  },\n";
 
         json_file << "  \"Fail report\": {\n";
-        json_file << "    \"Initialization at the seed failed\": " << logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION << ",\n";
-        json_file << "    \"Algorithm failed to propagate\": " << logger.log_failed_BY_THE_ALGORITHM << ",\n";
-        json_file << "    \"Unknown reason\": " << logger.log_failed_UNKNOWN_REASON << "\n";
+        json_file << "    \"Initialization at the seed failed\": "  << logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION << ",\n";
+        json_file << "    \"Algorithm failed to propagate\": "      << logger.log_failed_BY_THE_ALGORITHM << ",\n";
+        json_file << "    \"Unknown reason\": "                     << logger.log_failed_UNKNOWN_REASON << "\n";
         json_file << "  },\n";
 
         json_file << "  \"Summary\": {\n";
-        json_file << "    \"Success\": " << success << ",\n";
-        json_file << "    \"Discard\": " << discard << ",\n";
-        json_file << "    \"Fail\": " << fail << ",\n";
-        json_file << "    \"Total\": " << total << ",\n";
+        json_file << "    \"Success\": "    << success << ",\n";
+        json_file << "    \"Discard\": "    << discard << ",\n";
+        json_file << "    \"Fail\": "       << fail << ",\n";
+        json_file << "    \"Total\": "      << total << ",\n";
         json_file << "    \"Duration\": \"" << TRACKER::runTime() << " sec\"\n";
         json_file << "  }\n";
 
