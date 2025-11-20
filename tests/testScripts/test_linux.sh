@@ -2,7 +2,6 @@
 
 # Make sure trekker_linux is executable
 trekker=./trekker_linux
-trekker=trekker
 
 chmod +x ${trekker}
 
