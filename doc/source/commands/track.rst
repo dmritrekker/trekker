@@ -264,6 +264,14 @@ fiber tracker
            <td style="padding: 8px; font-weight: 500;">--inOrder</td>
            <td style="padding: 8px;">If enabled, all pathway requirements are going to be satisfied in the order that they are input to Trekker. All pathway options should be defined for pathway_A/pathway_B in order to use this option.</td>
        </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">-x, --xact FILE</td>
+           <td style="padding: 8px;">Combined xact surface mesh file created with prepXact (experimental).</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--xact_stop_before_exit</td>
+           <td style="padding: 8px;">Truncates streamlines before exiting stop regions, i.e. gray matter and background, instead of truncating after entry, which is the default behaviour (experimental).</td>
+       </tr>
    </table>
 
 |

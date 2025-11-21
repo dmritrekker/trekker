@@ -2,6 +2,23 @@
 #include <fstream>
 #include <sstream>
 
+// Description of the labels used in XACT for tractography:
+//
+// Common rules:
+//  1. seed:                 (Seeds are randomly generated in this region)  L_WM + R_WM + CER_WM + BS
+//  2. discard_seed:         (No seeds allowed here)                        L_GM + R_GM + CER_GM + CSF + BG
+//  3. req_end_inside:       (Ends are allowed here)                        L_GM + R_GM + CER_GM + L_SUB + R_SUB + BS + BG
+//  4. discard_if_enters:    (No entry)                                     CSF
+//
+// Optional rules:
+//  5. xact_opt_seed_sub              (Default: ON) :  (Seeds are generated in subcortex too)      L_SUB + R_SUB
+//  6. xact_opt_stop_before_exit_sub  (Default: OFF):  (Propagation stops right before exit)       L_SUB + R_SUB
+//  7. xact_opt_stop_after_entry_bg   (Default: ON) :  (Propagation stops immediately after entry) BG
+//  8. xact_opt_stop_before_exit_bg   (Default: OFF):  (Propagation stops right before exit)       BG
+//  9. xact_opt_stop_after_entry_gm   (Default: OFF):  (Propagation stops immediately after entry) L_GM + R_GM + CER_GM
+// 10. xact_opt_stop_before_exit_gm   (Default: ON) :  (Propagation stops right before exit)       L_GM + R_GM + CER_GM
+//
+// Note: I_BS is a part of BS and is not currently used during tractography as a separate label.
 
 using namespace NIBR;
 
@@ -44,6 +61,15 @@ namespace CMDARGS_TRACK
     bool        inOrder                 = false;
     bool        skipSeed                = false;
     // bool        allowEdgeSeeds          = false;
+
+    // Xact options
+    std::string xact_fname              = "";
+    bool xact_opt_seed_sub              = true;
+    bool xact_opt_stop_before_exit_sub  = false;
+    bool xact_opt_stop_after_entry_bg   = true;
+    bool xact_opt_stop_before_exit_bg   = false;
+    bool xact_opt_stop_after_entry_gm   = false;
+    bool xact_opt_stop_before_exit_gm   = true;
 
     // Seeding options
     std::vector<std::string> seedInp;
@@ -155,6 +181,28 @@ void run_track()
 
 
     // =======================
+    // XACT
+    XactTractographyOption              xact_opts = XACT_TRACTOGRAPHY_OPT_UNSET;
+    if (xact_opt_seed_sub)              xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_SEED_SUB);
+    if (xact_opt_stop_before_exit_sub)  xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_SUB);
+    if (xact_opt_stop_after_entry_bg)   xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_AFTER_ENTRY_BG);
+    if (xact_opt_stop_before_exit_bg)   xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_BG);
+    if (xact_opt_stop_after_entry_gm)   xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_AFTER_ENTRY_GM);
+    if (xact_opt_stop_before_exit_gm)   xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_GM); 
+
+    if (!trekker->pathway_xact(xact_fname,xact_opts)) return;
+    if (xact_fname != "") {
+        if (!seed_surf_faceDensity.empty())   disp(MSG_WARN,"xact will ignore --seed_surf_faceDensity option.");
+        if (!seed_surf_vertDensity.empty())   disp(MSG_WARN,"xact will ignore --seed_surf_vertDensity option.");
+        if (!seed_surf_fieldDensity.empty())  disp(MSG_WARN,"xact will ignore --seed_surf_fieldDensity option.");
+        if (*seed_surf_useSurfNorm_option)    disp(MSG_WARN,"xact will ignore --surf_useSurfNorm_option option.");
+        if (!seedInp.empty())                 disp(MSG_WARN,"xact will ignore --seed option.");
+    }
+    // =======================
+
+
+
+    // =======================
     // SEED
     if (!seed_surf_faceDensity.empty()) {
 
@@ -175,14 +223,17 @@ void run_track()
         trekker->seed_surface_density_fileDataType(seed_surf_vertDensity[1]);
     }
 
-    trekker->seed_surface_fieldDensity(seed_surf_fieldDensity);
-    if (*seed_surf_useSurfNorm_option)    trekker->seed_surface_useNormForDir(seed_surf_useSurfNorm);
+    if (xact_fname == "") trekker->seed_surface_fieldDensity(seed_surf_fieldDensity);
+    if ((xact_fname == "") && (*seed_surf_useSurfNorm_option))    trekker->seed_surface_useNormForDir(seed_surf_useSurfNorm);
 
     if (*seedCount_option)   trekker->seed_count  (seedCount  );
     if (*seedDensity_option) trekker->seed_density(seedDensity);
     if (*seedTrials_option)  trekker->seed_trials (seedTrials );
 
-    if (!trekker->pathway_addSeed(seedInp))         return;
+    if ((xact_fname == "") && !trekker->pathway_addSeed(seedInp)) {
+        disp(MSG_ERROR, "Missing seed.");
+        return;
+    }
     
     std::vector<std::string> tmp;
     for (size_t n = 0; n < discardSeedInp.size(); n++) {
@@ -358,6 +409,18 @@ void run_track()
         writeOnOff ("    \"oneSided\": ",     TRACKER::pw.directionality == NIBR::Directionality::ONE_SIDED); json_file << ",\n";
         writeOnOff ("    \"skipSeed\": ",     TRACKER::pw.skipSeedROI); json_file << ",\n";
         writeOnOff ("    \"inOrder\": ",      TRACKER::pw.satisfy_requirements_in_order == NIBR::RequirementOrder::IN_ORDER); json_file << ",\n";
+
+        if (xact_fname != "") {
+            json_file << "    \"xact\": \"" << xact_fname << "\",\n";
+            writeOnOff ("    \"xact_opt_seed_sub\": ",             xact_opt_seed_sub); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_sub\": ", xact_opt_stop_before_exit_sub); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_bg\": ",  xact_opt_stop_after_entry_bg); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_bg\": ",  xact_opt_stop_before_exit_bg); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_gm\": ",  xact_opt_stop_after_entry_gm); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_gm\": ",  xact_opt_stop_before_exit_gm); json_file << ",\n";
+        } else {
+             json_file << "    \"xact\": \"OFF\",\n";
+        }
 
         json_file << "    \"Rules\": [\n";
         
@@ -562,7 +625,7 @@ void track(CLI::App *app)
 
     // Seeding options
     auto seeding = tracking->add_option_group("SEEDING PARAMETERS");
-    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw)->required();
+    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_option ("--discard_seed",                          discardSeedInp,  "If a seed point falls into this region, it will be discarded")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_flag   ("--skipSeed",                              skipSeed,        "Does not output the points that are within seed region");
     // seeding->add_flag   ("--allowEdgeSeeds",                        allowEdgeSeeds,  "Allows seeding at the edges of pathway rules. Default: false");
@@ -576,13 +639,19 @@ void track(CLI::App *app)
 
     // Pathway options
     auto pathwayOpt = app->add_option_group(center_text("PATHWAY OPTIONS",45));    
-    pathwayOpt->add_option ("--pathway, -p",            pathway,                "Pathway rules. (See below for details.)")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
-    pathwayOpt->add_option ("--minlength",              minlength,              "Minimum length of output streamlines. Default=0");
-    pathwayOpt->add_option ("--maxlength",              maxlength,              "Maximum length of output streamlines. Default=infinite");
-    pathwayOpt->add_flag   ("--oneSided",               oneSided,               "If enabled tracking is done only towards the one direction. Default=OFF");
-    pathwayOpt->add_flag   ("--stopAtMax",              stopAtMax,              "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
-    pathwayOpt->add_flag   ("--inOrder",                inOrder,                "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
-
+    pathwayOpt->add_option ("--pathway, -p",                    pathway,                        "Pathway rules. (See below for details.)")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
+    pathwayOpt->add_option ("--minlength",                      minlength,                      "Minimum length of output streamlines. Default=0");
+    pathwayOpt->add_option ("--maxlength",                      maxlength,                      "Maximum length of output streamlines. Default=infinite");
+    pathwayOpt->add_flag   ("--oneSided",                       oneSided,                       "If enabled tracking is done only towards the one direction. Default=OFF");
+    pathwayOpt->add_flag   ("--stopAtMax",                      stopAtMax,                      "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
+    pathwayOpt->add_flag   ("--inOrder",                        inOrder,                        "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
+    pathwayOpt->add_option ("--xact,-x",                        xact_fname,                     "Combined xact surface mesh file created with prepXact (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_seed_sub",              xact_opt_seed_sub,              "Enables seeds to be generated in subcortex too. Default ON. (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_sub",  xact_opt_stop_before_exit_sub,  "Propagation stops right before exiting subcortex. Default OFF. (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_bg",   xact_opt_stop_after_entry_bg,   "Propagation stops immediately after entering background. Default ON. (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_bg",   xact_opt_stop_before_exit_bg,   "Propagation stops right before exiting background. Default OFF. (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_gm",   xact_opt_stop_after_entry_gm,   "Propagation stops immediately after entering gray matter (l_gm + r_gm + cer_gm). Default OFF. (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_gm",   xact_opt_stop_before_exit_gm,   "Propagation stops right before exiting gray matter (l_gm + r_gm + cer_gm). Default ON. (experimental).");
     app->callback(run_track);
     
 }
