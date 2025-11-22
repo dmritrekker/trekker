@@ -3,7 +3,7 @@
 using namespace NIBR;
 
 // Labels
-//  1 - L_WM    (Left White Matter)
+//  1 - out_L_WM    (Left White Matter)
 //  2 - R_WM    (Right White Matter)
 //  3 - L_GM    (Left Gray Matter)
 //  4 - R_GM    (Right Gray Matter)
@@ -21,19 +21,19 @@ namespace CMDARGS_PREPXACT {
     std::string fsPath;
     std::string fslFirstFolder = "";
 
-    std::string COMBINED    = "";
-    std::string L_WM        = "";
-    std::string R_WM        = "";
-    std::string L_GM        = "";
-    std::string R_GM        = "";
-    std::string L_SUB       = "";
-    std::string R_SUB       = "";
-    std::string CSF         = "";
-    std::string CER_WM      = "";
-    std::string CER_GM      = "";
-    std::string BS          = "";
-    std::string I_BS        = "";
-    std::string BG          = "";
+    std::string out_COMBINED    = "";
+    std::string out_L_WM        = "";
+    std::string out_R_WM        = "";
+    std::string out_L_GM        = "";
+    std::string out_R_GM        = "";
+    std::string out_L_SUB       = "";
+    std::string out_R_SUB       = "";
+    std::string out_CSF         = "";
+    std::string out_CER_WM      = "";
+    std::string out_CER_GM      = "";
+    std::string out_BS          = "";
+    std::string out_I_BS        = "";
+    std::string out_BG          = "";
     
     float cereDistThresh            = 0.5;
     float enlargeBrainStem          = 5;
@@ -51,54 +51,54 @@ void run_prepXact()
 {
 
     parseCommon(numberOfThreads,verbose);
-    if (!parseForceOutput(COMBINED,force)   || ((COMBINED != "")    && !ensureVTK(COMBINED) ) ) return;
-    if (!parseForceOutput(L_WM,force)       || ((L_WM != "")        && !ensureVTK(L_WM)     ) ) return;
-    if (!parseForceOutput(R_WM,force)       || ((R_WM != "")        && !ensureVTK(R_WM)     ) ) return;
-    if (!parseForceOutput(L_GM,force)       || ((L_GM != "")        && !ensureVTK(L_GM)     ) ) return;
-    if (!parseForceOutput(R_GM,force)       || ((R_GM != "")        && !ensureVTK(R_GM)     ) ) return;
-    if (!parseForceOutput(L_SUB,force)      || ((L_SUB != "")       && !ensureVTK(L_SUB)    ) ) return;
-    if (!parseForceOutput(R_SUB,force)      || ((R_SUB != "")       && !ensureVTK(R_SUB)    ) ) return;
-    if (!parseForceOutput(CSF,force)        || ((CSF != "")         && !ensureVTK(CSF)      ) ) return;
-    if (!parseForceOutput(CER_WM,force)     || ((CER_WM != "")      && !ensureVTK(CER_WM)   ) ) return;
-    if (!parseForceOutput(CER_GM,force)     || ((CER_GM != "")      && !ensureVTK(CER_GM)   ) ) return;
-    if (!parseForceOutput(BS,force)         || ((BS != "")          && !ensureVTK(BS)       ) ) return;
-    if (!parseForceOutput(I_BS,force)       || ((I_BS != "")        && !ensureVTK(I_BS)     ) ) return;
-    if (!parseForceOutput(BG,force)         || ((BG != "")          && !ensureVTK(BG)       ) ) return;
+    if (!parseForceOutput(out_COMBINED,force)   || ((out_COMBINED != "")    && !ensureVTK(out_COMBINED) ) ) return;
+    if (!parseForceOutput(out_L_WM,force)       || ((out_L_WM != "")        && !ensureVTK(out_L_WM)     ) ) return;
+    if (!parseForceOutput(out_R_WM,force)       || ((out_R_WM != "")        && !ensureVTK(out_R_WM)     ) ) return;
+    if (!parseForceOutput(out_L_GM,force)       || ((out_L_GM != "")        && !ensureVTK(out_L_GM)     ) ) return;
+    if (!parseForceOutput(out_R_GM,force)       || ((out_R_GM != "")        && !ensureVTK(out_R_GM)     ) ) return;
+    if (!parseForceOutput(out_L_SUB,force)      || ((out_L_SUB != "")       && !ensureVTK(out_L_SUB)    ) ) return;
+    if (!parseForceOutput(out_R_SUB,force)      || ((out_R_SUB != "")       && !ensureVTK(out_R_SUB)    ) ) return;
+    if (!parseForceOutput(out_CSF,force)        || ((out_CSF != "")         && !ensureVTK(out_CSF)      ) ) return;
+    if (!parseForceOutput(out_CER_WM,force)     || ((out_CER_WM != "")      && !ensureVTK(out_CER_WM)   ) ) return;
+    if (!parseForceOutput(out_CER_GM,force)     || ((out_CER_GM != "")      && !ensureVTK(out_CER_GM)   ) ) return;
+    if (!parseForceOutput(out_BS,force)         || ((out_BS != "")          && !ensureVTK(out_BS)       ) ) return;
+    if (!parseForceOutput(out_I_BS,force)       || ((out_I_BS != "")        && !ensureVTK(out_I_BS)     ) ) return;
+    if (!parseForceOutput(out_BG,force)         || ((out_BG != "")          && !ensureVTK(out_BG)       ) ) return;
 
     XactPrepOption opt = XACT_PREP_OPT_UNSET;
 
     opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_COMBINED);
 
-    if (L_WM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_WM);
-    if (R_WM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_WM);
-    if (L_GM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_GM);
-    if (R_GM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_GM);
-    if (L_SUB    != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_SUB);
-    if (R_SUB    != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_SUB);
-    if (CSF      != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CSF);
-    if (CER_WM   != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CER_WM);
-    if (CER_GM   != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CER_GM);
-    if (BS       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BS);
-    if (I_BS     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_I_BS);
-    if (BG       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BG);
+    if (out_L_WM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_WM);
+    if (out_R_WM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_WM);
+    if (out_L_GM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_GM);
+    if (out_R_GM     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_GM);
+    if (out_L_SUB    != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_L_SUB);
+    if (out_R_SUB    != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_R_SUB);
+    if (out_CSF      != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CSF);
+    if (out_CER_WM   != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CER_WM);
+    if (out_CER_GM   != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CER_GM);
+    if (out_BS       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BS);
+    if (out_I_BS     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_I_BS);
+    if (out_BG       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BG);
     
 
-    auto surf = prepXact(fsPath,fslFirstFolder,cereDistThresh,enlargeBrainStem,inferiorBrainStemCutLevel,faceArea,opt);
+    auto surf = prepXact(fsPath,fslFirstFolder,NULL,cereDistThresh,enlargeBrainStem,inferiorBrainStemCutLevel,faceArea,opt);
 
-    surf[0].write(COMBINED);
+    surf[0].write(out_COMBINED);
 
-    if (L_WM     != "")  surf[1].write(L_WM);
-    if (R_WM     != "")  surf[2].write(R_WM);
-    if (L_GM     != "")  surf[3].write(L_GM);
-    if (R_GM     != "")  surf[4].write(R_GM);
-    if (L_SUB    != "")  surf[5].write(L_SUB);
-    if (R_SUB    != "")  surf[6].write(R_SUB);
-    if (CSF      != "")  surf[7].write(CSF);
-    if (CER_WM   != "")  surf[8].write(CER_WM);
-    if (CER_GM   != "")  surf[9].write(CER_GM);
-    if (BS       != "") surf[10].write(BS);
-    if (I_BS     != "") surf[11].write(I_BS);
-    if (BG       != "") surf[12].write(BG);
+    if (out_L_WM     != "")  surf[1].write(out_L_WM);
+    if (out_R_WM     != "")  surf[2].write(out_R_WM);
+    if (out_L_GM     != "")  surf[3].write(out_L_GM);
+    if (out_R_GM     != "")  surf[4].write(out_R_GM);
+    if (out_L_SUB    != "")  surf[5].write(out_L_SUB);
+    if (out_R_SUB    != "")  surf[6].write(out_R_SUB);
+    if (out_CSF      != "")  surf[7].write(out_CSF);
+    if (out_CER_WM   != "")  surf[8].write(out_CER_WM);
+    if (out_CER_GM   != "")  surf[9].write(out_CER_GM);
+    if (out_BS       != "")  surf[10].write(out_BS);
+    if (out_I_BS     != "")  surf[11].write(out_I_BS);
+    if (out_BG       != "")  surf[12].write(out_BG);
 
     return;
 
@@ -119,21 +119,21 @@ void prepXact(CLI::App* app)
         ->required()
         ->check(CLI::ExistingDirectory);
 
-    app->add_option("<Output_xact_file>", COMBINED, "xact output (.vtk)")
+    app->add_option("<Output_xact_file>", out_COMBINED, "xact output (.vtk)")
         ->required()->type_name("FILE");
 
-    app->add_option("--l_wm",       L_WM,       "Left white matter. (Label = 1)"         );
-    app->add_option("--r_wm",       R_WM,       "Right white matter. (Label = 2)"        );
-    app->add_option("--l_gm",       L_GM,       "Left gray matter. (Label = 3)"          );
-    app->add_option("--r_gm",       R_GM,       "Right gray matter. (Label = 4)"         );
-    app->add_option("--l_sub",      L_SUB,      "Left subcortical. (Label = 5)"          );
-    app->add_option("--r_sub",      R_SUB,      "Right subcortical. (Label = 6)"         );
-    app->add_option("--csf",        CSF,        "Cerebrospinal fluid. (Label = 7)"       );
-    app->add_option("--cer_wm",     CER_WM,     "Cerebellar white matter. (Label = 8)"   );
-    app->add_option("--cer_gm",     CER_GM,     "Cerebellar gray matter. (Label = 9)"    );
-    app->add_option("--bs",         BS,         "Brain stem. (Label = 10)"               );
-    app->add_option("--i_bs",       I_BS,       "Inferior brain stem. (Label = 11)"      );
-    app->add_option("--bg",         BG,         "Background. (Label = 12)"               );
+    app->add_option("--l_wm",       out_L_WM,       "Left white matter. (Label = 1)"         );
+    app->add_option("--r_wm",       out_R_WM,       "Right white matter. (Label = 2)"        );
+    app->add_option("--l_gm",       out_L_GM,       "Left gray matter. (Label = 3)"          );
+    app->add_option("--r_gm",       out_R_GM,       "Right gray matter. (Label = 4)"         );
+    app->add_option("--l_sub",      out_L_SUB,      "Left subcortical. (Label = 5)"          );
+    app->add_option("--r_sub",      out_R_SUB,      "Right subcortical. (Label = 6)"         );
+    app->add_option("--csf",        out_CSF,        "Cerebrospinal fluid. (Label = 7)"       );
+    app->add_option("--cer_wm",     out_CER_WM,     "Cerebellar white matter. (Label = 8)"   );
+    app->add_option("--cer_gm",     out_CER_GM,     "Cerebellar gray matter. (Label = 9)"    );
+    app->add_option("--bs",         out_BS,         "Brain stem. (Label = 10)"               );
+    app->add_option("--i_bs",       out_I_BS,       "Inferior brain stem. (Label = 11)"      );
+    app->add_option("--bg",         out_BG,         "Background. (Label = 12)"               );
 
     app->add_option("--fslFirst", fslFirstFolder, "Use FSL First results for subcortical and brainstem surfaces");
 

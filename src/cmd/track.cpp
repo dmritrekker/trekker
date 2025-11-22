@@ -64,12 +64,18 @@ namespace CMDARGS_TRACK
 
     // Xact options
     std::string xact_fname                  = "";
+    bool xact_opt_seed_gm_on                = false;
+    bool xact_opt_stop_after_entry_gm_off   = false;
+    bool xact_opt_stop_before_exit_gm_on    = false;
     bool xact_opt_seed_sub_off              = false;
+    bool xact_opt_stop_after_entry_sub_on   = false;
     bool xact_opt_stop_before_exit_sub_on   = false;
+    bool xact_opt_seed_abn_off              = false;
+    bool xact_opt_stop_after_entry_abn_on   = false;
+    bool xact_opt_stop_before_exit_abn_on   = false;
+    bool xact_opt_seed_bg_on                = false;
     bool xact_opt_stop_after_entry_bg_off   = false;
     bool xact_opt_stop_before_exit_bg_on    = false;
-    bool xact_opt_stop_after_entry_gm_on    = false;
-    bool xact_opt_stop_before_exit_gm_off   = false;
 
     // Seeding options
     std::vector<std::string> seedInp;
@@ -178,17 +184,22 @@ void run_track()
     trekker->writeStepSize(writeStepSize);
     // =======================
 
-
-
     // =======================
     // XACT
-    XactTractographyOption                  xact_opts = XACT_TRACTOGRAPHY_OPT_UNSET;
-    if (!xact_opt_seed_sub_off)             xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_SEED_SUB);
-    if (xact_opt_stop_before_exit_sub_on)   xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_SUB);
-    if (!xact_opt_stop_after_entry_bg_off)  xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_AFTER_ENTRY_BG);
-    if (xact_opt_stop_before_exit_bg_on)    xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_BG);
-    if (xact_opt_stop_after_entry_gm_on)    xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_AFTER_ENTRY_GM);
-    if (!xact_opt_stop_before_exit_gm_off)  xact_opts = static_cast<XactTractographyOption>(xact_opts | XACT_TRACTOGRAPHY_OPT_STOP_BEFORE_EXIT_GM); 
+    XactTrackOption                          xact_opts = XACT_TRACK_OPT_UNSET;
+    if (xact_opt_seed_gm_on)                 xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_GM);
+    if (!xact_opt_stop_after_entry_gm_off)   xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM);
+    if (xact_opt_stop_before_exit_gm_on)     xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM);
+    if (!xact_opt_seed_sub_off)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_SUB);
+    if (xact_opt_stop_after_entry_sub_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB);
+    if (xact_opt_stop_before_exit_sub_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB);
+    if (!xact_opt_seed_abn_off)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_ABN);
+    if (xact_opt_stop_after_entry_abn_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN);
+    if (xact_opt_stop_before_exit_abn_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN);
+    if (xact_opt_seed_bg_on)                 xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_BG);
+    if (!xact_opt_stop_after_entry_bg_off)   xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG);
+    if (xact_opt_stop_before_exit_bg_on)     xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG);
+
 
     if (!trekker->pathway_xact(xact_fname,xact_opts)) return;
     if (xact_fname != "") {
@@ -412,12 +423,18 @@ void run_track()
 
         if (xact_fname != "") {
             json_file << "    \"xact\": \"" << xact_fname << "\",\n";
-            writeOnOff ("    \"xact_opt_seed_sub_off\": ",              xact_opt_seed_sub_off);             json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_sub_on\": ",   xact_opt_stop_before_exit_sub_on);  json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_bg_off\": ",   xact_opt_stop_after_entry_bg_off);  json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_bg_on\": ",    xact_opt_stop_before_exit_bg_on);   json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_gm_on\": ",    xact_opt_stop_after_entry_gm_on);   json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_gm_off\": ",   xact_opt_stop_before_exit_gm_off);  json_file << ",\n";
+            writeOnOff ("    \"xact_opt_seed_gm_on\": ",                xact_opt_seed_gm_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_gm_off\": ",   xact_opt_stop_after_entry_gm_off); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_gm_on\": ",    xact_opt_stop_before_exit_gm_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_seed_sub_off\": ",              xact_opt_seed_sub_off); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_sub_on\": ",   xact_opt_stop_after_entry_sub_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_sub_on\": ",   xact_opt_stop_before_exit_sub_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_seed_abn_off\": ",              xact_opt_seed_abn_off); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_abn_on\": ",   xact_opt_stop_after_entry_abn_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_abn_on\": ",   xact_opt_stop_before_exit_abn_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_seed_bg_on\": ",                xact_opt_seed_bg_on); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_after_entry_bg_off\": ",   xact_opt_stop_after_entry_bg_off); json_file << ",\n";
+            writeOnOff ("    \"xact_opt_stop_before_exit_bg_on\": ",    xact_opt_stop_before_exit_bg_on); json_file << ",\n";
         } else {
              json_file << "    \"xact\": \"OFF\",\n";
         }
@@ -646,12 +663,19 @@ void track(CLI::App *app)
     pathwayOpt->add_flag   ("--stopAtMax",                      stopAtMax,                      "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
     pathwayOpt->add_flag   ("--inOrder",                        inOrder,                        "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
     pathwayOpt->add_option ("--xact,-x",                        xact_fname,                     "Combined xact surface mesh file created with prepXact (experimental).");
+    pathwayOpt->add_flag   ("--xact_opt_seed_gm_on",                xact_opt_seed_gm_on,                "By default seeds are not generated in gray matter (l_gm + r_gm + cer_gm). This option enables seeds to be generated in there.");
+    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_gm_off",   xact_opt_stop_after_entry_gm_off,   "By default propagation stops if streamlines enter gray matter (l_gm + r_gm + cer_gm). This option allows propagation to continue after entering gray matter.");
+    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_gm_on",    xact_opt_stop_before_exit_gm_on,    "By default propagation continues if streamlines exit gray matter (l_gm + r_gm + cer_gm). This option stops propagation right before exiting gray matter.");
     pathwayOpt->add_flag   ("--xact_opt_seed_sub_off",              xact_opt_seed_sub_off,              "By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.");
+    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_sub_on",   xact_opt_stop_after_entry_sub_on,   "By default propagation continues if streamlines enter the subcortex. This option stops propagation right after entering the subcortex.");
     pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_sub_on",   xact_opt_stop_before_exit_sub_on,   "By default propagation continues if streamlines exit the subcortex. This option stops propagation right before exiting the subcortex.");
+    pathwayOpt->add_flag   ("--xact_opt_seed_abn_off",              xact_opt_seed_abn_off,              "By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.");
+    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_abn_on",   xact_opt_stop_after_entry_abn_on,   "By default propagation continues if streamlines enter the abnormality. This option stops propagation right after entering the abnormality.");
+    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_abn_on",   xact_opt_stop_before_exit_abn_on,   "By default propagation continues if streamlines exit the abnormality. This option stops propagation right before exiting the abnormality.");
+    pathwayOpt->add_flag   ("--xact_opt_seed_bg_on",                xact_opt_seed_bg_on,                "By default seeds are not generated in the background. This option enables seeds to be generated in there.");
     pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_bg_off",   xact_opt_stop_after_entry_bg_off,   "By default propagation stops if streamlines enter the background. This option allows propagation to continue after entering the background.");
     pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_bg_on",    xact_opt_stop_before_exit_bg_on,    "By default propagation continues if streamlines exit the background. This option stops propagation right before exiting the background.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_gm_on",    xact_opt_stop_after_entry_gm_on,    "By default propagation stops if streamlines enter gray matter (l_gm + r_gm + cer_gm). This option allows propagation to continue after entering gray matter.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_gm_off",   xact_opt_stop_before_exit_gm_off,   "By default propagation continues if streamlines exit gray matter (l_gm + r_gm + cer_gm). This option stops propagation right before exiting gray matter.");
+    
     app->callback(run_track);
     
 }
