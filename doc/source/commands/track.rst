@@ -170,6 +170,10 @@ fiber tracker
 
 **Seeding parameters**
 
+.. note::
+
+   When ``--xact`` is used, Trekker ignores ``--seed``, ``--seed_surf_faceDensity``, ``--seed_surf_vertDensity``, ``--seed_surf_fieldDensity`` and ``--seed_surf_useSurfNorm`` options, since seeding is internally handled by xact.
+
 .. raw:: html
 
    <table style="width: 100%; border-collapse: collapse;">
@@ -195,31 +199,32 @@ fiber tracker
            <td style="padding: 8px;">Allows seeding at the edges of pathway rules. Default: false.</td>
        </tr>
        -->
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_trials INT</td>
            <td style="padding: 8px;">Sets the maximum number of attempts to generate streamline from the seed point. Default=1.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_count INT</td>
            <td style="padding: 8px;">Number of seeds. Trekker tries to generate a single streamline from each seed. For that it makes maximum amount of "trials". If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be fewer streamlines in the output tractogram than what is defined with "count".</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_density FLOAT</td>
            <td style="padding: 8px;">Density of seeds. If seed is an image, density is the number of seeds per mm^3. If seed is a surface mesh, density is the number of seeds per mm^2.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_surf_faceDensity TEXT ...</td>
            <td style="padding: 8px;">A text file containing density information for each face of the input seed surface.</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;"   >
            <td style="padding: 8px; font-weight: 500;">--seed_surf_vertDensity TEXT ...</td>
            <td style="padding: 8px;">A text file containing density information for each vertex of the input seed surface.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_surf_fieldDensity TEXT</td>
            <td style="padding: 8px;">The given field in the input seed surface will be used to set seed density.</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_surf_useSurfNorm</td>
            <td style="padding: 8px;">Surface normals will be used as the initial direction.</td>
        </tr>
@@ -269,8 +274,28 @@ fiber tracker
            <td style="padding: 8px;">Combined xact surface mesh file created with prepXact (experimental).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500;">--xact_stop_before_exit</td>
-           <td style="padding: 8px;">Truncates streamlines before exiting stop regions, i.e. gray matter and background, instead of truncating after entry, which is the default behaviour (experimental).</td>
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_seed_sub_off</td>
+           <td style="padding: 8px;">By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_sub_on</td>
+           <td style="padding: 8px;">By default propagation continues if streamlines exit the subcortex. This option stops propagation right before exiting the subcortex.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_after_entry_bg_off</td>
+           <td style="padding: 8px;">By default propagation stops if streamlines enter the background. This option allows propagation to continue after entering the background.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_bg_on</td>
+           <td style="padding: 8px;">By default propagation continues if streamlines exit the background. This option stops propagation right before exiting the background.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_after_entry_gm_on</td>
+           <td style="padding: 8px;">By default propagation stops if streamlines enter gray matter (l_gm + r_gm + cer_gm). This option allows propagation to continue after entering gray matter.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_gm_off</td>
+           <td style="padding: 8px;">By default propagation continues if streamlines exit gray matter (l_gm + r_gm + cer_gm). This option stops propagation right before exiting gray matter.</td>
        </tr>
    </table>
 
