@@ -203,32 +203,29 @@ void prepXact(CLI::App* app)
         ->required()
         ->check(CLI::ExistingDirectory);
 
-    app->add_option("<Output_xact_file>", out_COMBINED, "xact output (.vtk)")
+    app->add_option("<Output_xact_file>", out_COMBINED, "xact output (.vtk). This single file will contains all surfaces combined.")
         ->required()->type_name("FILE");
 
-    app->add_option("--l_wm",       out_L_WM,       "Left white matter. (Label = 1)"         );
-    app->add_option("--r_wm",       out_R_WM,       "Right white matter. (Label = 2)"        );
-    app->add_option("--l_gm",       out_L_GM,       "Left gray matter. (Label = 3)"          );
-    app->add_option("--r_gm",       out_R_GM,       "Right gray matter. (Label = 4)"         );
-    app->add_option("--l_sub",      out_L_SUB,      "Left subcortical. (Label = 5)"          );
-    app->add_option("--r_sub",      out_R_SUB,      "Right subcortical. (Label = 6)"         );
-    app->add_option("--csf",        out_CSF,        "Cerebrospinal fluid. (Label = 7)"       );
-    app->add_option("--cer_wm",     out_CER_WM,     "Cerebellar white matter. (Label = 8)"   );
-    app->add_option("--cer_gm",     out_CER_GM,     "Cerebellar gray matter. (Label = 9)"    );
-    app->add_option("--bs",         out_BS,         "Brain stem. (Label = 10)"               );
-    app->add_option("--i_bs",       out_I_BS,       "Inferior brain stem. (Label = 11)"      );
-    app->add_option("--abn",        out_ABN,        "Abnormality. (Label = 12)"              );
-    app->add_option("--bg",         out_BG,         "Background. (Label = 13)"               );
-
-    app->add_option("--fslFirst",    fslFirstFolder, "Use FSL First results for subcortical and brainstem surfaces")->check(CLI::ExistingDirectory);;
-    app->add_option("--abnormality", abnormality,    "Path to abnormality mask/surface to include in the XACT output. If an image is used, it will be converted to a surface.")->check(CLI::ExistingFile);
-
-
+    app->add_option("--fslFirst",                   fslFirstFolder, "Use FSL First results for subcortical and brainstem surfaces")->check(CLI::ExistingDirectory);;
+    app->add_option("--abnormality",                abnormality,    "Path to abnormality mask/surface to include in the XACT output. If an image is used, it will be converted to a surface.")->check(CLI::ExistingFile);
     app->add_option("--cereDistThresh",             cereDistThresh,             "Distance threshold from the brain stem to separate cerebellar white matter. Default: 0.5 mm");
     app->add_option("--enlargeBrainStem",           enlargeBrainStem,           "Enlarge or shrink brain stem. Default: 5 mm");
     app->add_option("--inferiorBrainStemCutLevel",  inferiorBrainStemCutLevel,  "Cut level for inferior brain stem. Default: 20 mm");
+    app->add_option("--faceArea",                   faceArea,           "Average area of output triangles. Default: 0.25 mm^2");
 
-    app->add_option("--faceArea",            faceArea,           "Average area of output triangles. Default: 0.25 mm^2");
+    app->add_option("--out_l_wm",       out_L_WM,       "Optional left white matter output. (Label = 1)"         );
+    app->add_option("--out_r_wm",       out_R_WM,       "Optional right white matter output. (Label = 2)"        );
+    app->add_option("--out_l_gm",       out_L_GM,       "Optional left gray matter output. (Label = 3)"          );
+    app->add_option("--out_r_gm",       out_R_GM,       "Optional right gray matter output. (Label = 4)"         );
+    app->add_option("--out_l_sub",      out_L_SUB,      "Optional left subcortical output. (Label = 5)"          );
+    app->add_option("--out_r_sub",      out_R_SUB,      "Optional right subcortical output. (Label = 6)"         );
+    app->add_option("--out_csf",        out_CSF,        "Optional cerebrospinal fluid output. (Label = 7)"       );
+    app->add_option("--out_cer_wm",     out_CER_WM,     "Optional cerebellar white matter output. (Label = 8)"   );
+    app->add_option("--out_cer_gm",     out_CER_GM,     "Optional cerebellar gray matter output. (Label = 9)"    );
+    app->add_option("--out_bs",         out_BS,         "Optional brain stem output. (Label = 10)"               );
+    app->add_option("--out_i_bs",       out_I_BS,       "Optional inferior brain stem output. (Label = 11)"      );
+    app->add_option("--out_abn",        out_ABN,        "Optional abnormality output. (Label = 12)"              );
+    app->add_option("--out_bg",         out_BG,         "Optional background output. (Label = 13)"               );
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.")->check(CLI::Range(0, INT32_MAX));
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quite\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

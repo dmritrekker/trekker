@@ -2,21 +2,32 @@
 #include <fstream>
 #include <sstream>
 
-// Description of the labels used in XACT for tractography:
+// Description of the labels (see prepXact) used in XACT for tractography:
 //
 // Common rules:
-//  1. seed:                 (Seeds are randomly generated in this region)  L_WM + R_WM + CER_WM + BS
-//  2. discard_seed:         (No seeds allowed here)                        L_GM + R_GM + CER_GM + CSF + BG
-//  3. req_end_inside:       (Ends are allowed here)                        L_GM + R_GM + CER_GM + L_SUB + R_SUB + BS + BG
-//  4. discard_if_enters:    (No entry)                                     CSF
+//  1. seed:                 (Seeds are randomly generated in this region)  L_WM + R_WM + CER_WM + BS (includes I_BS)
+//  2. req_end_inside:       (Ends are allowed here)                        L_GM + R_GM + CER_GM + L_SUB + R_SUB + BS + ABN + BG (includes I_BS)
+//  3. discard_if_enters:    (No entry)                                     CSF
 //
 // Optional rules:
-//  5. xact_opt_seed_sub              (Default: ON) :  (Seeds are generated in subcortex too)      L_SUB + R_SUB
-//  6. xact_opt_stop_before_exit_sub  (Default: OFF):  (Propagation stops right before exit)       L_SUB + R_SUB
-//  7. xact_opt_stop_after_entry_bg   (Default: ON) :  (Propagation stops immediately after entry) BG
-//  8. xact_opt_stop_before_exit_bg   (Default: OFF):  (Propagation stops right before exit)       BG
-//  9. xact_opt_stop_after_entry_gm   (Default: OFF):  (Propagation stops immediately after entry) L_GM + R_GM + CER_GM
-// 10. xact_opt_stop_before_exit_gm   (Default: ON) :  (Propagation stops right before exit)       L_GM + R_GM + CER_GM
+//  1. XACT_TRACK_OPT_SEED_GM               (Default: OFF):  (Seeds are generated in cortex)              L_GM + R_GM + CER_GM
+//  2. XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM   (Default: ON):   (Propagation stops immediately after entry)  L_GM + R_GM + CER_GM
+//  3. XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM   (Default: OFF):  (Propagation stops right before exit)        L_GM + R_GM + CER_GM
+//  4. XACT_TRACK_OPT_SEED_BG               (Default: OFF):  (Seeds are generated in BG too)              BG
+//  5. XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG   (Default: ON) :  (Propagation stops immediately after entry)  BG
+//  6. XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG   (Default: OFF):  (Propagation stops right before exit)        BG
+//  7. XACT_TRACK_OPT_SEED_SUB              (Default: ON) :  (Seeds are generated in subcortex too)       L_SUB + R_SUB
+//  8. XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB  (Default: OFF):  (Propagation stops immediately after entry)  L_SUB + R_SUB
+//  9. XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB  (Default: OFF):  (Propagation stops right before exit)        L_SUB + R_SUB
+// 10. XACT_TRACK_OPT_SEED_ABN              (Default: ON):   (Seeds are generated in abnormality)         ABN
+// 11. XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN  (Default: OFF):  (Propagation stops immediately after entry)  ABN
+// 12. XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN  (Default: OFF):  (Propagation stops right before exit)        ABN
+//
+// Preset modes:
+//  1. XACT_INTRACORTICAL       = (XACT_TRACK_OPT_SEED_GM  | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM  | XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM )
+//  2. XACT_CRANIAL             = (XACT_TRACK_OPT_SEED_BG  | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG  | XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG )
+//  3. XACT_SUBCORTICAL_DEADEND = (XACT_TRACK_OPT_SEED_SUB | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB | XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB)
+//  4. XACT_ABNORMALITY_DEADEND = (XACT_TRACK_OPT_SEED_ABN | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN | XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN)
 //
 // Note: I_BS is a part of BS and is not currently used during tractography as a separate label.
 
@@ -63,19 +74,11 @@ namespace CMDARGS_TRACK
     // bool        allowEdgeSeeds          = false;
 
     // Xact options
-    std::string xact_fname                  = "";
-    bool xact_opt_seed_gm_on                = false;
-    bool xact_opt_stop_after_entry_gm_off   = false;
-    bool xact_opt_stop_before_exit_gm_on    = false;
-    bool xact_opt_seed_sub_off              = false;
-    bool xact_opt_stop_after_entry_sub_on   = false;
-    bool xact_opt_stop_before_exit_sub_on   = false;
-    bool xact_opt_seed_abn_off              = false;
-    bool xact_opt_stop_after_entry_abn_on   = false;
-    bool xact_opt_stop_before_exit_abn_on   = false;
-    bool xact_opt_seed_bg_on                = false;
-    bool xact_opt_stop_after_entry_bg_off   = false;
-    bool xact_opt_stop_before_exit_bg_on    = false;
+    std::string xact_fname               = "";
+    bool xact_intracortical              = false;
+    bool xact_cranial                    = false;
+    bool xact_subcortical_deadend        = false;
+    bool xact_abnormality_deadend        = false;
 
     // Seeding options
     std::vector<std::string> seedInp;
@@ -186,19 +189,11 @@ void run_track()
 
     // =======================
     // XACT
-    XactTrackOption                          xact_opts = XACT_TRACK_OPT_UNSET;
-    if (xact_opt_seed_gm_on)                 xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_GM);
-    if (!xact_opt_stop_after_entry_gm_off)   xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM);
-    if (xact_opt_stop_before_exit_gm_on)     xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM);
-    if (!xact_opt_seed_sub_off)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_SUB);
-    if (xact_opt_stop_after_entry_sub_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB);
-    if (xact_opt_stop_before_exit_sub_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB);
-    if (!xact_opt_seed_abn_off)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_ABN);
-    if (xact_opt_stop_after_entry_abn_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN);
-    if (xact_opt_stop_before_exit_abn_on)    xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN);
-    if (xact_opt_seed_bg_on)                 xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_SEED_BG);
-    if (!xact_opt_stop_after_entry_bg_off)   xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG);
-    if (xact_opt_stop_before_exit_bg_on)     xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG);
+    XactTrackOption                xact_opts = XACT_TRACK_OPT_UNSET;
+    if (xact_intracortical)        xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_INTRACORTICAL);
+    if (xact_cranial)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_CRANIAL);
+    if (xact_subcortical_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_SUBCORTICAL_DEADEND);
+    if (xact_abnormality_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_ABNORMALITY_DEADEND);
 
 
     if (!trekker->pathway_xact(xact_fname,xact_opts)) return;
@@ -423,18 +418,10 @@ void run_track()
 
         if (xact_fname != "") {
             json_file << "    \"xact\": \"" << xact_fname << "\",\n";
-            writeOnOff ("    \"xact_opt_seed_gm_on\": ",                xact_opt_seed_gm_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_gm_off\": ",   xact_opt_stop_after_entry_gm_off); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_gm_on\": ",    xact_opt_stop_before_exit_gm_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_seed_sub_off\": ",              xact_opt_seed_sub_off); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_sub_on\": ",   xact_opt_stop_after_entry_sub_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_sub_on\": ",   xact_opt_stop_before_exit_sub_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_seed_abn_off\": ",              xact_opt_seed_abn_off); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_abn_on\": ",   xact_opt_stop_after_entry_abn_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_abn_on\": ",   xact_opt_stop_before_exit_abn_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_seed_bg_on\": ",                xact_opt_seed_bg_on); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_after_entry_bg_off\": ",   xact_opt_stop_after_entry_bg_off); json_file << ",\n";
-            writeOnOff ("    \"xact_opt_stop_before_exit_bg_on\": ",    xact_opt_stop_before_exit_bg_on); json_file << ",\n";
+            writeOnOff ("    \"xact_intracortical\": ", xact_intracortical); json_file << ",\n";
+            writeOnOff ("    \"xact_cranial\": ", xact_cranial); json_file << ",\n";
+            writeOnOff ("    \"xact_subcortical_deadend\": ", xact_subcortical_deadend); json_file << ",\n";
+            writeOnOff ("    \"xact_abnormality_deadend\": ", xact_abnormality_deadend); json_file << ",\n";
         } else {
              json_file << "    \"xact\": \"OFF\",\n";
         }
@@ -662,20 +649,12 @@ void track(CLI::App *app)
     pathwayOpt->add_flag   ("--oneSided",                       oneSided,                       "If enabled tracking is done only towards the one direction. Default=OFF");
     pathwayOpt->add_flag   ("--stopAtMax",                      stopAtMax,                      "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
     pathwayOpt->add_flag   ("--inOrder",                        inOrder,                        "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
-    pathwayOpt->add_option ("--xact,-x",                        xact_fname,                     "Combined xact surface mesh file created with prepXact (experimental).");
-    pathwayOpt->add_flag   ("--xact_opt_seed_gm_on",                xact_opt_seed_gm_on,                "By default seeds are not generated in gray matter (l_gm + r_gm + cer_gm). This option enables seeds to be generated in there.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_gm_off",   xact_opt_stop_after_entry_gm_off,   "By default propagation stops if streamlines enter gray matter (l_gm + r_gm + cer_gm). This option allows propagation to continue after entering gray matter.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_gm_on",    xact_opt_stop_before_exit_gm_on,    "By default propagation continues if streamlines exit gray matter (l_gm + r_gm + cer_gm). This option stops propagation right before exiting gray matter.");
-    pathwayOpt->add_flag   ("--xact_opt_seed_sub_off",              xact_opt_seed_sub_off,              "By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_sub_on",   xact_opt_stop_after_entry_sub_on,   "By default propagation continues if streamlines enter the subcortex. This option stops propagation right after entering the subcortex.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_sub_on",   xact_opt_stop_before_exit_sub_on,   "By default propagation continues if streamlines exit the subcortex. This option stops propagation right before exiting the subcortex.");
-    pathwayOpt->add_flag   ("--xact_opt_seed_abn_off",              xact_opt_seed_abn_off,              "By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_abn_on",   xact_opt_stop_after_entry_abn_on,   "By default propagation continues if streamlines enter the abnormality. This option stops propagation right after entering the abnormality.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_abn_on",   xact_opt_stop_before_exit_abn_on,   "By default propagation continues if streamlines exit the abnormality. This option stops propagation right before exiting the abnormality.");
-    pathwayOpt->add_flag   ("--xact_opt_seed_bg_on",                xact_opt_seed_bg_on,                "By default seeds are not generated in the background. This option enables seeds to be generated in there.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_after_entry_bg_off",   xact_opt_stop_after_entry_bg_off,   "By default propagation stops if streamlines enter the background. This option allows propagation to continue after entering the background.");
-    pathwayOpt->add_flag   ("--xact_opt_stop_before_exit_bg_on",    xact_opt_stop_before_exit_bg_on,    "By default propagation continues if streamlines exit the background. This option stops propagation right before exiting the background.");
-    
+    pathwayOpt->add_option ("--xact,-x",                        xact_fname,                     "Combined XACT surface mesh file created with prepXact (experimental).");
+    pathwayOpt->add_flag   ("--xact_intracortical",             xact_intracortical,             "Performs tractography also within the intracortical regions defined in the XACT file (l_gm + r_gm + cer_gm).");
+    pathwayOpt->add_flag   ("--xact_cranial",                   xact_cranial,                   "Performs tractography also within the cranial region defined in the XACT file (bg).");
+    pathwayOpt->add_flag   ("--xact_subcortical_deadend",       xact_subcortical_deadend,       "Streamlines are truncated before they exit subcortical regions (l_sub + r_sub).");
+    pathwayOpt->add_flag   ("--xact_abnormality_deadend",       xact_abnormality_deadend,       "Streamlines are truncated before they exit abnormality regions (abn).");
+
     app->callback(run_track);
     
 }

@@ -274,28 +274,20 @@ fiber tracker
            <td style="padding: 8px;">Combined xact surface mesh file created with prepXact (experimental).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_seed_sub_off</td>
-           <td style="padding: 8px;">By default seeds are generated also in the subcortex. This option disables seeds to be generated in there.</td>
+           <td style="padding: 8px; font-weight: 500;">--xact_intracortical</td>
+           <td style="padding: 8px;">Performs tractography also within the intracortical regions defined in the XACT file (l_gm + r_gm + cer_gm).</td>
        </tr>
        <tr>
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_sub_on</td>
-           <td style="padding: 8px;">By default propagation continues if streamlines exit the subcortex. This option stops propagation right before exiting the subcortex.</td>
+           <td style="padding: 8px; font-weight: 500;">--xact_cranial</td>
+           <td style="padding: 8px;">Performs tractography also within the cranial region defined in the XACT file (bg).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_after_entry_bg_off</td>
-           <td style="padding: 8px;">By default propagation stops if streamlines enter the background. This option allows propagation to continue after entering the background.</td>
+           <td style="padding: 8px; font-weight: 500;">--xact_subcortical_deadend</td>
+           <td style="padding: 8px;">Streamlines are truncated before they exit subcortical regions (l_sub + r_sub).</td>
        </tr>
        <tr>
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_bg_on</td>
-           <td style="padding: 8px;">By default propagation continues if streamlines exit the background. This option stops propagation right before exiting the background.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_after_entry_gm_on</td>
-           <td style="padding: 8px;">By default propagation stops if streamlines enter gray matter (l_gm + r_gm + cer_gm). This option allows propagation to continue after entering gray matter.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px; font-weight: 500;">--xact_opt_stop_before_exit_gm_off</td>
-           <td style="padding: 8px;">By default propagation continues if streamlines exit gray matter (l_gm + r_gm + cer_gm). This option stops propagation right before exiting gray matter.</td>
+           <td style="padding: 8px; font-weight: 500;">--xact_abnormality_deadend</td>
+           <td style="padding: 8px;">Streamlines are truncated before they exit abnormality regions (abn).</td>
        </tr>
    </table>
 
