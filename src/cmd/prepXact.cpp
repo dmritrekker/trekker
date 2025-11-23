@@ -3,7 +3,7 @@
 using namespace NIBR;
 
 // Labels
-//  1 - out_L_WM    (Left White Matter)
+//  1 - L_WM    (Left White Matter)
 //  2 - R_WM    (Right White Matter)
 //  3 - L_GM    (Left Gray Matter)
 //  4 - R_GM    (Right Gray Matter)
@@ -14,12 +14,16 @@ using namespace NIBR;
 //  9 - CER_GM  (Cerebellar Gray Matter)
 // 10 - BS      (Brain Stem)
 // 11 - I_BS    (Inferior Brain Stem)
-// 12 - BG      (Background)
+// 12 - ABN     (Abnormality)
+// 13 - BG      (Background)
 
 
 namespace CMDARGS_PREPXACT {
-    std::string fsPath;
-    std::string fslFirstFolder = "";
+    
+    std::string fsFolder        = "";
+    std::string fslFirstFolder  = "";
+    std::string abnormality     = "";
+    
 
     std::string out_COMBINED    = "";
     std::string out_L_WM        = "";
@@ -33,6 +37,7 @@ namespace CMDARGS_PREPXACT {
     std::string out_CER_GM      = "";
     std::string out_BS          = "";
     std::string out_I_BS        = "";
+    std::string out_ABN         = "";
     std::string out_BG          = "";
     
     float cereDistThresh            = 0.5;
@@ -50,6 +55,8 @@ using namespace CMDARGS_PREPXACT;
 void run_prepXact()
 {
 
+
+    // Parse common options
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_COMBINED,force)   || ((out_COMBINED != "")    && !ensureVTK(out_COMBINED) ) ) return;
     if (!parseForceOutput(out_L_WM,force)       || ((out_L_WM != "")        && !ensureVTK(out_L_WM)     ) ) return;
@@ -63,8 +70,11 @@ void run_prepXact()
     if (!parseForceOutput(out_CER_GM,force)     || ((out_CER_GM != "")      && !ensureVTK(out_CER_GM)   ) ) return;
     if (!parseForceOutput(out_BS,force)         || ((out_BS != "")          && !ensureVTK(out_BS)       ) ) return;
     if (!parseForceOutput(out_I_BS,force)       || ((out_I_BS != "")        && !ensureVTK(out_I_BS)     ) ) return;
+    if (!parseForceOutput(out_ABN,force)        || ((out_ABN != "")         && !ensureVTK(out_ABN)      ) ) return;
     if (!parseForceOutput(out_BG,force)         || ((out_BG != "")          && !ensureVTK(out_BG)       ) ) return;
 
+
+    // Determine options
     XactPrepOption opt = XACT_PREP_OPT_UNSET;
 
     opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_COMBINED);
@@ -80,11 +90,84 @@ void run_prepXact()
     if (out_CER_GM   != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_CER_GM);
     if (out_BS       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BS);
     if (out_I_BS     != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_I_BS);
+    if (out_ABN      != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_ABN);
     if (out_BG       != "") opt = static_cast<XactPrepOption>(opt | XACT_PREP_OPT_BG);
+
+
+    // Prepare abnormality file
+    Surface abn_surf;
+
+    if (!abnormality.empty()) {
+
+
+        // Check file format
+        std::string ext = getFileExtension(abnormality);
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        if (ext != "vtk" && ext != "gii" && ext != "nii" && ext != "nii.gz") {
+            disp(MSG_ERROR,"Unsupported file format for abnormality: %s (only vtk/gii/nii/nii.gz are supported)", abnormality.c_str());
+            return;
+        }
+
+
+        // Load abnormality
+        if (ext == "nii" || ext == "nii.gz") {
+            
+            // Load image and convert to surface
+            Image<float> abn_img(abnormality);
+
+            if (!abn_img.read()) {
+                disp(MSG_ERROR,"Failed to load abnormality image: %s", abnormality.c_str());
+                return;
+            }
+
+            auto [isBinaryMask, bg, label] = isBinary(&abn_img);
+
+            if (isBinaryMask) {
+                // Binary mask
+                disp(MSG_DETAIL,"Abnormality image %s is detected as a binary mask.", abnormality.c_str());
+                abn_surf = label2surface(abn_img,label,faceArea);
+            } else {
+                // Partial volume fraction image
+                disp(MSG_DETAIL,"Abnormality image %s is detected as a partial volume fraction image.", abnormality.c_str());
+                auto [minVal, maxVal] = imgMinMax(&abn_img);
+                if (minVal < 0.0f || maxVal > 1.0f) {
+                    disp(MSG_ERROR,"Abnormality image %s contains values outside the range [0, 1].", abnormality.c_str());
+                    return;
+                }
+                if (!isosurface(&abn_img,EPS6,&abn_surf)) {
+                    disp(MSG_ERROR, "Failed to generate surface");
+                    return;
+                }
+
+                if (abn_surf.nv > 0) abn_surf = surfSmooth(abn_surf,2);
+                if (faceArea != 0) {
+                    if (abn_surf.nv > 0) abn_surf.calcArea();
+                    if (abn_surf.nv > 0) abn_surf = surfRemesh(abn_surf,abn_surf.area/faceArea*0.5f,1,0);
+                }
+                if (abn_surf.nv > 0) abn_surf = surfMakeItSingleClosed(abn_surf);
+            }
+            
+            disp(MSG_DETAIL,"Converted abnormality image to surface: %s", abnormality.c_str());
+
+        } else {
+            // Load surface directly
+            abn_surf = Surface(abnormality);
+            if (!abn_surf.readMesh()) {
+                disp(MSG_ERROR,"Failed to load abnormality surface: %s", abnormality.c_str());
+                return;
+            }
+            disp(MSG_DETAIL,"Loaded abnormality surface: %s", abnormality.c_str());
+        }
+        
+    }
     
 
-    auto surf = prepXact(fsPath,fslFirstFolder,NULL,cereDistThresh,enlargeBrainStem,inferiorBrainStemCutLevel,faceArea,opt);
+    // Run prepXact
+    auto surf = prepXact(fsFolder,fslFirstFolder,&abn_surf,cereDistThresh,enlargeBrainStem,inferiorBrainStemCutLevel,faceArea,opt);
 
+
+    // Write outputs
     surf[0].write(out_COMBINED);
 
     if (out_L_WM     != "")  surf[1].write(out_L_WM);
@@ -98,7 +181,8 @@ void run_prepXact()
     if (out_CER_GM   != "")  surf[9].write(out_CER_GM);
     if (out_BS       != "")  surf[10].write(out_BS);
     if (out_I_BS     != "")  surf[11].write(out_I_BS);
-    if (out_BG       != "")  surf[12].write(out_BG);
+    if (out_ABN      != "")  surf[12].write(out_ABN);
+    if (out_BG       != "")  surf[13].write(out_BG);
 
     return;
 
@@ -115,7 +199,7 @@ void prepXact(CLI::App* app)
 
     app->description("creates XACT surfaces for whole-brain tractography (experimental)");
     
-    app->add_option("<Freesurfer_folder>", fsPath, "Path to Freesurfer aseg file")
+    app->add_option("<Freesurfer_folder>", fsFolder, "Path to Freesurfer folder containing.")
         ->required()
         ->check(CLI::ExistingDirectory);
 
@@ -133,9 +217,12 @@ void prepXact(CLI::App* app)
     app->add_option("--cer_gm",     out_CER_GM,     "Cerebellar gray matter. (Label = 9)"    );
     app->add_option("--bs",         out_BS,         "Brain stem. (Label = 10)"               );
     app->add_option("--i_bs",       out_I_BS,       "Inferior brain stem. (Label = 11)"      );
-    app->add_option("--bg",         out_BG,         "Background. (Label = 12)"               );
+    app->add_option("--abn",        out_ABN,        "Abnormality. (Label = 12)"              );
+    app->add_option("--bg",         out_BG,         "Background. (Label = 13)"               );
 
-    app->add_option("--fslFirst", fslFirstFolder, "Use FSL First results for subcortical and brainstem surfaces");
+    app->add_option("--fslFirst",    fslFirstFolder, "Use FSL First results for subcortical and brainstem surfaces")->check(CLI::ExistingDirectory);;
+    app->add_option("--abnormality", abnormality,    "Path to abnormality mask/surface to include in the XACT output. If an image is used, it will be converted to a surface.")->check(CLI::ExistingFile);
+
 
     app->add_option("--cereDistThresh",             cereDistThresh,             "Distance threshold from the brain stem to separate cerebellar white matter. Default: 0.5 mm");
     app->add_option("--enlargeBrainStem",           enlargeBrainStem,           "Enlarge or shrink brain stem. Default: 5 mm");
