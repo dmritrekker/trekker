@@ -6,6 +6,12 @@ Trekker
     November 24\ :sup:`th`, 2025
 
     **UPDATE:** Trekker v1.0.0-rc6 is now out with major improvements!
+
+    - **XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography. XACT enables the use of surface meshes as anatomical constraints along with extended options to the conventional ACT framework.
+
+        - **Intracortical tracking:** XACT allows streamlines to be seeded and propagated within the gray matter, enabling detailed mapping of intracortical connectivity.
+        - **Cranial tracking:** XACT supports tracking that extends into cranial regions, enabling cranial nerve tracking.
+        - **Track through subcortex:** or optionally treat subcortical regions as deadends.
     
     - **Purifibre**: We now moved `purifibre` under Trekker as a new command to remove spurious streamlines from tractograms.
 
@@ -219,9 +225,11 @@ Release notes for Trekker-v1.0.0-rc6
 ------------------------------------
 November 24\ :sup:`th`, 2025
 
-    - **New feature 1 - Purifibre**: We now moved `purifibre` under Trekker as a new command to remove spurious streamlines from tractograms. The original `purifibre` repository is now deprecated, as the functionality has been integrated into nibrary and Trekker. The legacy repository can be found here: https://github.com/baranaydogan/purifibre.
+    - **New feature 1 - XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography using surface meshes. This feature leverages surface meshes as anatomical constraints together with extended options to the conventional ACT.
+
+    - **New feature 2 - Purifibre**: We now moved `purifibre` under Trekker as a new command to remove spurious streamlines from tractograms. The original `purifibre` repository is now deprecated, as the functionality has been integrated into nibrary and Trekker. The legacy repository can be found here: https://github.com/baranaydogan/purifibre.
     
-    - **New feature 2 - Json sidecar**: `track` now saves a json sidecar for logging purposes. This allows store metadata and parameters associated with tractograms in a structured format. This was a previously available that had to wait for a major refactoring.
+    - **New feature 3 - Json sidecar**: `track` now saves a json sidecar for logging purposes. This allows store metadata and parameters associated with tractograms in a structured format. This was a previously available that had to wait for a major refactoring.
     
     - **Improvement 1**: More robust handling of ASCII vtk formatted tractograms across different platforms.
     
@@ -382,8 +390,10 @@ August 6\ :sup:`th`, 2024
    :hidden:
 
    guide/tutorial.rst
-   guide/pathways.rst
    guide/FOD.rst
+   guide/pathways.rst
+   guide/XACT.rst
+
 
 
 .. toctree::

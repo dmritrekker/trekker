@@ -192,8 +192,11 @@ void prepXact(CLI::App* app)
 {
 
     app->formatter(std::make_shared<CustomHelpFormatter>());
- 
-    const std::string info = "XACT output can be used for fiber tracking using the `track` command with the `xact` option for anatomically constrained whole-brain tractography.";
+
+    const std::string info = "XACT output can be used for fiber tracking using the \033[1mtrack\033[0m command with the \033[1mxact\033[0m option for eXtended Anatomically Constrained Tractography (ACT)."
+    "\n\nXACT builds on the original ACT framework [Smith2012] by including additional options for tractography and surface definitions for applying anatomical constraints to enhance the biological accuracy of tractography."
+    "\n\n\033[1mREFERENCES\033[0m:"
+        "\n\n[Smith2012] Smith RE, Tournier JD, Calamante F, Connelly A. \"Anatomically-constrained tractography: improved diffusion MRI streamlines tractography through effective use of anatomical information.\" Neuroimage. 2012 Sep 1;62(3):1924-38.";
 
     setInfo(app,info);
 

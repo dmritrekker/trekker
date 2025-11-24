@@ -236,7 +236,9 @@ fiber tracker
 
 .. tip::
 
-    Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+    - Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+
+    - For XACT-specific pathway options, please refer to the `XACT guide <../guide/XACT.html>`__.
 
 .. raw:: html
 
@@ -271,7 +273,7 @@ fiber tracker
        </tr>
        <tr>
            <td style="padding: 8px; font-weight: 500;">-x, --xact FILE</td>
-           <td style="padding: 8px;">Combined xact surface mesh file created with prepXact (experimental).</td>
+           <td style="padding: 8px;">Combined XACT surface mesh file created with prepXact (experimental).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--xact_intracortical</td>
