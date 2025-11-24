@@ -3,9 +3,11 @@ XACT
 
 .. Note::
 
-    eXtended Anatomically Constrained Tractography (XACT) is currently an experimental feature in Trekker.
+    - eXtended Anatomically Constrained Tractography (XACT) is currently an experimental feature in Trekker.
 
-XACT leverages surface meshes as anatomical constraints together with extended options to the conventional ACT [Smith2012]_.
+    - Please submit an issue in our `GitHub repository <https://github.com/dmritrekker/trekker/issues>`__ or send an e-mail to `baran.aydogan@uef.fi <mailto:baran.aydogan@uef.fi>`__ if you encounter any problems or have suggestions.
+
+XACT leverages surface meshes as anatomical constraints together with extended options to the conventional ACT [Smith2012]_ [Yeh2017]_.
 
 To create XACT surfaces from a Freesurfer folder, please use the `prepXact <../commands/prepXact.html>`__ command. The generated XACT file can then be used for fiber tracking using the `track <../commands/track.html>`__ command with the ``--xact`` option.
 
@@ -43,9 +45,17 @@ The XACT file contains multiple surfaces that are used to apply anatomical const
 |13   |Background               | BG           |
 +-----+-------------------------+--------------+
 
-.. Tip::
+.. Important::
 
-    Please visualize and check the generated XACT surfaces before using them for tractography to ensure that they accurately represent the anatomical regions.
+    **Known issue:** The surfaces created by ``prepXact`` are known to intersect each other. This may cause problems for some applications. 
+    
+    While we are still working on improvements for future releases, we advise to check the surfaces carefully before use to ensure they are adequate for the application in question. 
+    
+    An example showing the intersecting surfaces is shown below:
+
+    .. figure:: xact_overlap.png
+        :scale: 25 %
+        :alt: prepXact generated XACT surfaces showing overlaps
 
 
 **Common rules**
@@ -128,3 +138,7 @@ The default behavior can be modified using specific flags. These flags adjust th
 
     - Abnormality (ABN) region is optional. This region can be included to represent tumours, lesions or other abnormalities if they are present. Please use ``prepXact``'s ``--abnormality`` option to include this region in the XACT file. If not provided, the related rules are ignored.
 
+**References**
+
+.. [Smith2012] `Smith RE, Tournier JD, Calamante F, Connelly A. "Anatomically-constrained tractography: improved diffusion MRI streamlines tractography through effective use of anatomical information." Neuroimage. 2012 Sep 1;62(3):1924-38. <https://doi.org/10.1016/j.neuroimage.2012.06.005>`__
+.. [Yeh2017] `Yeh, C.H., Smith, R.E., Dhollander, T. and Connelly, A. "Mesh-based anatomically-constrained tractography for effective tracking termination and structural connectome construction."" In Proc ISMRM (Vol. 58). <https://cds.ismrm.org/protected/17MProceedings/PDFfiles/0058.html>`__

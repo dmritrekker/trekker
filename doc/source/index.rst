@@ -7,7 +7,9 @@ Trekker
 
     **UPDATE:** Trekker v1.0.0-rc6 is now out with major improvements!
 
-    - **XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography. XACT enables the use of surface meshes as anatomical constraints along with extended options to the conventional ACT framework.
+    - **XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography as an experimental feature. See the `XACT guide <../guide/XACT.html>`__ for more details. 
+    
+      XACT enables the use of surface meshes as anatomical constraints along with extended options to the conventional ACT framework.
 
         - **Intracortical tracking:** XACT allows streamlines to be seeded and propagated within the gray matter, enabling detailed mapping of intracortical connectivity.
         - **Cranial tracking:** XACT supports tracking that extends into cranial regions, enabling cranial nerve tracking.

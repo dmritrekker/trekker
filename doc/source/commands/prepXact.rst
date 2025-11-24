@@ -5,7 +5,7 @@ creates XACT surfaces for whole-brain tractography
 
 XACT output can be used for fiber tracking using the `track` command with the `xact` option for eXtended Anatomically Constrained Tractography (ACT).
 
-XACT builds on the original ACT framework [Smith2012]_ by including additional options for tractography and surface definitions for applying anatomical constraints to enhance the biological accuracy of tractography.
+XACT builds on the original ACT framework [Smith2012]_ [Yeh2017]_ by including additional options for tractography and surface definitions for applying anatomical constraints to enhance the biological accuracy of tractography.
 
 For a detailed description of XACT and its usage, please refer to the `XACT guide <../guide/XACT.html>`__.
 
@@ -151,3 +151,4 @@ For a detailed description of XACT and its usage, please refer to the `XACT guid
 **References**
 
 .. [Smith2012] `Smith RE, Tournier JD, Calamante F, Connelly A. "Anatomically-constrained tractography: improved diffusion MRI streamlines tractography through effective use of anatomical information." Neuroimage. 2012 Sep 1;62(3):1924-38. <https://doi.org/10.1016/j.neuroimage.2012.06.005>`__
+.. [Yeh2017] `Yeh, C.H., Smith, R.E., Dhollander, T. and Connelly, A. "Mesh-based anatomically-constrained tractography for effective tracking termination and structural connectome construction."" In Proc ISMRM (Vol. 58). <https://cds.ismrm.org/protected/17MProceedings/PDFfiles/0058.html>`__
