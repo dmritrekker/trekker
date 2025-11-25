@@ -107,6 +107,10 @@ In addition to the common rules, Trekker applies specific rules for different re
        </tr>
    </table>
 
+.. note::
+
+    Unless otherwise specified, ``--xact`` uses the default fiber tracking parameters in Trekker, e.g., **minlength** = 0, **maxlength** = infinite.
+
 |
 
 **Modifying behavior**
@@ -132,11 +136,21 @@ The default behavior can be modified using specific flags. These flags adjust th
     |                               | abnormality regions (ABN).                            |                                                                  |
     +-------------------------------+-------------------------------------------------------+------------------------------------------------------------------+
 
+.. Important::
+
+    - ``--xact_intracortical`` and ``--xact_cranial`` options only set anatomical constraints in order to obtain the streamlines confining to these regions. These options do not apply any *magic* solutions to obtain high-quality streamlines. 
+
+    - For intracortical tractography, it is crucial to have high-quality diffusion data with sufficient spatial resolution and signal-to-noise ratio (SNR). Additionally, advanced modeling techniques such as multi-shell acquisitions and higher-order diffusion models may be necessary to accurately capture the complex fiber orientations within the cortex with tuned parameters used for fiber tracking.    
+
+    - For tractography outside of the brain (cranial), it is important to make sure that FODs are properly estimated in these regions. High-quality data and appropriate modeling techniques are essential for reliable results. Fiber tracking parameters may also need to be adjusted to account for the different diffusion characteristics in these areas.
+
+
+
 .. note::
 
     - Inferior brain stem (I_BS) is considered part of the brain stem (BS) and is not currently used as a separate label during tractography.
 
-    - Abnormality (ABN) region is optional. This region can be included to represent tumours, lesions or other abnormalities if they are present. Please use ``prepXact``'s ``--abnormality`` option to include this region in the XACT file. If not provided, the related rules are ignored.
+    - Abnormality (ABN) region is optional. This region can be included to represent tumours or other lesions if they are present. Please use ``prepXact``'s ``--abnormality`` option to include this region in the XACT file. If not provided, the related rules are ignored.
 
 **References**
 
