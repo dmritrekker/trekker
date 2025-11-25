@@ -31,6 +31,17 @@
 //
 // Note: I_BS is a part of BS and is not currently used during tractography as a separate label.
 
+#ifdef _WIN32
+namespace NIBR {
+    namespace TRACKER {
+        Seed        seed;
+        Pathway     pw;
+        Params_PTT  params_ptt;
+    }
+}
+#endif
+
+
 using namespace NIBR;
 
 namespace CMDARGS_TRACK
