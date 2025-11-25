@@ -3,7 +3,7 @@ Trekker
 
 .. note::
 
-    November 24\ :sup:`th`, 2025
+    November 25\ :sup:`th`, 2025
 
     **UPDATE:** Trekker v1.0.0-rc6 is now out with major improvements!
 
@@ -225,7 +225,7 @@ Examples
 
 Release notes for Trekker-v1.0.0-rc6
 ------------------------------------
-November 24\ :sup:`th`, 2025
+November 25\ :sup:`th`, 2025
 
     - **New feature 1 - XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography using surface meshes. This feature leverages surface meshes as anatomical constraints together with extended options to the conventional ACT.
 

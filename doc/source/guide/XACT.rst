@@ -127,10 +127,12 @@ The default behavior can be modified using specific flags. These flags adjust th
     |                               | CER_GM).                                              |                                                                  |
     +-------------------------------+-------------------------------------------------------+------------------------------------------------------------------+
     | ``--xact_cranial``            | Performs tractography also within the cranial region  | Enables seeding in background, disables stopping after entry,    |
-    |                               | defined in the XACT file (BG).                        | and enables stopping before exit.                                |
+    |                               | defined in the XACT file (BG), which can be used for  | and enables stopping before exit.                                |
+    |                               | cranial nerve tracking.                               |                                                                  |
     +-------------------------------+-------------------------------------------------------+------------------------------------------------------------------+
     | ``--xact_subcortical_deadend``| Streamlines are truncated before they exit            | Enables stopping before exit for subcortical regions.            |
-    |                               | subcortical regions (L_SUB + R_SUB).                  |                                                                  |
+    |                               | subcortical regions (L_SUB + R_SUB), which is the     |                                                                  |
+    |                               | convention in [Smith2012]_.                           |                                                                  |
     +-------------------------------+-------------------------------------------------------+------------------------------------------------------------------+
     | ``--xact_abnormality_deadend``| Streamlines are truncated before they exit            | Enables stopping before exit for abnormality regions.            |
     |                               | abnormality regions (ABN).                            |                                                                  |
@@ -138,7 +140,7 @@ The default behavior can be modified using specific flags. These flags adjust th
 
 .. Important::
 
-    - ``--xact_intracortical`` and ``--xact_cranial`` options only set anatomical constraints in order to obtain the streamlines confining to these regions. These options do not apply any *magic* solutions to obtain high-quality streamlines. 
+    - ``--xact_intracortical`` and ``--xact_cranial`` options only set anatomical constraints in order to obtain the streamlines confining to these regions. These options do not apply dedicated fiber tracking algorithms to obtain high-quality streamlines. 
 
     - For intracortical tractography, it is crucial to have high-quality diffusion data with sufficient spatial resolution and signal-to-noise ratio (SNR). Additionally, advanced modeling techniques such as multi-shell acquisitions and higher-order diffusion models may be necessary to accurately capture the complex fiber orientations within the cortex with tuned parameters used for fiber tracking.    
 
@@ -148,7 +150,7 @@ The default behavior can be modified using specific flags. These flags adjust th
 
 .. note::
 
-    - Inferior brain stem (I_BS) is considered part of the brain stem (BS) and is not currently used as a separate label during tractography.
+    - Inferior brain stem (I_BS) is a part of the brain stem (BS). While it is not used as a separate label during tractography, it is included for completeness and can be used for consequent filtering of streamlines.
 
     - Abnormality (ABN) region is optional. This region can be included to represent tumours or other lesions if they are present. Please use ``prepXact``'s ``--abnormality`` option to include this region in the XACT file. If not provided, the related rules are ignored.
 
