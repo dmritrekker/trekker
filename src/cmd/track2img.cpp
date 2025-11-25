@@ -191,7 +191,7 @@ void run_track2img()
         if (shOrder>0) {
             NIBR::Image<float> out;
             sf2sh(&out,&img,SF::getSFCoords(),shOrder);
-            out.write(removeFileExtension(out_fname) + "_SH.nii.gz");
+            out.write(replaceFileExtension(out_fname, "_SH.nii.gz"));
         }
 
         img.write(out_fname);
@@ -201,12 +201,13 @@ void run_track2img()
             sfImg.read();
             sfImg.setOutsideVal(0.0f);
             sfImg.smooth(sfSmoothing);
-            sfImg.write(removeFileExtension(out_fname) + "_smooth.nii.gz");
+            sfImg.write(replaceFileExtension(out_fname, "_smooth.nii.gz"));
+            
 
             if (shOrder>0) {
                 NIBR::Image<float> smShOut;
                 sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder);
-                smShOut.write(removeFileExtension(out_fname) + "_smooth_SH.nii.gz");
+                smShOut.write(replaceFileExtension(out_fname, "_smooth_SH.nii.gz"));
             }
         }
         

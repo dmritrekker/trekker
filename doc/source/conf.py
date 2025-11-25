@@ -26,7 +26,7 @@ author = 'Dogu Baran Aydogan'
 # The short X.Y version
 version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '1.0.0-rc5'
+release = '1.0.0-rc6'
 
 
 # -- General configuration ---------------------------------------------------
@@ -84,6 +84,13 @@ pygments_style = 'sphinx'
 # documentation.
 #
 # html_theme_options = {"sidebarwidth": "10em"}
+html_theme_options = {
+    'github_user': 'dmritrekker',
+    'github_repo': 'trekker',
+    'github_banner': True,
+    'github_button': False,
+    'sidebar_width': '250px',
+}
 html_logo = "_static/logo.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -100,6 +107,14 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 html_sidebars = { '**': ['globaltoc.html']}
+# html_sidebars = {
+#     '**': [
+#         'about.html',
+#         'github_logo.html',
+#         'navigation.html',
+#         'searchbox.html',
+#     ]
+# }
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

@@ -3,9 +3,24 @@ Trekker
 
 .. note::
 
-    June 30\ :sup:`th`, 2025
+    November 25\ :sup:`th`, 2025
 
-    **UPDATE:** Trekker v1.0.0-rc5 is now out! This quick update fine tuned a few issues related to our major changes in release candidate 4 (rc4). See below for a list of changes.
+    **UPDATE:** Trekker v1.0.0-rc6 is now out with major improvements!
+
+    - **XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography as an experimental feature. See the `XACT guide <../guide/XACT.html>`__ for more details. 
+    
+      XACT enables the use of surface meshes as anatomical constraints along with extended options to the conventional ACT framework.
+
+        - **Intracortical tracking:** XACT allows streamlines to be seeded and propagated within the gray matter, enabling detailed mapping of intracortical connectivity.
+        - **Cranial tracking:** XACT supports tracking that extends into cranial regions, enabling cranial nerve tracking.
+        - **Track through subcortex:** or optionally treat subcortical regions as deadends.
+    
+    - **Purifibre**: We now moved `purifibre` under Trekker as a new command to remove spurious streamlines from tractograms.
+
+    - **Output log for fiber tracking**: `track` now saves a json sidecar for logging purposes.
+
+    Scroll below for a list of other changes.
+
 
 Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
 
@@ -33,15 +48,15 @@ Option 1: Stand-alone executables
 
 Download the appropriate stand-alone executable for your operating system:
 
-*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/linux_binary.zip>`
-*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/macOS-universal_binary.zip>`
-*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/windows_binary.zip>`
+*   **Linux:** :download:`linux_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/linux_binary.zip>`
+*   **macOS:** :download:`macOS-universal_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/macOS-universal_binary.zip>`
+*   **Windows:** :download:`windows_binary.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/windows_binary.zip>`
 
 After downloading and extracting the archive, you can run the executable.
 
 **Testing:**
 
-- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/tests.zip>`_.
+- Download and extract the datasets and scripts we prepared for testing by clicking here, `tests.zip <https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/tests.zip>`_.
 - Copy paste your executable under the ``testScripts`` folder.
 - Run the provided test script for your operating system.
 
@@ -67,7 +82,7 @@ Trekker is natively supported on Linux, Windows, and macOS. Trekker can be insta
 
 For detailed instructions to build from source, please check the `Readme <https://github.com/dmritrekker/trekker/tree/main>`_ file in GitHub.
 
-Shortly, if your system has CMake (min version 3.15), OpenMP, and a modern compiler. The following should be sufficient for the compilation.
+Shortly, if your system has CMake (min version 3.15), OpenMP, and a modern compiler, the following should be sufficient for compilation.
 
 *Note*: clang-v19 is known NOT to work with this version of Trekker due to a conflict with an internal dependency. Please use clang-v18 instead.
 
@@ -99,56 +114,20 @@ Simply run ``trekker`` on the terminal. This will display help and the commands,
            <th style="padding: 8px; border-bottom: 1px solid #000; border-top: 1px solid #000;">Description</th>
        </tr>
        <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/info.html">info</a></strong></td>
-           <td style="padding: 8px;">Displays information about input file.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/track.html">track</a></strong></td>
-           <td style="padding: 8px;">Performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px;"><strong><a href="../commands/filter.html">filter</a></strong></td>
-           <td style="padding: 8px;">Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/track2img.html">track2img</a></strong></td>
-           <td style="padding: 8px;">Maps tractogram features on an image.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px;"><strong><a href="../commands/track2surf.html">track2surf</a></strong></td>
-           <td style="padding: 8px;">Maps tractogram features on a surface.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/img2track.html">img2track</a></strong></td>
-           <td style="padding: 8px;">Maps image values on a tractogram.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px;"><strong><a href="../commands/select.html">select</a></strong></td>
-           <td style="padding: 8px;">Selects streamlines from a tractogram.</td>
-       </tr>
-       <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/resample.html">resample</a></strong></td>
-           <td style="padding: 8px;">Resamples streamlines in a tractogram.</td>
+           <td style="padding: 8px;"><strong><a href="../commands/addColor.html">addColor</a></strong></td>
+           <td style="padding: 8px;">Adds colors to streamlines (.vtk only).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px;"><strong><a href="../commands/convert.html">convert</a></strong></td>
            <td style="padding: 8px;">Converts tractogram file formats (.vtk, .tck, .trk).</td>
        </tr>
        <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/transform.html">transform</a></strong></td>
-           <td style="padding: 8px;">Applies a transform on an input tractogram.</td>
-       </tr>
-       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px;"><strong><a href="../commands/diff.html">diff</a></strong></td>
            <td style="padding: 8px;">Finds different streamlines between two tractograms.</td>
        </tr>
-       <tr>
-           <td style="padding: 8px;"><strong><a href="../commands/merge.html">merge</a></strong></td>
-           <td style="padding: 8px;">Merges two tractograms, optionally ignoring duplicates.</td>
-       </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px;"><strong><a href="../commands/addColor.html">addColor</a></strong></td>
-           <td style="padding: 8px;">Adds colors to streamlines (.vtk only).</td>
+           <td style="padding: 8px;"><strong><a href="../commands/dMRI.html">dMRI</a></strong></td>
+           <td style="padding: 8px;">dMRI commands</td>
        </tr>
        <tr>
            <td style="padding: 8px;"><strong><a href="../commands/fieldExport.html">fieldExport</a></strong></td>
@@ -163,8 +142,52 @@ Simply run ``trekker`` on the terminal. This will display help and the commands,
            <td style="padding: 8px;">Removes a vtk field from a tractogram (.vtk only).</td>
        </tr>
        <tr style="background-color: #f2f2f2;">
-           <td style="padding: 8px; border-bottom: 1px solid #000;"><strong><a href="../commands/dMRI.html">dMRI</a></strong></td>
-           <td style="padding: 8px; border-bottom: 1px solid #000;">dMRI commands</td>
+           <td style="padding: 8px;"><strong><a href="../commands/filter.html">filter</a></strong></td>
+           <td style="padding: 8px;">Trekker employs an intuitive set of pathway rules to filter tractograms. The rules can be specified with surface meshes, as well as with spheres, image masks and partial volume fractions.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/img2track.html">img2track</a></strong></td>
+           <td style="padding: 8px;">Maps image values on a tractogram.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px;"><strong><a href="../commands/info.html">info</a></strong></td>
+           <td style="padding: 8px;">Displays information about input file.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/merge.html">merge</a></strong></td>
+           <td style="padding: 8px;">Merges two tractograms, optionally ignoring duplicates.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px;"><strong><a href="../commands/prepXact.html">prepXact</a></strong></td>
+           <td style="padding: 8px;">Creates XACT surfaces for whole-brain tractography.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/purifibre.html">purifibre</a></strong></td>
+           <td style="padding: 8px;">Removes spurious streamlines from tractograms</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px;"><strong><a href="../commands/resample.html">resample</a></strong></td>
+           <td style="padding: 8px;">Resamples streamlines in a tractogram.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/select.html">select</a></strong></td>
+           <td style="padding: 8px;">Selects streamlines from a tractogram.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px;"><strong><a href="../commands/track.html">track</a></strong></td>
+           <td style="padding: 8px;">Performs fiber tracking using parallel transport tractography (PTT) algorithm. PTT excels in reconstructing geometrically smooth and topographically organized fiber bundles.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px;"><strong><a href="../commands/track2img.html">track2img</a></strong></td>
+           <td style="padding: 8px;">Maps tractogram features on an image.</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px;"><strong><a href="../commands/track2surf.html">track2surf</a></strong></td>
+           <td style="padding: 8px;">Maps tractogram features on a surface.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; border-bottom: 1px solid #000;"><strong><a href="../commands/transform.html">transform</a></strong></td>
+           <td style="padding: 8px; border-bottom: 1px solid #000;">Applies a transform on an input tractogram.</td>
        </tr>
    </table>
 
@@ -199,17 +222,37 @@ Examples
              --pathway require_end_inside LEFT_THAL.nii.gz \
              --output OUT_TRACK.vtk
 
+
+Release notes for Trekker-v1.0.0-rc6
+------------------------------------
+November 25\ :sup:`th`, 2025
+
+    - **New feature 1 - XACT**: We introduced eXtended Anatomically Constrained Tractography (XACT) for whole-brain tractography using surface meshes. This feature leverages surface meshes as anatomical constraints together with extended options to the conventional ACT.
+
+    - **New feature 2 - Purifibre**: We now moved `purifibre` under Trekker as a new command to remove spurious streamlines from tractograms. The original `purifibre` repository is now deprecated, as the functionality has been integrated into nibrary and Trekker. The legacy repository can be found here: https://github.com/baranaydogan/purifibre.
+    
+    - **New feature 3 - Json sidecar**: `track` now saves a json sidecar for logging purposes. This allows store metadata and parameters associated with tractograms in a structured format. This was a previously available that had to wait for a major refactoring.
+    
+    - **Improvement 1**: More robust handling of ASCII vtk formatted tractograms across different platforms.
+    
+    - **Improvement 2**: Better handling of stop rules when used with image masks/pvf tracking.
+    
+    - **Improvement 3**: `discard_if_ends_inside` option now does not require a side defition when a seed is not provided.
+    
+    - **Bug fix 1**: Improvement 2 fixed an issue where there was a discrepancy with `track` and `filter`. This is now largely resolved. A small difference (few streamlines in a million) may still exist for edge cases.
+
+
 Release notes for Trekker-v1.0.0-rc5
 ------------------------------------
+June 30\ :sup:`th`, 2025
 
     - **Bug fix 1**: Fixed a minor issue with preloaded tractogram reading.
     
     - **Improvement 1**: Switched to glib based Linux executable.
 
-Trekker offers state-of-the-art tractography tools to study the structural connectivity of the brain. Trekker aims to improve fiber tracking pipelines by offering features like:
-
 Release notes for Trekker-v1.0.0-rc4
 ------------------------------------
+June 12\ :sup:`th`, 2025
 
     - **Bug fix 1**: Fixed an issue related to duplicate end points when using stop rules with filtering.
 
@@ -223,17 +266,18 @@ Release notes for Trekker-v1.0.0-rc4
     
     - **Improvement 5**: Upgraded to nibrary-v0.4.0
 
-    - **Dropped feature 1:** Checking of dublicate streamlines during `merge` was removed. Same can be later by using `diff`.
+    - **Dropped feature 1:** Checking of duplicate streamlines during `merge` was removed. The same can be done later by using `diff`.
 
     - **Dropped feature 2:** Removed `--saveUncropped` option from `filter`. Similar can be done using a combination of `diff` and `filter`'s `--saveDiscarded` option.
 
 
 Release notes for Trekker-v1.0.0-rc3
 ------------------------------------
+February 3\ :sup:`th`, 2025
 
     - **New feature:** `track` can now save seed indices as a vtk field.
 
-    - **Bug fix 1**: Fixed an issue when stopping rule was ignored when a seed was places on edges.
+    - **Bug fix 1**: Fixed an issue when stopping rule was ignored when a seed was placed on edges.
 
     - **Bug fix 2**: Fixed an issue with segment surface intersection.
     
@@ -262,6 +306,7 @@ Release notes for Trekker-v1.0.0-rc3
 
 Release notes for Trekker-v1.0.0-rc2
 ------------------------------------
+December 19\ :sup:`th`, 2024
 
     - **Bug fix 1**: Fixed a bug which prevented using negative labels for selecting surface ROIs.
 
@@ -282,6 +327,7 @@ Release notes for Trekker-v1.0.0-rc2
 
 Release notes for Trekker-v1.0.0-rc1
 ------------------------------------
+August 6\ :sup:`th`, 2024
 
     - **Bug fix 1**: Fixed a bug in `track` where streamlines were not stopped as expected when a pathway rule was set. This issue occurred because `track` allowed stop options unsupported by nibrary. The fix involved providing nibrary with the necessary stopping features during tracking.
     
@@ -346,8 +392,10 @@ Release notes for Trekker-v1.0.0-rc1
    :hidden:
 
    guide/tutorial.rst
-   guide/pathways.rst
    guide/FOD.rst
+   guide/pathways.rst
+   guide/XACT.rst
+
 
 
 .. toctree::
@@ -355,23 +403,25 @@ Release notes for Trekker-v1.0.0-rc1
    :caption: Commands
    :hidden:
 
-   commands/info.rst
-   commands/track.rst
-   commands/filter.rst
-   commands/track2img.rst
-   commands/track2surf.rst
-   commands/img2track.rst
-   commands/select.rst
-   commands/resample.rst
-   commands/convert.rst
-   commands/transform.rst
-   commands/diff.rst
-   commands/merge.rst
    commands/addColor.rst
+   commands/convert.rst
+   commands/diff.rst
+   commands/dMRI.rst
    commands/fieldExport.rst
    commands/fieldImport.rst
    commands/fieldRemove.rst
-   commands/dMRI.rst
+   commands/filter.rst
+   commands/img2track.rst
+   commands/info.rst
+   commands/merge.rst
+   commands/prepXact.rst
+   commands/purifibre.rst
+   commands/resample.rst
+   commands/select.rst
+   commands/track.rst
+   commands/track2img.rst
+   commands/track2surf.rst
+   commands/transform.rst
 
 
 .. toctree::

@@ -16,9 +16,11 @@
 static std::string TREKKER_EXE_STRING = "Trekker-v" + std::to_string(TREKKER_VERSION_MAJOR) + "." + 
                                                       std::to_string(TREKKER_VERSION_MINOR) + "." + 
                                                       std::to_string(TREKKER_VERSION_PATCH) + 
-                                        "-rc5";
+                                        "-rc6";
 
 void parseCommon(int& numberOfThreads, std::string verbose);
 bool parseForceOutput(std::string out_fname, bool force);
 void setInfo(CLI::App* app, const std::string& information);
 void displayHelp(const std::string& text);
+
+extern std::string TREKKER_CMD_LINE;
