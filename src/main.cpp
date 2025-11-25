@@ -3,9 +3,15 @@
 
 using namespace NIBR;
 
+std::string TREKKER_CMD_LINE;
+
 int main(int argc, char *argv[]) {
 
     NIBR::INITIALIZE();
+
+    for(int i=0; i<argc; i++) {
+        TREKKER_CMD_LINE += std::string(argv[i]) + " ";
+    }
 
     // Parse input
     CLI::App app(TREKKER_EXE_STRING);
@@ -17,43 +23,47 @@ int main(int argc, char *argv[]) {
 
     app.require_subcommand(1);
     
-    info(app.add_subcommand("info", ""));
-    track(app.add_subcommand("track", ""));
-    filter(app.add_subcommand("filter", ""));
-    purifibre(app.add_subcommand("purifibre", ""));
-    track2img(app.add_subcommand("track2img", ""));
-    track2surf(app.add_subcommand("track2surf", ""));
-    img2track(app.add_subcommand("img2track", ""));
-    select(app.add_subcommand("select", ""));
-    resample(app.add_subcommand("resample", ""));
-    convert(app.add_subcommand("convert", ""));
-    transform(app.add_subcommand("transform", ""));
-    diff(app.add_subcommand("diff", ""));
-    merge(app.add_subcommand("merge", ""));
     addColor(app.add_subcommand("addColor", ""));
+    convert(app.add_subcommand("convert", ""));
+    diff(app.add_subcommand("diff", ""));
+    dMRI_cmd(app.add_subcommand("dMRI", ""));
     fieldExport(app.add_subcommand("fieldExport", ""));
     fieldImport(app.add_subcommand("fieldImport", ""));
     fieldRemove(app.add_subcommand("fieldRemove", ""));
-    dMRI_cmd(app.add_subcommand("dMRI", ""));
+    filter(app.add_subcommand("filter", ""));
+    img2track(app.add_subcommand("img2track", ""));
+    info(app.add_subcommand("info", ""));
+    merge(app.add_subcommand("merge", ""));
+    prepXact(app.add_subcommand("prepXact", ""));
+    purifibre(app.add_subcommand("purifibre", ""));
+    resample(app.add_subcommand("resample", ""));
+    select(app.add_subcommand("select", ""));
+    track(app.add_subcommand("track", ""));
+    track2img(app.add_subcommand("track2img", ""));
+    track2surf(app.add_subcommand("track2surf", ""));  
+    transform(app.add_subcommand("transform", ""));    
 
     std::vector<std::string> subcommands = {
-        "info", 
-        "track", 
-        "filter",
-        "purifibre",
-        "track2img",
-        "track2surf",
-        "img2track",
-        "select",
-        "resample",
-        "transform",
-        "diff",
-        "merge",
         "addColor",
+        "convert",
+        "diff",
+        "dMRI",
         "fieldExport",
         "fieldImport",
         "fieldRemove",
-        "dMRI"};
+        "filter",
+        "img2track",
+        "info", 
+        "merge",
+        "prepXact",
+        "purifibre",
+        "resample",
+        "select",
+        "track",
+        "track2img",
+        "track2surf",
+        "transform"
+    };
 
     const std::string dMRI_name          = "dMRI";
     const std::string recon_name         = "recon";
