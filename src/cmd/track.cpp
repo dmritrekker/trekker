@@ -353,15 +353,15 @@ void run_track()
         json_file << "  },\n";
 
         json_file << "  \"SEEDING OPTIONS\": {\n";
-        json_file << "    \"seed_count\": "     << TRACKER::seed.sCount << ",\n";
-        json_file << "    \"seed_density\": "   << TRACKER::seed.sDensity << ",\n";
-        json_file << "    \"seed_trials\": "    << TRACKER::seed.trials << "\n";
+        json_file << "    \"seed_count\": "     << TRACKER::getSeed().sCount << ",\n";
+        json_file << "    \"seed_density\": "   << TRACKER::getSeed().sDensity << ",\n";
+        json_file << "    \"seed_trials\": "    << TRACKER::getSeed().trials << "\n";
         json_file << "  },\n";
 
         json_file << "  \"PTT OPTIONS\": {\n";
         json_file << "    \"algorithm\": \""            << ((alg == "" || alg == "ptt") ? "parallel transport tracker (ptt)" : alg) << "\",\n";
         json_file << "    \"fod\": \""                  << (fod.empty() ? "" : fod[0]) << "\",\n";
-        json_file << "    \"fodDiscretization\": \""    << (TRACKER::params_ptt.fodDiscretization ? "ON" : "OFF") << "\",\n";
+        json_file << "    \"fodDiscretization\": \""    << (TRACKER::getParamsPTT().fodDiscretization ? "ON" : "OFF") << "\",\n";
 
         auto writeParamF = [&](std::string pstr, Image<float>* img, float pval, int precision) {
             json_file << pstr << to_string_with_precision(pval,precision);
@@ -379,42 +379,42 @@ void run_track()
             json_file << pstr << "\"" << (pval ? "ON" : "OFF") << "\"";
         };
 
-        writeParamF("    \"stepSize\": ",                TRACKER::params_ptt.stepSize_img,               TRACKER::params_ptt.stepSize_global,                4); json_file << ",\n";
-        writeParamF("    \"writeStepSize\": ",           TRACKER::params_ptt.outputStep_img,             TRACKER::params_ptt.outputStep_global,              4); json_file << ",\n";
+        writeParamF("    \"stepSize\": ",                TRACKER::getParamsPTT().stepSize_img,                      TRACKER::getParamsPTT().stepSize_global,                4); json_file << ",\n";
+        writeParamF("    \"writeStepSize\": ",           TRACKER::getParamsPTT().outputStep_img,                    TRACKER::getParamsPTT().outputStep_global,              4); json_file << ",\n";
         
-        writeParamF("    \"minRadiusOfCurvature\": ",    TRACKER::params_ptt.minRadiusOfCurvature_img,   TRACKER::params_ptt.minRadiusOfCurvature_global,    4); json_file << ",\n";
-        writeParamF("    \"minDataSupport\": ",          TRACKER::params_ptt.minDataSupport_img,         TRACKER::params_ptt.minDataSupport_global,          4); json_file << ",\n";
-        writeParamF("    \"dataSupportExponent\": ",     TRACKER::params_ptt.dataSupportExponent_img,    TRACKER::params_ptt.dataSupportExponent_global,     4); json_file << ",\n";
+        writeParamF("    \"minRadiusOfCurvature\": ",    TRACKER::getParamsPTT().minRadiusOfCurvature_img,          TRACKER::getParamsPTT().minRadiusOfCurvature_global,    4); json_file << ",\n";
+        writeParamF("    \"minDataSupport\": ",          TRACKER::getParamsPTT().minDataSupport_img,                TRACKER::getParamsPTT().minDataSupport_global,          4); json_file << ",\n";
+        writeParamF("    \"dataSupportExponent\": ",     TRACKER::getParamsPTT().dataSupportExponent_img,           TRACKER::getParamsPTT().dataSupportExponent_global,     4); json_file << ",\n";
 
-        writeParamF("    \"ignoreWeakLinks\": ",         NULL,                                           TRACKER::params_ptt.weakLinkThresh,                 4); json_file << ",\n";
+        writeParamF("    \"ignoreWeakLinks\": ",         NULL,                                                      TRACKER::getParamsPTT().weakLinkThresh,                 4); json_file << ",\n";
 
-        writeParamI("    \"maxEstInterval\": ",          TRACKER::params_ptt.maxEstInterval_img,         TRACKER::params_ptt.maxEstInterval_global); json_file << ",\n";
-        writeParamI("    \"maxSamplingPerStep\": ",      TRACKER::params_ptt.triesPerRejectionSampling_img,     TRACKER::params_ptt.triesPerRejectionSampling_global); json_file << ",\n";
-        writeParamI("    \"initMaxEstTrials\": ",        TRACKER::params_ptt.initMaxEstTrials_img,       TRACKER::params_ptt.initMaxEstTrials_global); json_file << ",\n";
-        writeParamI("    \"propMaxEstTrials\": ",        TRACKER::params_ptt.propMaxEstTrials_img,       TRACKER::params_ptt.propMaxEstTrials_global); json_file << ",\n";
+        writeParamI("    \"maxEstInterval\": ",          TRACKER::getParamsPTT().maxEstInterval_img,                TRACKER::getParamsPTT().maxEstInterval_global); json_file << ",\n";
+        writeParamI("    \"maxSamplingPerStep\": ",      TRACKER::getParamsPTT().triesPerRejectionSampling_img,     TRACKER::getParamsPTT().triesPerRejectionSampling_global); json_file << ",\n";
+        writeParamI("    \"initMaxEstTrials\": ",        TRACKER::getParamsPTT().initMaxEstTrials_img,              TRACKER::getParamsPTT().initMaxEstTrials_global); json_file << ",\n";
+        writeParamI("    \"propMaxEstTrials\": ",        TRACKER::getParamsPTT().propMaxEstTrials_img,              TRACKER::getParamsPTT().propMaxEstTrials_global); json_file << ",\n";
 
-        writeOnOff ("    \"useBestAtInit\": ",           TRACKER::params_ptt.useBestAtInit); json_file << ",\n";
-        writeOnOff ("    \"useLegacySampling\": ",       TRACKER::params_ptt.useLegacySampling); json_file << ",\n";
-        writeParamI("    \"samplingQuality\": ",         NULL,                                           TRACKER::params_ptt.samplingQuality); json_file << ",\n";
+        writeOnOff ("    \"useBestAtInit\": ",           TRACKER::getParamsPTT().useBestAtInit); json_file << ",\n";
+        writeOnOff ("    \"useLegacySampling\": ",       TRACKER::getParamsPTT().useLegacySampling); json_file << ",\n";
+        writeParamI("    \"samplingQuality\": ",         NULL,                                                      TRACKER::getParamsPTT().samplingQuality); json_file << ",\n";
 
 
-        writeParamF("    \"probeLength\": ",            TRACKER::params_ptt.probeLength_img,           TRACKER::params_ptt.probeLength_global,               4); json_file << ",\n";
-        writeParamF("    \"probeRadius\": ",            TRACKER::params_ptt.probeRadius_img,           TRACKER::params_ptt.probeRadius_global,               4); json_file << ",\n";
-        writeParamF("    \"probeCount\": ",             TRACKER::params_ptt.probeCount_img,            TRACKER::params_ptt.probeCount_global,                0); json_file << ",\n";
-        writeParamF("    \"probeQuality\": ",           TRACKER::params_ptt.probeQuality_img,          TRACKER::params_ptt.probeQuality_global,              0); json_file << "\n";
+        writeParamF("    \"probeLength\": ",            TRACKER::getParamsPTT().probeLength_img,                    TRACKER::getParamsPTT().probeLength_global,               4); json_file << ",\n";
+        writeParamF("    \"probeRadius\": ",            TRACKER::getParamsPTT().probeRadius_img,                    TRACKER::getParamsPTT().probeRadius_global,               4); json_file << ",\n";
+        writeParamF("    \"probeCount\": ",             TRACKER::getParamsPTT().probeCount_img,                     TRACKER::getParamsPTT().probeCount_global,                0); json_file << ",\n";
+        writeParamF("    \"probeQuality\": ",           TRACKER::getParamsPTT().probeQuality_img,                   TRACKER::getParamsPTT().probeQuality_global,              0); json_file << "\n";
         json_file << "  },\n";
 
         json_file << "  \"PATHWAY OPTIONS\": {\n";
-        json_file << "    \"minlength\": "      << TRACKER::pw.minLength << ",\n";
-        if (TRACKER::pw.maxLength == FLT_MAX)
+        json_file << "    \"minlength\": "      << TRACKER::getPathway().minLength << ",\n";
+        if (TRACKER::getPathway().maxLength == FLT_MAX)
              json_file << "    \"maxlength\": \"infinite\",\n";
         else
-             json_file << "    \"maxlength\": " << TRACKER::pw.maxLength << ",\n";
+             json_file << "    \"maxlength\": " << TRACKER::getPathway().maxLength << ",\n";
         
-        writeOnOff ("    \"stopAtMax\": ",    TRACKER::pw.atMaxLength == ATMAXLENGTH_STOP); json_file << ",\n";
-        writeOnOff ("    \"oneSided\": ",     TRACKER::pw.directionality == NIBR::Directionality::ONE_SIDED); json_file << ",\n";
-        writeOnOff ("    \"skipSeed\": ",     TRACKER::pw.skipSeedROI); json_file << ",\n";
-        writeOnOff ("    \"inOrder\": ",      TRACKER::pw.satisfy_requirements_in_order == NIBR::RequirementOrder::IN_ORDER); json_file << ",\n";
+        writeOnOff ("    \"stopAtMax\": ",    TRACKER::getPathway().atMaxLength == ATMAXLENGTH_STOP); json_file << ",\n";
+        writeOnOff ("    \"oneSided\": ",     TRACKER::getPathway().directionality == NIBR::Directionality::ONE_SIDED); json_file << ",\n";
+        writeOnOff ("    \"skipSeed\": ",     TRACKER::getPathway().skipSeedROI); json_file << ",\n";
+        writeOnOff ("    \"inOrder\": ",      TRACKER::getPathway().satisfy_requirements_in_order == NIBR::RequirementOrder::IN_ORDER); json_file << ",\n";
 
         if (xact_fname != "") {
             json_file << "    \"xact\": \"" << xact_fname << "\",\n";
@@ -473,7 +473,7 @@ void run_track()
         };
 
         bool first_rule = true;
-        for (const auto& rule : TRACKER::pw.prules) {
+        for (const auto& rule : TRACKER::getPathway().prules) {
             if (!first_rule) json_file << ",\n";
             json_file << "      \"" << getRuleString(rule) << "\"";
             first_rule = false;
