@@ -43,6 +43,7 @@ out_filter_1_img="$results_dir/filter_1_img.vtk"
 out_filter_1_surf="$results_dir/filter_1_surf.vtk"
 out_filter_2_img="$results_dir/filter_2_img.vtk"
 out_filter_2_surf="$results_dir/filter_2_surf.vtk"
+out_purifibre="$results_dir/purifibre.vtk"
 
 # --- Function to display file information ---
 display_file_info() {
@@ -241,6 +242,15 @@ ${trekker} track2surf -f "$out_filter_2_surf" "$L_V1_SURF" "$out_track2surf" den
 display_file_info "$out_track2surf"
 
 
+echo
+echo
+echo "=========="
+echo "===Test 13: purifibre"
+echo "=========="
+echo
+${trekker} purifibre -f -p 10 "$out_filter_1_surf" "$out_purifibre" -v quiet
+
+display_file_info "$out_purifibre"
 
 
 

@@ -24,16 +24,16 @@ For complete documentation, tutorials and examples, visit https://dmritrekker.gi
 
 Download the appropriate stand-alone executable for your operating system:
 
-*   **Linux:** :download: [linux_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/linux_binary.zip)
-*   **macOS:** :download: [macOS-universal_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/macOS-universal_binary.zip)
-*   **Windows:** :download: [windows_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/windows_binary.zip)
+*   **Linux:** :download: [linux_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/linux_binary.zip)
+*   **macOS:** :download: [macOS-universal_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/macOS-universal_binary.zip)
+*   **Windows:** :download: [windows_binary.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/windows_binary.zip)
 
 After downloading and extracting the archive, you can run the executable.
 
 **Testing:**
 
-- Download and extract the datasets and scripts we prepared for testing by clicking here, [tests.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc5/tests.zip).
-- Copy paste your executable under the ``testScripts`` folder.
+- Download and extract the datasets and scripts we prepared for testing by clicking here, [tests.zip](https://github.com/dmritrekker/trekker/releases/download/v1.0.0-rc6/tests.zip).
+- Copy your executable into the ``testScripts`` folder.
 - Run the provided test script for your operating system.
 
 
@@ -107,7 +107,7 @@ Edit the `build_linux.sh` script to customize your installation.
 #
 #### macOS
 
-The provided installation script for macOS, `build_mac.sh`, will install the dependencies, set the environment variables, compile and install trekker under the `build-static` folder.
+The provided installation script for macOS, `build_macOS.sh`, will install the dependencies, set the environment variables, compile and install trekker under the `build-static` folder.
 
 ```bash
 cd trekker
@@ -121,7 +121,7 @@ Edit the `build_mac.sh` script to customize your installation.
 #
 #### Windows
 
-Install Visual Studio 2022 (other versions might work too but they have not been tested). Open command window and use the following to install a statically built library under the `build-static` folder:
+Install Visual Studio 2022 (other versions might work too but they have not been tested). Open a command window and use the following to install a statically built library under the `build-static` folder:
 
 ```cmd
 cd trekker
@@ -135,7 +135,7 @@ Edit the `build_win.bat` script to customize your installation.
 
 You can test your executable using the test scripts and data provided under the `tests` folder. For that:
 
-1. copy paste your executable under the `tests/testScripts`
+1. Copy your executable into `tests/testScripts`
 2. rename your executable as:
     - For Linux: `trekker_linux`
     - For macOS: `trekker_macOS` 

@@ -4,6 +4,8 @@
 
 bool ensureVTK(std::string fname);
 bool ensureVTKorTCK(std::string fname);
+bool ensureSURF(std::string fname);
+bool ensureIMG(std::string fname);
 
 std::string center_text(std::string input, std::size_t width);
 std::string wrap_text(const std::string &text, std::size_t first_line_indent, std::size_t subsequent_indent, std::size_t width);

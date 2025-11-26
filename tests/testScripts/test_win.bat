@@ -23,6 +23,7 @@ set "out_filter_1_img=%results_dir%\filter_1_img.vtk"
 set "out_filter_1_surf=%results_dir%\filter_1_surf.vtk"
 set "out_filter_2_img=%results_dir%\filter_2_img.vtk"
 set "out_filter_2_surf=%results_dir%\filter_2_img.vtk"
+set "out_purifibre=%results_dir%\purifibre.vtk"
 
 @REM --- Main Script ---
 
@@ -154,6 +155,16 @@ echo.
 call "%batchDir%trekker_win.exe" track2surf -f "%out_filter_2_surf%" "%l_v1_surf%" "%out_track2surf%" dens --feature streamlineDensity -v quiet
 call test_win_disp_file_info.bat "%out_track2surf%"
 echo.
+
+
+echo "=========="
+echo "===Test 13: purifibre"
+echo "=========="
+echo.
+call "%batchDir%trekker_win.exe" purifibre -f -p 10 "%out_filter_1_surf%" "%out_purifibre%" -v quiet
+call test_win_disp_file_info.bat "%out_purifibre%"
+echo.
+
 
 echo "=========="
 echo "===Completed tests"
