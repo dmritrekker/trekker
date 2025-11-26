@@ -170,6 +170,10 @@ fiber tracker
 
 **Seeding parameters**
 
+.. note::
+
+   When ``--xact`` is used, Trekker ignores ``--seed``, ``--seed_surf_faceDensity``, ``--seed_surf_vertDensity``, ``--seed_surf_fieldDensity`` and ``--seed_surf_useSurfNorm`` options, since seeding is internally handled by xact.
+
 .. raw:: html
 
    <table style="width: 100%; border-collapse: collapse;">
@@ -195,31 +199,32 @@ fiber tracker
            <td style="padding: 8px;">Allows seeding at the edges of pathway rules. Default: false.</td>
        </tr>
        -->
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_trials INT</td>
            <td style="padding: 8px;">Sets the maximum number of attempts to generate streamline from the seed point. Default=1.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_count INT</td>
            <td style="padding: 8px;">Number of seeds. Trekker tries to generate a single streamline from each seed. For that it makes maximum amount of "trials". If an acceptable streamline cannot be generated then it is skipped. If this happens, there will be fewer streamlines in the output tractogram than what is defined with "count".</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_density FLOAT</td>
            <td style="padding: 8px;">Density of seeds. If seed is an image, density is the number of seeds per mm^3. If seed is a surface mesh, density is the number of seeds per mm^2.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_surf_faceDensity TEXT ...</td>
            <td style="padding: 8px;">A text file containing density information for each face of the input seed surface.</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;"   >
            <td style="padding: 8px; font-weight: 500;">--seed_surf_vertDensity TEXT ...</td>
            <td style="padding: 8px;">A text file containing density information for each vertex of the input seed surface.</td>
        </tr>
-       <tr style="background-color: #f2f2f2;">
+       <tr>
            <td style="padding: 8px; font-weight: 500;">--seed_surf_fieldDensity TEXT</td>
            <td style="padding: 8px;">The given field in the input seed surface will be used to set seed density.</td>
        </tr>
-       <tr>
+       <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--seed_surf_useSurfNorm</td>
            <td style="padding: 8px;">Surface normals will be used as the initial direction.</td>
        </tr>
@@ -231,7 +236,9 @@ fiber tracker
 
 .. tip::
 
-    Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+    - Please check the documentation for `pathways <../guide/pathways.html>`__ for a detailed explanation.
+
+    - For XACT-specific pathway options, please refer to the `XACT guide <../guide/XACT.html>`__.
 
 .. raw:: html
 
@@ -263,6 +270,26 @@ fiber tracker
        <tr style="background-color: #f2f2f2;">
            <td style="padding: 8px; font-weight: 500;">--inOrder</td>
            <td style="padding: 8px;">If enabled, all pathway requirements are going to be satisfied in the order that they are input to Trekker. All pathway options should be defined for pathway_A/pathway_B in order to use this option.</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">-x, --xact FILE</td>
+           <td style="padding: 8px;">Combined XACT surface mesh file created with prepXact (experimental).</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--xact_intracortical</td>
+           <td style="padding: 8px;">Performs tractography also within the intracortical regions defined in the XACT file (l_gm + r_gm + cer_gm).</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--xact_cranial</td>
+           <td style="padding: 8px;">Performs tractography also within the cranial region defined in the XACT file (bg).</td>
+       </tr>
+       <tr style="background-color: #f2f2f2;">
+           <td style="padding: 8px; font-weight: 500;">--xact_subcortical_deadend</td>
+           <td style="padding: 8px;">Streamlines are truncated before they exit subcortical regions (l_sub + r_sub).</td>
+       </tr>
+       <tr>
+           <td style="padding: 8px; font-weight: 500;">--xact_abnormality_deadend</td>
+           <td style="padding: 8px;">Streamlines are truncated before they exit abnormality regions (abn).</td>
        </tr>
    </table>
 

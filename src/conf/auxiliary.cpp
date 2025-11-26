@@ -69,3 +69,27 @@ bool ensureVTKorTCK(std::string fname)
     disp(MSG_ERROR,"Unsupported file format: %s (only vtk/tck are supported)", fname.c_str());
     return false;
 }
+
+bool ensureSURF(std::string fname)
+{
+    std::string ext = getFileExtension(fname);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == "vtk" || ext == "gii")
+        return true;
+
+    disp(MSG_ERROR,"Unsupported file format: %s (only vtk/gii are supported)", fname.c_str());
+    return false;
+}
+
+bool ensureIMG(std::string fname)
+{
+    std::string ext = getFileExtension(fname);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == "nii" || ext == "nii.gz")
+        return true;
+
+    disp(MSG_ERROR,"Unsupported file format: %s (only nii/nii.gz are supported)", fname.c_str());
+    return false;
+}

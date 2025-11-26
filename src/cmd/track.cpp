@@ -1,5 +1,35 @@
 #include "cmd.h"
+#include <fstream>
+#include <sstream>
 
+// Description of the labels (see prepXact) used in XACT for tractography:
+//
+// Common rules:
+//  1. seed:                 (Seeds are randomly generated in this region)  L_WM + R_WM + CER_WM + BS (includes I_BS)
+//  2. req_end_inside:       (Ends are allowed here)                        L_GM + R_GM + CER_GM + L_SUB + R_SUB + BS + ABN + BG (includes I_BS)
+//  3. discard_if_enters:    (No entry)                                     CSF
+//
+// Optional rules:
+//  1. XACT_TRACK_OPT_SEED_GM               (Default: OFF):  (Seeds are generated in cortex)              L_GM + R_GM + CER_GM
+//  2. XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM   (Default: ON):   (Propagation stops immediately after entry)  L_GM + R_GM + CER_GM
+//  3. XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM   (Default: OFF):  (Propagation stops right before exit)        L_GM + R_GM + CER_GM
+//  4. XACT_TRACK_OPT_SEED_BG               (Default: OFF):  (Seeds are generated in BG too)              BG
+//  5. XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG   (Default: ON) :  (Propagation stops immediately after entry)  BG
+//  6. XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG   (Default: OFF):  (Propagation stops right before exit)        BG
+//  7. XACT_TRACK_OPT_SEED_SUB              (Default: ON) :  (Seeds are generated in subcortex too)       L_SUB + R_SUB
+//  8. XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB  (Default: OFF):  (Propagation stops immediately after entry)  L_SUB + R_SUB
+//  9. XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB  (Default: OFF):  (Propagation stops right before exit)        L_SUB + R_SUB
+// 10. XACT_TRACK_OPT_SEED_ABN              (Default: ON):   (Seeds are generated in abnormality)         ABN
+// 11. XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN  (Default: OFF):  (Propagation stops immediately after entry)  ABN
+// 12. XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN  (Default: OFF):  (Propagation stops right before exit)        ABN
+//
+// Preset modes:
+//  1. XACT_INTRACORTICAL       = (XACT_TRACK_OPT_SEED_GM  | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_GM  | XACT_TRACK_OPT_STOP_BEFORE_EXIT_GM )
+//  2. XACT_CRANIAL             = (XACT_TRACK_OPT_SEED_BG  | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_BG  | XACT_TRACK_OPT_STOP_BEFORE_EXIT_BG )
+//  3. XACT_SUBCORTICAL_DEADEND = (XACT_TRACK_OPT_SEED_SUB | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_SUB | XACT_TRACK_OPT_STOP_BEFORE_EXIT_SUB)
+//  4. XACT_ABNORMALITY_DEADEND = (XACT_TRACK_OPT_SEED_ABN | !XACT_TRACK_OPT_STOP_AFTER_ENTRY_ABN | XACT_TRACK_OPT_STOP_BEFORE_EXIT_ABN)
+//
+// Note: I_BS is a part of BS and is not currently used during tractography as a separate label.
 
 using namespace NIBR;
 
@@ -42,6 +72,13 @@ namespace CMDARGS_TRACK
     bool        inOrder                 = false;
     bool        skipSeed                = false;
     // bool        allowEdgeSeeds          = false;
+
+    // Xact options
+    std::string xact_fname               = "";
+    bool xact_intracortical              = false;
+    bool xact_cranial                    = false;
+    bool xact_subcortical_deadend        = false;
+    bool xact_abnormality_deadend        = false;
 
     // Seeding options
     std::vector<std::string> seedInp;
@@ -150,6 +187,25 @@ void run_track()
     trekker->writeStepSize(writeStepSize);
     // =======================
 
+    // =======================
+    // XACT
+    XactTrackOption                xact_opts = XACT_TRACK_OPT_UNSET;
+    if (xact_intracortical)        xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_INTRACORTICAL);
+    if (xact_cranial)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_CRANIAL);
+    if (xact_subcortical_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_SUBCORTICAL_DEADEND);
+    if (xact_abnormality_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_ABNORMALITY_DEADEND);
+
+
+    if (!trekker->pathway_xact(xact_fname,xact_opts)) return;
+    if (xact_fname != "") {
+        if (!seed_surf_faceDensity.empty())   disp(MSG_WARN,"xact will ignore --seed_surf_faceDensity option.");
+        if (!seed_surf_vertDensity.empty())   disp(MSG_WARN,"xact will ignore --seed_surf_vertDensity option.");
+        if (!seed_surf_fieldDensity.empty())  disp(MSG_WARN,"xact will ignore --seed_surf_fieldDensity option.");
+        if (*seed_surf_useSurfNorm_option)    disp(MSG_WARN,"xact will ignore --surf_useSurfNorm_option option.");
+        if (!seedInp.empty())                 disp(MSG_WARN,"xact will ignore --seed option.");
+    }
+    // =======================
+
 
 
     // =======================
@@ -173,14 +229,17 @@ void run_track()
         trekker->seed_surface_density_fileDataType(seed_surf_vertDensity[1]);
     }
 
-    trekker->seed_surface_fieldDensity(seed_surf_fieldDensity);
-    if (*seed_surf_useSurfNorm_option)    trekker->seed_surface_useNormForDir(seed_surf_useSurfNorm);
+    if (xact_fname == "") trekker->seed_surface_fieldDensity(seed_surf_fieldDensity);
+    if ((xact_fname == "") && (*seed_surf_useSurfNorm_option))    trekker->seed_surface_useNormForDir(seed_surf_useSurfNorm);
 
     if (*seedCount_option)   trekker->seed_count  (seedCount  );
     if (*seedDensity_option) trekker->seed_density(seedDensity);
     if (*seedTrials_option)  trekker->seed_trials (seedTrials );
 
-    if (!trekker->pathway_addSeed(seedInp))         return;
+    if ((xact_fname == "") && !trekker->pathway_addSeed(seedInp)) {
+        disp(MSG_ERROR, "Missing seed.");
+        return;
+    }
     
     std::vector<std::string> tmp;
     for (size_t n = 0; n < discardSeedInp.size(); n++) {
@@ -224,7 +283,12 @@ void run_track()
     trekker->run(&writer);
     disp(MSG_DEBUG,"Tracking finished");
 
+    // =======================
+
+    // =======================
+    // FINALIZE OUTPUT
     disp(MSG_DEBUG,"Writing output");
+
     if (saveSeedIndexField) {
         std::vector<TractogramField> seedIdx;
         seedIdx.push_back(TRACKER::getSeedIndexField());
@@ -236,6 +300,225 @@ void run_track()
     } else {
         disp(MSG_DEBUG, "Processing finished successfully.");
     }
+
+    // =======================
+    // Write the log file
+
+    TRACKER::Logger& logger = TRACKER::getLogger();
+
+    size_t success = logger.log_success_REACHED_MAXLENGTH_LIMIT +
+                     logger.log_success_REACHED_MINDATASUPPORT_LIMIT +
+                     logger.log_success_SATISFIED_PATHWAY_RULES;
+
+    size_t discard = logger.log_discard_TOO_SHORT +
+                     logger.log_discard_TOO_LONG +
+                     logger.log_discard_DISCARD_ROI_REACHED +
+                     logger.log_discard_REQUIRED_ROI_NOT_MET +
+                     logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET +
+                     logger.log_discard_CANT_MEET_STOP_CONDITION +
+                     logger.log_discard_ENDED_INSIDE_DISCARD_ROI +
+                     logger.log_discard_REACHED_TIME_LIMIT;
+
+    size_t fail = logger.log_failed_UNKNOWN_REASON +
+                  logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION +
+                  logger.log_failed_BY_THE_ALGORITHM;
+    
+    size_t total = success + discard + fail;
+
+    
+    std::string json_fname = replaceFileExtension(out_fname, ".json");
+
+    disp(MSG_INFO, "Output path: %s", out_fname.c_str());
+    disp(MSG_INFO, "Output log: %s",  json_fname.c_str());
+
+
+
+    std::ofstream json_file(json_fname);
+    if (json_file.is_open()) {
+        json_file << "{\n";
+        json_file << "  \"Trekker version\": \"" << TREKKER_EXE_STRING << "\",\n";
+        json_file << "  \"Command\": \"" << TREKKER_CMD_LINE << "\",\n";
+
+        json_file << "  \"GENERAL OPTIONS\": {\n";
+        json_file << "    \"numberOfThreads\": " << numberOfThreads << ",\n";
+        if (runTimeLimit == 0)
+            json_file << "    \"runTimeLimit\": \"infinite\",\n";
+        else
+            json_file << "    \"runTimeLimit\": \"" << runTimeLimit << " min\",\n";
+        
+        if (idleTimeLimit == 0)
+            json_file << "    \"idleTimeLimit\": \"infinite\"\n";
+        else
+            json_file << "    \"idleTimeLimit\": \"" << idleTimeLimit << " min\"\n";
+        json_file << "  },\n";
+
+        json_file << "  \"SEEDING OPTIONS\": {\n";
+        json_file << "    \"seed_count\": "     << TRACKER::getSeed().sCount << ",\n";
+        json_file << "    \"seed_density\": "   << TRACKER::getSeed().sDensity << ",\n";
+        json_file << "    \"seed_trials\": "    << TRACKER::getSeed().trials << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"PTT OPTIONS\": {\n";
+        json_file << "    \"algorithm\": \""            << ((alg == "" || alg == "ptt") ? "parallel transport tracker (ptt)" : alg) << "\",\n";
+        json_file << "    \"fod\": \""                  << (fod.empty() ? "" : fod[0]) << "\",\n";
+        json_file << "    \"fodDiscretization\": \""    << (TRACKER::getParamsPTT().fodDiscretization ? "ON" : "OFF") << "\",\n";
+
+        auto writeParamF = [&](std::string pstr, Image<float>* img, float pval, int precision) {
+            json_file << pstr << to_string_with_precision(pval,precision);
+            if (img != NULL)
+                json_file << "," << img->filePath;
+        };
+
+        auto writeParamI = [&](std::string pstr, Image<int>* img, float pval) {
+            json_file << pstr << pval;
+            if (img != NULL)
+                json_file << "," << img->filePath;
+        };
+
+        auto writeOnOff = [&](std::string pstr, bool pval) {
+            json_file << pstr << "\"" << (pval ? "ON" : "OFF") << "\"";
+        };
+
+        writeParamF("    \"stepSize\": ",                TRACKER::getParamsPTT().stepSize_img,                      TRACKER::getParamsPTT().stepSize_global,                4); json_file << ",\n";
+        writeParamF("    \"writeStepSize\": ",           TRACKER::getParamsPTT().outputStep_img,                    TRACKER::getParamsPTT().outputStep_global,              4); json_file << ",\n";
+        
+        writeParamF("    \"minRadiusOfCurvature\": ",    TRACKER::getParamsPTT().minRadiusOfCurvature_img,          TRACKER::getParamsPTT().minRadiusOfCurvature_global,    4); json_file << ",\n";
+        writeParamF("    \"minDataSupport\": ",          TRACKER::getParamsPTT().minDataSupport_img,                TRACKER::getParamsPTT().minDataSupport_global,          4); json_file << ",\n";
+        writeParamF("    \"dataSupportExponent\": ",     TRACKER::getParamsPTT().dataSupportExponent_img,           TRACKER::getParamsPTT().dataSupportExponent_global,     4); json_file << ",\n";
+
+        writeParamF("    \"ignoreWeakLinks\": ",         NULL,                                                      TRACKER::getParamsPTT().weakLinkThresh,                 4); json_file << ",\n";
+
+        writeParamI("    \"maxEstInterval\": ",          TRACKER::getParamsPTT().maxEstInterval_img,                TRACKER::getParamsPTT().maxEstInterval_global); json_file << ",\n";
+        writeParamI("    \"maxSamplingPerStep\": ",      TRACKER::getParamsPTT().triesPerRejectionSampling_img,     TRACKER::getParamsPTT().triesPerRejectionSampling_global); json_file << ",\n";
+        writeParamI("    \"initMaxEstTrials\": ",        TRACKER::getParamsPTT().initMaxEstTrials_img,              TRACKER::getParamsPTT().initMaxEstTrials_global); json_file << ",\n";
+        writeParamI("    \"propMaxEstTrials\": ",        TRACKER::getParamsPTT().propMaxEstTrials_img,              TRACKER::getParamsPTT().propMaxEstTrials_global); json_file << ",\n";
+
+        writeOnOff ("    \"useBestAtInit\": ",           TRACKER::getParamsPTT().useBestAtInit); json_file << ",\n";
+        writeOnOff ("    \"useLegacySampling\": ",       TRACKER::getParamsPTT().useLegacySampling); json_file << ",\n";
+        writeParamI("    \"samplingQuality\": ",         NULL,                                                      TRACKER::getParamsPTT().samplingQuality); json_file << ",\n";
+
+
+        writeParamF("    \"probeLength\": ",            TRACKER::getParamsPTT().probeLength_img,                    TRACKER::getParamsPTT().probeLength_global,               4); json_file << ",\n";
+        writeParamF("    \"probeRadius\": ",            TRACKER::getParamsPTT().probeRadius_img,                    TRACKER::getParamsPTT().probeRadius_global,               4); json_file << ",\n";
+        writeParamF("    \"probeCount\": ",             TRACKER::getParamsPTT().probeCount_img,                     TRACKER::getParamsPTT().probeCount_global,                0); json_file << ",\n";
+        writeParamF("    \"probeQuality\": ",           TRACKER::getParamsPTT().probeQuality_img,                   TRACKER::getParamsPTT().probeQuality_global,              0); json_file << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"PATHWAY OPTIONS\": {\n";
+        json_file << "    \"minlength\": "      << TRACKER::getPathway().minLength << ",\n";
+        if (TRACKER::getPathway().maxLength == FLT_MAX)
+             json_file << "    \"maxlength\": \"infinite\",\n";
+        else
+             json_file << "    \"maxlength\": " << TRACKER::getPathway().maxLength << ",\n";
+        
+        writeOnOff ("    \"stopAtMax\": ",    TRACKER::getPathway().atMaxLength == ATMAXLENGTH_STOP); json_file << ",\n";
+        writeOnOff ("    \"oneSided\": ",     TRACKER::getPathway().directionality == NIBR::Directionality::ONE_SIDED); json_file << ",\n";
+        writeOnOff ("    \"skipSeed\": ",     TRACKER::getPathway().skipSeedROI); json_file << ",\n";
+        writeOnOff ("    \"inOrder\": ",      TRACKER::getPathway().satisfy_requirements_in_order == NIBR::RequirementOrder::IN_ORDER); json_file << ",\n";
+
+        if (xact_fname != "") {
+            json_file << "    \"xact\": \"" << xact_fname << "\",\n";
+            writeOnOff ("    \"xact_intracortical\": ", xact_intracortical); json_file << ",\n";
+            writeOnOff ("    \"xact_cranial\": ", xact_cranial); json_file << ",\n";
+            writeOnOff ("    \"xact_subcortical_deadend\": ", xact_subcortical_deadend); json_file << ",\n";
+            writeOnOff ("    \"xact_abnormality_deadend\": ", xact_abnormality_deadend); json_file << ",\n";
+        } else {
+             json_file << "    \"xact\": \"OFF\",\n";
+        }
+
+        json_file << "    \"Rules\": [\n";
+        
+        auto getRuleString = [&](const PathwayRule& r) -> std::string {
+            std::stringstream ss;
+            
+            switch (r.type) {
+                case NIBR::seed:                   ss << "seed"; break;
+                case NIBR::discard_seed:           ss << "discard_seed"; break;
+                case NIBR::req_entry:              ss << "require_entry"; break;
+                case NIBR::req_exit:               ss << "require_exit"; break;
+                case NIBR::req_end_inside:         ss << "require_end_inside"; break;
+                case NIBR::discard_if_enters:      ss << "discard_if_enters"; break;
+                case NIBR::discard_if_exits:       ss << "discard_if_exits"; break;
+                case NIBR::discard_if_ends_inside: ss << "discard_if_ends_inside"; break;
+                case NIBR::stop_at_entry:          ss << "stop_at_entry"; break;
+                case NIBR::stop_at_exit:           ss << "stop_at_exit"; break;
+                case NIBR::stop_after_entry:       ss << "stop_after_entry"; break;
+                case NIBR::stop_after_exit:        ss << "stop_after_exit"; break;
+                case NIBR::stop_before_entry:      ss << "stop_before_entry"; break;
+                case NIBR::stop_before_exit:       ss << "stop_before_exit"; break;
+                default: break;
+            }
+
+            if (r.side == NIBR::side_A) ss << "_A";
+            if (r.side == NIBR::side_B) ss << "_B";
+
+            ss << " ";
+
+            if (r.src == NIBR::img_mask_src) {
+                ss << r.imageMaskSource;
+            } else if (r.src == NIBR::img_label_src) {
+                ss << r.imageLabelSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::img_pvf_src) {
+                ss << r.imagePvfSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::surf_src) {
+                ss << r.surfaceSource;
+                if (r.useLabel) ss << "," << r.label;
+            } else if (r.src == NIBR::sph_src) {
+                ss << r.center[0] << "," << r.center[1] << "," << r.center[2] << "," << r.radius;
+            }
+
+            return ss.str();
+        };
+
+        bool first_rule = true;
+        for (const auto& rule : TRACKER::getPathway().prules) {
+            if (!first_rule) json_file << ",\n";
+            json_file << "      \"" << getRuleString(rule) << "\"";
+            first_rule = false;
+        }
+        
+        json_file << "\n    ]\n";
+        json_file << "  },\n";
+        
+        json_file << "  \"Success report\": {\n";
+        json_file << "    \"Reached max length\": "                 << logger.log_success_REACHED_MAXLENGTH_LIMIT << ",\n";
+        json_file << "    \"Reached min data support\": "           << logger.log_success_REACHED_MINDATASUPPORT_LIMIT << ",\n";
+        json_file << "    \"Satisfied pathway rules\": "            << logger.log_success_SATISFIED_PATHWAY_RULES << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Discard report\": {\n";
+        json_file << "    \"Too short\": "                          << logger.log_discard_TOO_SHORT << ",\n";
+        json_file << "    \"Too long\": "                           << logger.log_discard_TOO_LONG << ",\n";
+        json_file << "    \"Reached discard region\": "             << logger.log_discard_DISCARD_ROI_REACHED << ",\n";
+        json_file << "    \"Required region not found\": "          << logger.log_discard_REQUIRED_ROI_NOT_MET << ",\n";
+        json_file << "    \"Required order not satisfied\": "       << logger.log_discard_REQUIRED_ROI_ORDER_NOT_MET << ",\n";
+        json_file << "    \"Can't meet stop condition\": "          << logger.log_discard_CANT_MEET_STOP_CONDITION << ",\n";
+        json_file << "    \"Ended inside discard region\": "        << logger.log_discard_ENDED_INSIDE_DISCARD_ROI << ",\n";
+        json_file << "    \"Reached time limit\": "                 << logger.log_discard_REACHED_TIME_LIMIT << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Fail report\": {\n";
+        json_file << "    \"Initialization at the seed failed\": "  << logger.log_failed_BY_THE_ALGORITHM_AT_INITIALIZATION << ",\n";
+        json_file << "    \"Algorithm failed to propagate\": "      << logger.log_failed_BY_THE_ALGORITHM << ",\n";
+        json_file << "    \"Unknown reason\": "                     << logger.log_failed_UNKNOWN_REASON << "\n";
+        json_file << "  },\n";
+
+        json_file << "  \"Summary\": {\n";
+        json_file << "    \"Success\": "    << success << ",\n";
+        json_file << "    \"Discard\": "    << discard << ",\n";
+        json_file << "    \"Fail\": "       << fail << ",\n";
+        json_file << "    \"Total\": "      << total << ",\n";
+        json_file << "    \"Duration\": \"" << TRACKER::runTime() << " sec\"\n";
+        json_file << "  }\n";
+
+        json_file << "}\n";
+        json_file.close();
+    } else {
+        disp(MSG_ERROR, "Failed to open json output file: %s", json_fname.c_str());
+    }
+    // ======================
 
     delete trekker;
 
@@ -346,7 +629,7 @@ void track(CLI::App *app)
 
     // Seeding options
     auto seeding = tracking->add_option_group("SEEDING PARAMETERS");
-    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw)->required();
+    seeding->add_option ("--seed, -s",                              seedInp,         "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_option ("--discard_seed",                          discardSeedInp,  "If a seed point falls into this region, it will be discarded")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
     seeding->add_flag   ("--skipSeed",                              skipSeed,        "Does not output the points that are within seed region");
     // seeding->add_flag   ("--allowEdgeSeeds",                        allowEdgeSeeds,  "Allows seeding at the edges of pathway rules. Default: false");
@@ -360,12 +643,17 @@ void track(CLI::App *app)
 
     // Pathway options
     auto pathwayOpt = app->add_option_group(center_text("PATHWAY OPTIONS",45));    
-    pathwayOpt->add_option ("--pathway, -p",            pathway,                "Pathway rules. (See below for details.)")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
-    pathwayOpt->add_option ("--minlength",              minlength,              "Minimum length of output streamlines. Default=0");
-    pathwayOpt->add_option ("--maxlength",              maxlength,              "Maximum length of output streamlines. Default=infinite");
-    pathwayOpt->add_flag   ("--oneSided",               oneSided,               "If enabled tracking is done only towards the one direction. Default=OFF");
-    pathwayOpt->add_flag   ("--stopAtMax",              stopAtMax,              "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
-    pathwayOpt->add_flag   ("--inOrder",                inOrder,                "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
+    pathwayOpt->add_option ("--pathway, -p",                    pathway,                        "Pathway rules. (See below for details.)")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
+    pathwayOpt->add_option ("--minlength",                      minlength,                      "Minimum length of output streamlines. Default=0");
+    pathwayOpt->add_option ("--maxlength",                      maxlength,                      "Maximum length of output streamlines. Default=infinite");
+    pathwayOpt->add_flag   ("--oneSided",                       oneSided,                       "If enabled tracking is done only towards the one direction. Default=OFF");
+    pathwayOpt->add_flag   ("--stopAtMax",                      stopAtMax,                      "If used, propagation stops when maxLength is reached. By default, streamlines are discarded when propagation reaches maxLength.");
+    pathwayOpt->add_flag   ("--inOrder",                        inOrder,                        "If enabled all pathway requirements are going to be satisfied in the order that they are input to Trekker-> All pathway options should be defined for pathway_A/pathway_B in order to use this option");
+    pathwayOpt->add_option ("--xact,-x",                        xact_fname,                     "Combined XACT surface mesh file created with prepXact (experimental).");
+    pathwayOpt->add_flag   ("--xact_intracortical",             xact_intracortical,             "Performs tractography also within the intracortical regions defined in the XACT file (l_gm + r_gm + cer_gm).");
+    pathwayOpt->add_flag   ("--xact_cranial",                   xact_cranial,                   "Performs tractography also within the cranial region defined in the XACT file (bg).");
+    pathwayOpt->add_flag   ("--xact_subcortical_deadend",       xact_subcortical_deadend,       "Streamlines are truncated before they exit subcortical regions (l_sub + r_sub).");
+    pathwayOpt->add_flag   ("--xact_abnormality_deadend",       xact_abnormality_deadend,       "Streamlines are truncated before they exit abnormality regions (abn).");
 
     app->callback(run_track);
     
