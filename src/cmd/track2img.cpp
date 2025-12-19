@@ -190,7 +190,7 @@ void run_track2img()
 
         if (shOrder>0) {
             NIBR::Image<float> out;
-            sf2sh(&out,&img,SF::getSFCoords(),shOrder);
+            sf2sh(&out,&img,SF::getSFCoords(),shOrder,true);
             out.write(replaceFileExtension(out_fname, "_SH.nii.gz"));
         }
 
@@ -206,7 +206,7 @@ void run_track2img()
 
             if (shOrder>0) {
                 NIBR::Image<float> smShOut;
-                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder);
+                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder,true);
                 smShOut.write(replaceFileExtension(out_fname, "_smooth_SH.nii.gz"));
             }
         }
