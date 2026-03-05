@@ -26,8 +26,17 @@ include_directories(${CMAKE_INCLUDE_PATH})
 link_directories(${CMAKE_LIBRARY_PATH})
 
 # Include external dependencies
+if(DEFINED ENV{NIBRARY_INCLUDE_DIR})
+    set(NIBRARY_INCLUDE_DIR $ENV{NIBRARY_INCLUDE_DIR} CACHE INTERNAL "")
+endif()
+
+if(DEFINED ENV{NIBRARY_LIBRARY_DIR})
+    set(NIBRARY_LIBRARY_DIR $ENV{NIBRARY_LIBRARY_DIR} CACHE INTERNAL "")
+endif()
+
 add_subdirectory(external)
 include_directories(${NIBRARY_INCLUDE_DIR})
+include_directories(${NIBRARY_INCLUDE_DIR}/trx-cpp)
 link_directories(${NIBRARY_LIBRARY_DIR})
 
 # List source files
@@ -139,6 +148,9 @@ endif()
 
 target_link_libraries(${CMDNAME} ${NIBRARY_LIBRARIES})
 
+find_package(libzip REQUIRED)
+target_link_libraries(${CMDNAME} libzip::zip)
+
 install(TARGETS ${CMDNAME} RUNTIME DESTINATION bin)
 
 if(BUILDING_NIBRARY_FROM_SOURCE)
@@ -153,3 +165,4 @@ add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -E echo "Uninstalling ${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
     COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
 )
+
