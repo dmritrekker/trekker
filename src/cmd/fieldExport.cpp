@@ -19,10 +19,11 @@ void run_fieldExport()
 {
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
-    
-    if (!ensureVTK(inp_tractogram_fname)) return;
 
-    NIBR::TractogramReader tractogram(inp_tractogram_fname);
+    if (!ensureVTKorTRX(inp_tractogram_fname)) return;
+
+    bool isTrx = (getFileExtension(inp_tractogram_fname) == "trx");
+    NIBR::TractogramReader tractogram(inp_tractogram_fname, false, isTrx);
     if (!tractogram.isReady()) return;
     
     std::vector<NIBR::TractogramField> fields;
@@ -118,7 +119,7 @@ void run_fieldExport()
 
 void fieldExport(CLI::App* app)
 {
-    app->description("exports a field from a tractogram (.vtk only)");
+    app->description("exports a field from a tractogram (.vtk or .trx)");
     
     app->add_option("<input_tractogram>",    inp_tractogram_fname,  "Input tractogram")
         ->required()

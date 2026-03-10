@@ -141,8 +141,8 @@ void diff(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("--out_diff, -d",         out_diff_fname,     "Output streamlines of input tractogram that does not exist in the reference (.vtk, .tck)");
-    app->add_option("--out_same, -s",         out_same_fname,     "Output streamlines of input tractogram that exists in the reference (.vtk, .tck)");
+    app->add_option("--out_diff, -d",         out_diff_fname,     "Output streamlines of input tractogram that does not exist in the reference (.vtk, .tck, .trx)");
+    app->add_option("--out_same, -s",         out_same_fname,     "Output streamlines of input tractogram that exists in the reference (.vtk, .tck, .trx)");
 
     app->add_option("--numberOfThreads, -n",  numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",          verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

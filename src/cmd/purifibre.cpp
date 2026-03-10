@@ -85,7 +85,7 @@ void purifibre(CLI::App* app)
     
     app->add_option("<input_tractogram>", inp_tractogram_fname, "Input tractogram (.vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");
 
-    app->add_option("<output_tractogram>", out_tractogram_fname, "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    app->add_option("<output_tractogram>", out_tractogram_fname, "Output tractogram (.vtk, .tck, .trx)")->required()->type_name("FILE");
     
     app->add_option("--trim,-t", trimFactor, "Trim excludes ends of streamlines from being analyzed. E.g., when trim is 10, 90%% of the streamline is analyzed. 5%% of the streamline length from each end is excluded from the computation. Default: 10.");
     

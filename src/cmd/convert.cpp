@@ -6,9 +6,10 @@ namespace CMDARGS_CONVERT {
     std::string  inp_fname;
     std::string  out_fname;
     std::string  reference = "";
+    std::string  trx_dtype = "float16";
 
     bool ascii              = false;
-    
+
     int numberOfThreads     =  0;
     std::string verbose     = "info";
     bool force              = false;
@@ -52,12 +53,21 @@ void run_convert()
     }
     disp(MSG_DEBUG, "Successfully initialized reader for %s. Streamlines found: %lu", inp_fname.c_str(), reader.numberOfStreamlines);
 
+    // === Validate TRX dtype option ===
+    if (out_ext == "trx") {
+        if (trx_dtype != "float16" && trx_dtype != "float32") {
+            std::cout << "Invalid --dtype value: \"" << trx_dtype << "\". Must be float16 or float32." << std::endl << std::flush;
+            return;
+        }
+    }
+
     // === Create and Configure TractogramWriter ===
     NIBR::TractogramWriter writer(out_fname);
     if (ascii) writer.setVTKIsAscii(true);
+    if (out_ext == "trx") writer.setTRXDtype(trx_dtype);
     if (!writer.isValid()) return;
 
-    // === Handle trk specific reference image ===
+    // === Handle reference image ===
     if (out_ext == "trk") {
         if (!reference.empty()) {
             NIBR::Image<bool> refImgForTrkHeader(reference);
@@ -66,6 +76,10 @@ void run_convert()
             disp(MSG_FATAL, "trk output requires a reference image when input is not .trk, but reference is empty.");
             return;
         }
+    }
+    if (out_ext == "trx" && !reference.empty()) {
+        NIBR::Image<bool> refImg(reference);
+        writer.setTRXReference(refImg);
     }
 
     // === Perform Conversion ===
@@ -135,10 +149,13 @@ void convert(CLI::App* app)
     app->add_option("<output_tractogram>",   out_fname,          "Output tractogram (.vtk, .tck, .trk, .trx)")
         ->required( );
 
-    app->add_option("--reference,-r",        reference,          "Image to use as reference space. Required for converting .vtk/.tck to .trk.")
+    app->add_option("--reference,-r",        reference,          "Reference image. Required for .vtk/.tck → .trk. Optional for .trx output (sets VOXEL_TO_RASMM and DIMENSIONS).")
         ->check(CLI::ExistingFile);
     
     app->add_flag("--ascii,-a",              ascii,              "Write ASCII output. Only available when the output is .vtk.");
+
+    app->add_option("--dtype,-d",            trx_dtype,          "Coordinate dtype for .trx output (float16, float32). Default=float16")
+        ->default_val("float16");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

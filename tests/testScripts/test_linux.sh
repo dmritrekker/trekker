@@ -27,6 +27,16 @@ out_filter_2_img="$results_dir/filter_2_img.vtk"
 out_filter_2_surf="$results_dir/filter_2_surf.vtk"
 out_purifibre="$results_dir/purifibre.vtk"
 
+# TRX output files
+out_wbt_trx="$results_dir/wbt.trx"
+out_wbt_100_trx="$results_dir/wbt_100.trx"
+out_wbt_colored_trx="$results_dir/wbt_colored.trx"
+out_wbt_colored_50_trx="$results_dir/wbt_colored_50.trx"
+out_wbt_field_trx="$results_dir/wbt_field.trx"
+out_wbt_field_50_trx="$results_dir/wbt_field_50.trx"
+out_weights_bin="$results_dir/weights.bin"
+out_weights_csv="$results_dir/weights.csv"
+
 # --- Function to display file information ---
 display_file_info() {
   local file="$1"
@@ -237,6 +247,126 @@ display_file_info "$out_purifibre"
 
 
 
+
+
+echo
+echo
+echo "=========="
+echo "===Test 14: Convert WBT.vtk to TRX format"
+echo "=========="
+echo
+${trekker} convert -f "$WBT" "$out_wbt_trx" -v quiet
+
+display_file_info "$out_wbt_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 15: Select a 100-streamline subset (TRX -> TRX)"
+echo "=========="
+echo
+${trekker} select -f "$out_wbt_trx" "$out_wbt_100_trx" --ordered 1 100 -v quiet
+
+display_file_info "$out_wbt_100_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 16: Display TRX file info (should show format and streamline count)"
+echo "=========="
+echo
+${trekker} info "$out_wbt_100_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 17: Add color to TRX (DPV field; exercises SIGSEGV fix)"
+echo "=========="
+echo
+${trekker} addColor -f "$out_wbt_100_trx" "$out_wbt_colored_trx" -v quiet
+
+display_file_info "$out_wbt_colored_trx"
+
+echo
+echo "--- TRX info after addColor (should show RGB DPV field) ---"
+${trekker} info "$out_wbt_colored_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 18: Select TRX -> TRX with DPV field (verify field is forwarded)"
+echo "=========="
+echo
+${trekker} select -f "$out_wbt_colored_trx" "$out_wbt_colored_50_trx" --ordered 1 50 -v quiet
+
+display_file_info "$out_wbt_colored_50_trx"
+
+echo
+echo "--- TRX info after select (RGB DPV field should still be present) ---"
+${trekker} info "$out_wbt_colored_50_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 19: Import a DPS weight field into TRX"
+echo "=========="
+echo
+python3 -c "import struct; f=open('$out_weights_bin','wb'); [f.write(struct.pack('f', i*0.01+1.0)) for i in range(100)]; f.close(); print('Created 100 float32 weights')"
+cp "$out_wbt_100_trx" "$out_wbt_field_trx"
+${trekker} fieldImport "$out_wbt_field_trx" "$out_weights_bin" STREAMLINE float 1 weight -v quiet
+
+echo
+echo "--- TRX info after fieldImport (should show 'weight' DPS field) ---"
+${trekker} info "$out_wbt_field_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 20: Select TRX -> TRX with DPS field (verify DPS is forwarded)"
+echo "=========="
+echo
+${trekker} select -f "$out_wbt_field_trx" "$out_wbt_field_50_trx" --ordered 1 50 -v quiet
+
+display_file_info "$out_wbt_field_50_trx"
+
+echo
+echo "--- TRX info after select (weight DPS field should still be present) ---"
+${trekker} info "$out_wbt_field_50_trx"
+
+
+echo
+echo
+echo "=========="
+echo "===Test 21: Export DPS field from TRX"
+echo "=========="
+echo
+${trekker} fieldExport -f "$out_wbt_field_50_trx" "$out_weights_csv" --fields weight -v quiet
+
+if [ -f "$out_weights_csv" ]; then
+  line_count=$(wc -l < "$out_weights_csv")
+  echo "Exported weight CSV line count: $line_count (expected 51: 1 header + 50 values)"
+else
+  echo "ERROR: $out_weights_csv was not created"
+fi
+
+
+echo
+echo
+echo "=========="
+echo "===Test 22: Remove DPS field from TRX"
+echo "=========="
+echo
+${trekker} fieldRemove "$out_wbt_field_trx" weight -v quiet
+
+echo
+echo "--- TRX info after fieldRemove (weight DPS field should be gone) ---"
+${trekker} info "$out_wbt_field_trx"
 
 
 echo

@@ -58,15 +58,27 @@ bool ensureVTK(std::string fname)
 }
 
 
+bool ensureVTKorTRX(std::string fname)
+{
+    std::string ext = getFileExtension(fname);
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == "vtk" || ext == "trx")
+        return true;
+
+    disp(MSG_ERROR,"Unsupported file format: %s (only vtk/trx are supported)", fname.c_str());
+    return false;
+}
+
 bool ensureVTKorTCK(std::string fname)
 {
     std::string ext = getFileExtension(fname);
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-    if (ext == "vtk" || ext == "tck")
+    if (ext == "vtk" || ext == "tck" || ext == "trx")
         return true;
 
-    disp(MSG_ERROR,"Unsupported file format: %s (only vtk/tck are supported)", fname.c_str());
+    disp(MSG_ERROR,"Unsupported file format: %s (only vtk/tck/trx are supported)", fname.c_str());
     return false;
 }
 

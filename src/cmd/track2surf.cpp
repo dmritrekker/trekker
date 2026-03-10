@@ -231,7 +231,7 @@ void track2surf(CLI::App* app)
 
     app->description("maps tractogram features on a surface");
 
-    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk, .trx)")
         ->required()
         ->check(CLI::ExistingFile);
     
