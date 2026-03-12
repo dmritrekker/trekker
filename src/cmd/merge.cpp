@@ -154,7 +154,7 @@ void merge(CLI::App* app)
 
     app->description("merges tractograms");
 
-    app->add_option("<output>",              out_fname,          "Output tractogram (.vtk, .tck)")
+    app->add_option("<output>",              out_fname,          "Output tractogram (.vtk, .tck, .trx)")
         ->required();
 
     app->add_option("--include,-i",          inp_fnames,         "List of tractograms or wildcards (.vtk, .tck, .trk) to include in the output, e.g.1. inp1.vtk inp2.tck, e.g.2. inp*.vtk, e.g.3. inp1*.tck inp2*.vtk")
