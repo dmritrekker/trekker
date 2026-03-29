@@ -6,7 +6,7 @@ set(trekker_VERSION_PATCH 0)
 
 project(trekker VERSION ${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH} LANGUAGES CXX C)
 
-set(CMDNAME trekker_v${trekker_VERSION}-rc6)
+set(CMDNAME trekker_v${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH})
 message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
@@ -25,23 +25,16 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_INCLUDE_PATH})
 link_directories(${CMAKE_LIBRARY_PATH})
 
-# Include external dependencies
-if(DEFINED ENV{NIBRARY_INCLUDE_DIR})
-    set(NIBRARY_INCLUDE_DIR $ENV{NIBRARY_INCLUDE_DIR} CACHE INTERNAL "")
-endif()
-
-if(DEFINED ENV{NIBRARY_LIBRARY_DIR})
-    set(NIBRARY_LIBRARY_DIR $ENV{NIBRARY_LIBRARY_DIR} CACHE INTERNAL "")
-endif()
-
 add_subdirectory(external)
 include_directories(${NIBRARY_INCLUDE_DIR})
 include_directories(${NIBRARY_INCLUDE_DIR}/trx-cpp)
 link_directories(${NIBRARY_LIBRARY_DIR})
 
+message(STATUS ">> NIBRARY_LIBRARY_DIR: ${NIBRARY_LIBRARY_DIR}")
+message(STATUS ">> NIBRARY_INCLUDE_DIR: ${NIBRARY_INCLUDE_DIR}")
+
 # List source files
-file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} 
-    "src/*.c*")
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
 
 list(REMOVE_ITEM SRCS "main.cpp")
 
