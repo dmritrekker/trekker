@@ -190,7 +190,7 @@ void run_track2img()
 
         if (shOrder>0) {
             NIBR::Image<float> out;
-            sf2sh(&out,&img,SF::getSFCoords(),shOrder);
+            sf2sh(&out,&img,SF::getSFCoords(),shOrder,true);
             out.write(removeFileExtension(out_fname) + "_SH.nii.gz");
         }
 
@@ -205,7 +205,7 @@ void run_track2img()
 
             if (shOrder>0) {
                 NIBR::Image<float> smShOut;
-                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder);
+                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder,true);
                 smShOut.write(removeFileExtension(out_fname) + "_smooth_SH.nii.gz");
             }
         }
@@ -355,7 +355,7 @@ void track2img(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineCount\", \"segmentLength\" or \"DEC_SegmentLength\".");
+    app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineCount\", \"segmentLength\" or \"DEC_segmentLength\".");
 
     app->add_option("--weights", weights, "A binary file for streamline weights. Values should have float datatype.")
         ->check(CLI::ExistingFile);

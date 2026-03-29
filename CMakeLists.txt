@@ -141,9 +141,6 @@ endif()
 
 target_link_libraries(${CMDNAME} ${NIBRARY_LIBRARIES})
 
-find_package(libzip REQUIRED)
-target_link_libraries(${CMDNAME} libzip::zip)
-
 install(TARGETS ${CMDNAME} RUNTIME DESTINATION bin)
 
 if(BUILDING_NIBRARY_FROM_SOURCE)
