@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
@@ -88,7 +88,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
@@ -216,10 +216,10 @@ jobs:
   build_ubuntu:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:20.04
+      image: ubuntu:22.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
@@ -228,7 +228,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         apt-get update
-        apt-get install -y gcc-9 g++-9 libomp-dev cmake git  
+        apt-get install -y gcc-12 g++-12 libomp-dev cmake git  
   
     - name: Set up build directory and environment
       run: |
@@ -242,8 +242,8 @@ jobs:
       run: |
         cmake -B ${{ env.build-output-dir }} \
           -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
-          -DCMAKE_C_COMPILER=gcc-9 \
-          -DCMAKE_CXX_COMPILER=g++-9 \
+          -DCMAKE_C_COMPILER=gcc-12 \
+          -DCMAKE_CXX_COMPILER=g++-12 \
           -DBUILD_SHARED_LIBS=ON \
           -DBUILD_NATIVE=OFF \
           -S .
@@ -267,7 +267,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
