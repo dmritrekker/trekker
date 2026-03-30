@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     
     argv = app.ensure_utf8(argv);
 
-    app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
+    app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2026, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
     app.require_subcommand(1);

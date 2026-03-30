@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Get Latest Artifact from "Static build" Workflow
       id: get_artifact
@@ -86,7 +86,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Get Latest Artifact from "Static build" Workflow
       id: get_artifact
@@ -162,7 +162,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Get Latest Artifact from "Static build" Workflow
       id: get_artifact
