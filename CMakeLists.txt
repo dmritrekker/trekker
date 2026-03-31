@@ -28,6 +28,7 @@ link_directories(${CMAKE_LIBRARY_PATH})
 add_subdirectory(external)
 include_directories(${NIBRARY_INCLUDE_DIR})
 include_directories(${NIBRARY_INCLUDE_DIR}/trx-cpp)
+include_directories(${NIBRARY_INCLUDE_DIR}/libzip)
 link_directories(${NIBRARY_LIBRARY_DIR})
 
 message(STATUS ">> NIBRARY_LIBRARY_DIR: ${NIBRARY_LIBRARY_DIR}")
