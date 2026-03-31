@@ -71,8 +71,10 @@ endif()
 if (UNIX)
 
     # Optimize for native architecture
-    if (BUILD_NATIVE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    if(BUILD_NATIVE)
+        target_compile_options(${CMDNAME} PRIVATE -march=native)
+    else()
+        target_compile_options(${CMDNAME} PRIVATE -march=x86-64 -mtune=generic)
     endif()
 
     # Debug messages
