@@ -70,22 +70,17 @@ endif()
 
 if (UNIX)
 
-    # Optimize for native architecture
+    # Architecture optimization
     if(BUILD_NATIVE)
-        target_compile_options(${CMDNAME} PRIVATE -march=native)
+        if(APPLE)
+            target_compile_options(${CMDNAME} PRIVATE -mcpu=native)  # Apple Silicon (ARM) Clang
+        else()
+            target_compile_options(${CMDNAME} PRIVATE -march=native) # Standard Linux x86/ARM
+        endif()
     else()
-        target_compile_options(${CMDNAME} PRIVATE -march=x86-64 -mtune=generic)
-    endif()
-
-    # Debug messages
-    if(CMAKE_BUILD_TYPE MATCHES Debug)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+        target_compile_options(${CMDNAME} PRIVATE -mtune=generic)
     endif()
     
-endif()
-
-if (UNIX)
     # Thread support
     find_package(Threads)
     if(Threads_FOUND)
@@ -99,6 +94,7 @@ if (UNIX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
     endif()
+
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
