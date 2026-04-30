@@ -102,6 +102,8 @@ void run_track2img()
             std::cout << "Spherical harmonics order should be a positive even integer."  << std::endl << std::flush;
             return;
         }
+        sfRes = (sfRes>0) ? sfRes : 17;
+        NIBR::SF::init(true,sfRes);
     }
 
 
