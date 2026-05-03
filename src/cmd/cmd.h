@@ -13,6 +13,7 @@ void fieldExport(CLI::App* app);
 void fieldImport(CLI::App* app);
 void fieldRemove(CLI::App* app);
 void filter(CLI::App* app);
+void harp(CLI::App* app);
 void img2track(CLI::App* app);
 void info(CLI::App* app);
 void merge(CLI::App* app);
