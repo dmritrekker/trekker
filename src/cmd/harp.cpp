@@ -45,13 +45,22 @@ using namespace CMDARGS_HARP;
 #define BS___BS             26
 #define NUM_PATHWAYS        27
 
-// We will assign each streamline to one of the 33 classes based on the pathways it matches.
-// First 2 are L1 implausibility classes. Note that the rest are subclasses of L1 plausible on the hierarchical ladder.
+// We will assign each streamline to one of the 4 courseclasses based on the pathways it matches.
+typedef enum {
+    L1_implausible,
+    L1_plausible,
+    L2_implausible,
+    L2_plausible
+} Streamline_Class_Course;
+
+// We will assign each streamline to one of the 33 detailed classes based on the pathways it matches.
+// First 3 are L1 implausibility classes. Note that the rest are subclasses of L1 plausible on the hierarchical ladder.
 // The next 10 classes are L2 implausibility classes.
 // The rest of the 21 classes are L2 plausible classes, and they depict which two regions the streamline connects.
 typedef enum {
     L1_implausible_CSF_entry = 0,
     L1_implausible_WM_termination,
+    L1_implausible_CSF_entry_and_WM_termination,
     L2_implausible_trj1,
     L2_implausible_trj2,
     L2_implausible_trj3,
@@ -83,7 +92,7 @@ typedef enum {
     L2_CER_GM___CER_GM,
     L2_CER_GM___BS,
     L2_BS___BS
-} Streamline_Class;
+} Streamline_Class_Detailed;
 
 // Helper function to write a boolean matrix to a CSV file
 bool write_matrix_to_csv(const std::string& filename, const std::vector<std::vector<bool>>& data) {
@@ -205,8 +214,9 @@ void run_harp()
     addCheckEntryRule(enters_BS,        BS,     "BS");      // Pathway #4.
 
 
-    // Streamline classes.
-    std::vector<Streamline_Class> streamlineClass(tractogram.numberOfStreamlines);
+    // Streamline classes
+    std::vector<Streamline_Class_Course>   courseClass(tractogram.numberOfStreamlines);
+    std::vector<Streamline_Class_Detailed> detailedClass(tractogram.numberOfStreamlines);
 
     // This is the binary output table. It will be of size numberOfStreamlines x number of paths.
     std::vector<std::vector<bool>> out;
@@ -271,8 +281,23 @@ void run_harp()
 
             const auto& stat = batch_stat[task.no];
 
-            if (stat[enters_CSF])
+            {
+                // L1 implausibility
+                bool implausible = false;
+                if (stat[enters_CSF])                   {detailedClass[batch_start_idx + task.no] = L1_implausible_CSF_entry;                    implausible = true;}
+                if (!stat[L1_ends])                     {detailedClass[batch_start_idx + task.no] = L1_implausible_WM_termination;               implausible = true;}
+                if (stat[enters_CSF] && !stat[L1_ends]) {detailedClass[batch_start_idx + task.no] = L1_implausible_CSF_entry_and_WM_termination; implausible = true;}
+                
+                courseClass[batch_start_idx + task.no] = (implausible) ? L1_implausible : L1_plausible;
+            }
 
+            {
+                // L2 implausibility
+                bool implausible = false;
+                
+
+            }
+            
             
         };
         MT::MTRUN(batch_size, checkEndPointConnectivity);
