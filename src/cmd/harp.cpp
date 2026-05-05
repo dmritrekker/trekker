@@ -3,7 +3,8 @@
 namespace CMDARGS_HARP {
     std::string  inp_fname;
     std::string  xact_fname;
-    std::string  out_table  = "";
+    std::string  out_labels  = "";
+    std::string  out_course_labels  = "";
 
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -11,7 +12,6 @@ namespace CMDARGS_HARP {
 }
 
 using namespace CMDARGS_HARP;
-
 
 // We will have 27 pathways in total. 
 // The first 5 rules check which part of the brain the streamline enters.
@@ -53,25 +53,12 @@ typedef enum {
     L2_plausible
 } Streamline_Class_Course;
 
-// We will assign each streamline to one of the 33 detailed classes based on the pathways it matches.
-// First 3 are L1 implausibility classes. Note that the rest are subclasses of L1 plausible on the hierarchical ladder.
-// The next 10 classes are L2 implausibility classes.
-// The rest of the 21 classes are L2 plausible classes, and they depict which two regions the streamline connects.
+// We will assign each streamline to one of the 34 detailed classes based on the pathways it matches.
+// First 21 are L2 plausible classes, i.e. end-to-end connections. 
+// The next 10 classes are L2 implausible trajectories.
+// The last 3 are L1 implausible classes.
 typedef enum {
-    L1_implausible_CSF_entry_and_WM_termination = 0,
-    L1_implausible_CSF_entry,
-    L1_implausible_WM_termination,
-    L2_implausible_trj1,
-    L2_implausible_trj2,
-    L2_implausible_trj3,
-    L2_implausible_trj4,
-    L2_implausible_trj5,
-    L2_implausible_trj6,
-    L2_implausible_trj7,
-    L2_implausible_trj8,
-    L2_implausible_trj9,
-    L2_implausible_trj10,
-    L2_LN_GM___LN_GM,
+    L2_LN_GM___LN_GM = 0,
     L2_LN_GM___RN_GM,
     L2_LN_GM___L_SUB,
     L2_LN_GM___R_SUB,
@@ -91,7 +78,20 @@ typedef enum {
     L2_R_SUB___BS,
     L2_CER_GM___CER_GM,
     L2_CER_GM___BS,
-    L2_BS___BS
+    L2_BS___BS,
+    L2_implausible_trj1,
+    L2_implausible_trj2,
+    L2_implausible_trj3,
+    L2_implausible_trj4,
+    L2_implausible_trj5,
+    L2_implausible_trj6,
+    L2_implausible_trj7,
+    L2_implausible_trj8,
+    L2_implausible_trj9,
+    L2_implausible_trj10,
+    L1_implausible_CSF_entry_and_WM_termination,
+    L1_implausible_CSF_entry,
+    L1_implausible_WM_termination,
 } Streamline_Class_Detailed;
 
 // Logger
@@ -137,45 +137,22 @@ std::atomic<std::size_t> log_L2_CER_GM___CER_GM{0};
 std::atomic<std::size_t> log_L2_CER_GM___BS{0};
 std::atomic<std::size_t> log_L2_BS___BS{0};
 
-// Helper function to write a boolean matrix to a CSV file
-bool write_matrix_to_csv(const std::string& filename, const std::vector<std::vector<bool>>& data) {
-    
-    // Open the file stream for writing
-    std::ofstream file(filename);
-
-    // Check if the file opened successfully
-    if (!file.is_open()) {
-        disp(MSG_ERROR, "Failed to open file for writing: %s", filename.c_str());
+bool writeBinaryFile(const std::string& filename, const std::vector<uint16_t>& data) {
+    std::ofstream outFile(filename, std::ios::binary);
+    if (!outFile) {
         return false;
     }
-
-    // Iterate over each row (streamline)
-    for (size_t i = 0; i < data.size(); ++i) {
-        
-        // Iterate over each column (pathway) in the current row
-        for (size_t j = 0; j < data[i].size(); ++j) {
-            
-            // Write the boolean value as 1 or 0
-            file << (data[i][j] ? "1" : "0");
-
-            // Add a comma after each element except the last one in the row
-            if (j < data[i].size() - 1) {
-                file << ",";
-            }
-        }
-        // Add a newline character at the end of each row
-        file << "\n";
-    }
-
-    return true;
+    outFile.write(reinterpret_cast<const char*>(data.data()), data.size() * sizeof(uint16_t));
+    return outFile.good();
 }
 
 void run_harp()
 {
 
     parseCommon(numberOfThreads,verbose);
-    bool makeTable = (out_table != "");
-    if (makeTable && !parseForceOutput(out_table,force)) return;
+    parseForceOutput(out_labels,force);
+    bool writeCourseLabels = (out_course_labels != "");
+    if (writeCourseLabels && !parseForceOutput(out_course_labels,force)) return;
 
     // Initialize tractogram
     NIBR::TractogramReader tractogram(inp_fname);
@@ -250,32 +227,23 @@ void run_harp()
         }
     };
 
-    addCheckEntryRule(enters_CSF,       CSF,    "CSF");     // Pathway #0.
-    addCheckEntryRule(enters_LN_WM,     LN_WM,  "LN_WM");   // Pathway #1.
-    addCheckEntryRule(enters_RN_WM,     RN_WM,  "RN_WM");   // Pathway #2.
-    addCheckEntryRule(enters_CER_WM,    CER_WM, "CER_WM");  // Pathway #3.
-    addCheckEntryRule(enters_BS,        BS,     "BS");      // Pathway #4.
-
+    addCheckEntryRule(enters_CSF,    CSF,    "CSF");
+    addCheckEntryRule(enters_LN_WM,  LN_WM,  "LN_WM");
+    addCheckEntryRule(enters_RN_WM,  RN_WM,  "RN_WM");
+    addCheckEntryRule(enters_CER_WM, CER_WM, "CER_WM");
+    addCheckEntryRule(enters_BS,     BS,     "BS");
 
     // Streamline classes
-    std::vector<Streamline_Class_Course>   courseClass(tractogram.numberOfStreamlines);
-    std::vector<Streamline_Class_Detailed> detailedClass(tractogram.numberOfStreamlines);
-
-    // This is the binary output table. It will be of size numberOfStreamlines x number of paths.
-    std::vector<std::vector<bool>> out;
-    if (makeTable) {
-        out.resize(tractogram.numberOfStreamlines);
-        for (auto& row : out) {
-            row.resize(NUM_PATHWAYS, false);
-        }
-    }
+    std::vector<uint16_t> courseClass(tractogram.numberOfStreamlines);
+    std::vector<uint16_t> detailedClass(tractogram.numberOfStreamlines);
 
     // Helper function for printing progress
-
     auto printProgress = [&]()
 {
         // Print out the statistics
         std::size_t total_analyzed = log_L1_implausible.load() + log_L2_implausible.load() + log_L2_plausible.load();
+
+        std::cout << "\033[0J";
 
         std::cout << std::endl;
         disp(MSG_INFO, "Total number of analyzed streamlines / all streamlines: %zu / %zu", total_analyzed, tractogram.numberOfStreamlines);
@@ -356,6 +324,9 @@ void run_harp()
             float firstPoint[3] = {input_batch[task.no].front()[0] , input_batch[task.no].front()[1], input_batch[task.no].front()[2]};
             float lastPoint[3]  = {input_batch[task.no].back()[0] ,  input_batch[task.no].back()[1],  input_batch[task.no].back()[2]};
 
+            // Assign end-to-end connectivity while resolving the ambiguities. 
+            // A streamline can match multiple pathways because of segmentation errors. 
+            // We want it to be assigned to only one class (the first matching endpoint).
             int n = 1;
             for (int i = 0; i < 6; i++) {
                 for (int j = i; j < 6; j++) {
@@ -365,10 +336,12 @@ void run_harp()
                     if (isConnected) {
                         batch_stat[task.no][L1_ends]     = true;
                         batch_stat[task.no][L1_ends + n] = true;
+                        break;
                     }
 
                     n++;
                 }
+                if (batch_stat[task.no][L1_ends]) break;
             }
             
             // All pathways are processed by this point.
@@ -498,14 +471,6 @@ void run_harp()
         };
         MT::MTRUN(batch_size, checkEndPointConnectivity);
 
-        if (makeTable) {
-            for (int i = 0; i < batch_size; i++) {
-                for (int j = 0; j < NUM_PATHWAYS - 1; j++) {
-                    out[batch_start_idx + i][j] = batch_stat[i][j];
-                }
-            }
-        }
-
         printProgress();
         std::cout << "\033[45F";
 
@@ -513,17 +478,19 @@ void run_harp()
         
     }
 
-    
     printProgress();
 
+    // Write the detailed labels
+    if (!writeBinaryFile(out_labels, detailedClass)) {
+        disp(MSG_ERROR, "Failed to write the output labels to %s.", out_labels.c_str());
+        return;
+    }
 
-    // Write the output as a .csv file
-    if (makeTable) {
-        disp(MSG_INFO, "Writing output table");
-        if (write_matrix_to_csv(out_table, out)) {
-            disp(MSG_INFO, "Successfully wrote csv file.");
-        } else {
-            disp(MSG_ERROR, "Failed to write output file.");
+    // Write the course labels
+    if (writeCourseLabels) {
+        if (!writeBinaryFile(out_course_labels, courseClass)) {
+            disp(MSG_ERROR, "Failed to write the output course labels to %s.", out_course_labels.c_str());
+            return;
         }
     }
 
@@ -547,7 +514,10 @@ void harp(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option ("--out_table",          out_table,          "A .csv table marking the streamlines and matching pathways");
+    app->add_option ("<out_labels>",         out_labels,         "Output uint16 type binary file that contains the detailed class labels for each streamline.")
+        ->required();
+
+    app->add_option ("--out_course_labels",  out_course_labels,  "Output uint16 type binary file that contains the course class labels for each streamline.");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

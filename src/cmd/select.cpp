@@ -8,12 +8,14 @@ namespace CMDARGS_SELECT {
     std::string out_fname;
 
     CLI::Option* selectOpt  = NULL;
+    CLI::Option* labelOpt   = NULL;
     CLI::Option* randomOpt  = NULL;
     CLI::Option* orderedOpt = NULL;
 
-    std::string select_fname ="";
-    int select_random = 0;
-    std::vector<int> select_ordered = {0,0};
+    std::string select_fname             = "";
+    std::vector<std::string> label_list  = std::vector<std::string>();
+    int select_random                    = 0;
+    std::vector<int> select_ordered      = {0,0};
 
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -162,6 +164,7 @@ void select(CLI::App* app)
         ->required();    
     
     selectOpt = app->add_option("--selection, -s",  select_fname,       "File with binary values that mark selected streamlines with 1 and others with 0");    
+    labelOpt  = app->add_option("--labels, -l",     label_list,         "Select streamlines given a binary (uint16) file and a list of labels, e.g. labels.uint18,10,223,3232")->delimiter(',');
     randomOpt = app->add_option("--random, -r",     select_random,      "Random tractogram file creating. One input required, total count for random lines")->expected(1);
     orderedOpt= app->add_option("--ordered, -o",    select_ordered,     "Ordered tractogram file creating. Two input required, begin and end index")->expected(2)->delimiter(' ');
 
