@@ -24,27 +24,6 @@ namespace CMDARGS_SELECT {
 
 using namespace CMDARGS_SELECT;
 
-
-// Write a subset of a TRX tractogram including DPS, DPV, and groups.
-// Uses in-memory approach since TRXWriter already buffers everything.
-static void writeTrxSubset(const std::string& out_fname,
-                           NIBR::TractogramReader& tractogram,
-                           const std::vector<size_t>& sorted_select)
-{
-    // Build subset tractogram in sorted-index order (matches existing writeTractogram behaviour)
-    NIBR::Tractogram subTractogram;
-    subTractogram.reserve(sorted_select.size());
-    for (size_t idx : sorted_select)
-        subTractogram.push_back(tractogram.getStreamline(idx));
-
-    auto subFields = NIBR::subsetTractogramFields(tractogram.getTrxFields(), sorted_select, tractogram);
-    auto subGroups = NIBR::subsetGroups(tractogram.getGroups(), sorted_select);
-
-    writeTractogram(out_fname, subTractogram, subFields, subGroups);
-
-    for (auto& f : subFields) clearField(f, subTractogram);
-}
-
 void run_select()
 {
 
@@ -89,8 +68,7 @@ void run_select()
         }
         fclose(selectFile);
 
-        if (trxToTrx) writeTrxSubset(out_fname, tractogram, select);
-        else          writeTractogram(out_fname, &tractogram, select);
+        writeTractogram(out_fname, &tractogram, select);
 
     } else if (*labelOpt) {
 
@@ -136,8 +114,7 @@ void run_select()
             }
         }
 
-        if (trxToTrx) writeTrxSubset(out_fname, tractogram, select);
-        else          writeTractogram(out_fname, &tractogram, select);
+        writeTractogram(out_fname, &tractogram, select);
 
     } else if(*randomOpt){
 
@@ -155,8 +132,7 @@ void run_select()
         select.insert(select.begin(),allInd.begin(),allInd.begin()+select_random);
         std::sort(select.begin(), select.end()); // match sorted order of writeTractogram
 
-        if (trxToTrx) writeTrxSubset(out_fname, tractogram, select);
-        else          NIBR::writeTractogram(out_fname, &tractogram, select);
+        NIBR::writeTractogram(out_fname, &tractogram, select);
 
     } else {
 
@@ -183,8 +159,7 @@ void run_select()
         for (int i = select_ordered[0]; i < (select_ordered[1]+1); i++)
             select.push_back(i-1);
 
-        if (trxToTrx) writeTrxSubset(out_fname, tractogram, select);
-        else          NIBR::writeTractogram(out_fname, &tractogram, select);
+        NIBR::writeTractogram(out_fname, &tractogram, select);
 
     }
 
@@ -212,7 +187,7 @@ void select(CLI::App* app)
         ->required();    
     
     selectOpt = app->add_option("--selection, -s",  select_fname,       "File with binary values that mark selected streamlines with 1 and others with 0");    
-    labelOpt  = app->add_option("--label, -l",     label_list,         "Select streamlines given a binary (uint16) file and a list of labels, e.g. labels.uint18,10,223,3232")->delimiter(',');
+    labelOpt  = app->add_option("--label, -l",      label_list,         "Select streamlines given a binary (uint16) file and a list of labels, e.g. labels.uint18,10,223,3232")->delimiter(',');
     randomOpt = app->add_option("--random, -r",     select_random,      "Random tractogram file creating. One input required, total count for random lines")->expected(1);
     orderedOpt= app->add_option("--ordered, -o",    select_ordered,     "Ordered tractogram file creating. Two input required, begin and end index")->expected(2)->delimiter(' ');
 
