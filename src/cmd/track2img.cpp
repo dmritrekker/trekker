@@ -353,7 +353,7 @@ void track2img(CLI::App* app)
 
     app->description("maps tractogram features on an image");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 

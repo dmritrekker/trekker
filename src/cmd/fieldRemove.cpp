@@ -55,7 +55,7 @@ void run_fieldRemove()
 
 void fieldRemove(CLI::App* app)
 {
-    app->description("removes a field from a tractogram (.vtk or .trx)");
+    app->description("removes a field from a tractogram (.trx or .vtk)");
     
     app->add_option("<input_tractogram>",    inp_tractogram,     "Input tractogram")
         ->required()

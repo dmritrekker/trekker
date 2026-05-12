@@ -3,8 +3,9 @@
 namespace CMDARGS_HARP {
     std::string  inp_fname;
     std::string  xact_fname;
-    std::string  out_labels  = "";
+    std::string  out_labels         = "";
     std::string  out_course_labels  = "";
+    std::string  out_counts         = "";
 
     int numberOfThreads     =  0;
     std::string verbose     = "info";
@@ -146,13 +147,26 @@ bool writeBinaryFile(const std::string& filename, const std::vector<uint16_t>& d
     return outFile.good();
 }
 
+bool writeCSVFile(const std::string& filename, const std::vector<std::pair<std::string, std::size_t>>& rows) {
+    std::ofstream outFile(filename);
+    if (!outFile) {
+        return false;
+    }
+    for (const auto& row : rows) {
+        outFile << row.first << "," << row.second << "\n";
+    }
+    return outFile.good();
+}
+
 void run_harp()
 {
 
     parseCommon(numberOfThreads,verbose);
     parseForceOutput(out_labels,force);
     bool writeCourseLabels = (out_course_labels != "");
+    bool writeCounts       = (out_counts != "");
     if (writeCourseLabels && !parseForceOutput(out_course_labels,force)) return;
+    if (writeCounts       && !parseForceOutput(out_counts,force)) return;
 
     // Initialize tractogram
     NIBR::TractogramReader tractogram(inp_fname);
@@ -494,6 +508,64 @@ void run_harp()
         }
     }
 
+    // Write the counts CSV file
+    if (writeCounts) {
+        const std::size_t total_analyzed = log_L1_implausible.load() + log_L2_implausible.load() + log_L2_plausible.load();
+        const std::vector<std::pair<std::string, std::size_t>> counts = {
+            
+            {"Total number of analyzed streamlines", total_analyzed},
+            {"Total number of streamlines",          tractogram.numberOfStreamlines},
+            
+            {"L1 implausible",  log_L1_implausible.load()},
+            {"L1 plausible",    log_L1_plausible.load()},
+            {"L2 implausible",  log_L2_implausible.load()},
+            {"L2 plausible",    log_L2_plausible.load()},
+            
+            {"L1 implausible - CSF entry and WM termination", log_L1_implausible_CSF_entry_and_WM_termination.load()},
+            {"L1 implausible - CSF entry",                    log_L1_implausible_CSF_entry.load()},
+            {"L1 implausible - WM termination",               log_L1_implausible_WM_termination.load()},
+            
+            {"L2 implausible - trj1", log_L2_implausible_trj1.load()},
+            {"L2 implausible - trj2", log_L2_implausible_trj2.load()},
+            {"L2 implausible - trj3", log_L2_implausible_trj3.load()},
+            {"L2 implausible - trj4", log_L2_implausible_trj4.load()},
+            {"L2 implausible - trj5", log_L2_implausible_trj5.load()},
+            {"L2 implausible - trj6", log_L2_implausible_trj6.load()},
+            {"L2 implausible - trj7", log_L2_implausible_trj7.load()},
+            {"L2 implausible - trj8", log_L2_implausible_trj8.load()},
+            {"L2 implausible - trj9", log_L2_implausible_trj9.load()},
+            {"L2 implausible - trj10",log_L2_implausible_trj10.load()},
+            
+            {"L2 plausible - LN_GM___LN_GM",  log_L2_LN_GM___LN_GM.load()},
+            {"L2 plausible - LN_GM___RN_GM",  log_L2_LN_GM___RN_GM.load()},
+            {"L2 plausible - LN_GM___L_SUB",  log_L2_LN_GM___L_SUB.load()},
+            {"L2 plausible - LN_GM___R_SUB",  log_L2_LN_GM___R_SUB.load()},
+            {"L2 plausible - LN_GM___CER_GM", log_L2_LN_GM___CER_GM.load()},
+            {"L2 plausible - LN_GM___BS",     log_L2_LN_GM___BS.load()},
+            {"L2 plausible - RN_GM___RN_GM",  log_L2_RN_GM___RN_GM.load()},
+            {"L2 plausible - RN_GM___L_SUB",  log_L2_RN_GM___L_SUB.load()},
+            {"L2 plausible - RN_GM___R_SUB",  log_L2_RN_GM___R_SUB.load()},
+            {"L2 plausible - RN_GM___CER_GM", log_L2_RN_GM___CER_GM.load()},
+            {"L2 plausible - RN_GM___BS",     log_L2_RN_GM___BS.load()},
+            {"L2 plausible - L_SUB___L_SUB",  log_L2_L_SUB___L_SUB.load()},
+            {"L2 plausible - L_SUB___R_SUB",  log_L2_L_SUB___R_SUB.load()},
+            {"L2 plausible - L_SUB___CER_GM", log_L2_L_SUB___CER_GM.load()},
+            {"L2 plausible - L_SUB___BS",     log_L2_L_SUB___BS.load()},
+            {"L2 plausible - R_SUB___R_SUB",  log_L2_R_SUB___R_SUB.load()},
+            {"L2 plausible - R_SUB___CER_GM", log_L2_R_SUB___CER_GM.load()},
+            {"L2 plausible - R_SUB___BS",     log_L2_R_SUB___BS.load()},
+            {"L2 plausible - CER_GM___CER_GM",log_L2_CER_GM___CER_GM.load()},
+            {"L2 plausible - CER_GM___BS",    log_L2_CER_GM___BS.load()},
+            {"L2 plausible - BS___BS",        log_L2_BS___BS.load()},
+
+        };
+
+        if (!writeCSVFile(out_counts, counts)) {
+            disp(MSG_ERROR, "Failed to write the output counts to %s.", out_counts.c_str());
+            return;
+        }
+    }
+
     disp(MSG_INFO, "Done.");
 
     return;
@@ -506,7 +578,7 @@ void harp(CLI::App* app)
 
     app->description("applies harp");
 
-    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk, .trx)")
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
@@ -518,6 +590,7 @@ void harp(CLI::App* app)
         ->required();
 
     app->add_option ("--out_course_labels",  out_course_labels,  "Output uint16 type binary file that contains the course class labels for each streamline.");
+    app->add_option ("--out_counts",         out_counts,         "Output CSV file with harp counts and log values.");
 
     app->add_option("--numberOfThreads, -n", numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",         verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");

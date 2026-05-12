@@ -120,7 +120,7 @@ void run_track()
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
 
-    if(!ensureVTKorTCK(out_fname)) return;
+    if(!ensureNoTrk(out_fname)) return;
     std::string out_ext = getFileExtension(out_fname);
 
     if (saveSeedIndexField) {
@@ -590,7 +590,7 @@ void track(CLI::App *app)
     auto general = app->add_option_group(center_text("GENERAL OPTIONS",45));
     
     general->add_option ("<FOD>",                     fod,                   "Input FOD image (.nii, .nii.gz). Trekker supports both symmetric and asymmetric FODs, i.e. spherical harmonics with both even and odd orders.")->required();
-    general->add_option ("--output,-o",               out_fname,             "Output tractogram (.vtk, .tck, .trx)")->required()->type_name("FILE");
+    general->add_option ("--output,-o",               out_fname,             "Output tractogram (.trx, .vtk, .tck)")->required()->type_name("FILE");
     general->add_flag   ("--saveSeedIndexField",      saveSeedIndexField,    "Save seed indices as tractogram field. Available only for binary vtk output.");
     general->add_flag   ("--ascii,-a",                ascii,                 "Write ASCII output (.vtk only)");
     general->add_option ("--writeStepSize,-w",        writeStepSize,         "Because stepSize might be very small, it might not be desirable to save each step of propagation in the output. writeStepSize enables skipping of a number of steps before saving them. This parameter does not change the propagation algorithm, internally Trekker always walks with the specified --stepSize. --writeStepSize by Default: is set, so that the distance between the output tracks is 0.5 x the smallest of the FOD voxel dimensions.");

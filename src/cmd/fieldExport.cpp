@@ -119,7 +119,7 @@ void run_fieldExport()
 
 void fieldExport(CLI::App* app)
 {
-    app->description("exports a field from a tractogram (.vtk or .trx)");
+    app->description("exports a field from a tractogram (.trx or .vtk) to a .csv file");
     
     app->add_option("<input_tractogram>",    inp_tractogram_fname,  "Input tractogram")
         ->required()

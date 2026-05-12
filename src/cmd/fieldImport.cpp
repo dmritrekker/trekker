@@ -78,7 +78,7 @@ void run_fieldImport()
 
 void fieldImport(CLI::App* app)
 {
-    app->description("adds a new field with values read from a file (.vtk or .trx)");
+    app->description("adds a new field with values read from a file (.trx or .vtk)");
     
     app->add_option("<input_tractogram>",           inp_tractogram_fname,   "Input tractogram")
         ->required()

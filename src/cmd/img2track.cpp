@@ -193,7 +193,7 @@ void img2track(CLI::App* app)
         ->required()
         ->check(CLI::ExistingFile);
         
-    app->add_option("<input_tractogram>",    inp_tractogram,     "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>",    inp_tractogram,     "Input tractogram (.trx,.vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
     

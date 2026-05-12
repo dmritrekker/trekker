@@ -26,7 +26,7 @@ void run_resample()
 
     parseCommon(numberOfThreads, verbose);
     if (!parseForceOutput(out_fname, force)) return;
-    if (!ensureVTKorTCK(out_fname)) return;
+    if (!ensureNoTrk(out_fname)) return;
 
     int optCounter = 0;
     if (*sizeOpt)   optCounter++;
@@ -83,11 +83,11 @@ void resample(CLI::App* app)
 
     app->description("resamples streamlines in a tractogram");
 
-    app->add_option("<input_tractogram>",            inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>",            inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("<output_tractogram>",           out_fname,          "Output tractogram (.vtk, .tck, .trx)")
+    app->add_option("<output_tractogram>",           out_fname,          "Output tractogram (.trx, .vtk, .tck)")
         ->required();   
     
     sizeOpt   = app->add_option("--stepSize, -s",   stepSize,           "Resampling is done based on the given step size. The last segment of a streamline might have a shorter step size.");

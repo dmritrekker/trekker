@@ -26,8 +26,8 @@ void run_diff()
         return;
     }
 
-    if ((out_diff_fname!="")&&(!parseForceOutput(out_diff_fname,force)&&(!ensureVTKorTCK(out_diff_fname)))) return;
-    if ((out_same_fname!="")&&(!parseForceOutput(out_same_fname,force)&&(!ensureVTKorTCK(out_same_fname)))) return;
+    if ((out_diff_fname!="")&&(!parseForceOutput(out_diff_fname,force)&&(!ensureNoTrk(out_diff_fname)))) return;
+    if ((out_same_fname!="")&&(!parseForceOutput(out_same_fname,force)&&(!ensureNoTrk(out_same_fname)))) return;
 
 
     // Initialize readers
@@ -133,16 +133,16 @@ void diff(CLI::App* app)
 
     app->description("finds different streamlines between two tractograms");
 
-    app->add_option("<input_tractogram>",     inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>",     inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
     
-    app->add_option("<reference_tractogram>", ref_fname,          "Reference tractogram (.vtk, .tck, .trk)")
+    app->add_option("<reference_tractogram>", ref_fname,          "Reference tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("--out_diff, -d",         out_diff_fname,     "Output streamlines of input tractogram that does not exist in the reference (.vtk, .tck, .trx)");
-    app->add_option("--out_same, -s",         out_same_fname,     "Output streamlines of input tractogram that exists in the reference (.vtk, .tck, .trx)");
+    app->add_option("--out_diff, -d",         out_diff_fname,     "Output streamlines of input tractogram that does not exist in the reference (.trx, .vtk, .tck)");
+    app->add_option("--out_same, -s",         out_same_fname,     "Output streamlines of input tractogram that exists in the reference (.trx, .vtk, .tck)");
 
     app->add_option("--numberOfThreads, -n",  numberOfThreads,    "Number of threads.");
     app->add_option("--verbose, -v",          verbose,            "Verbose level. Options are \"quiet\",\"fatal\",\"error\",\"warn\",\"info\" and \"debug\". Default=info");
