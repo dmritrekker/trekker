@@ -58,7 +58,7 @@ void run_merge()
 
     parseCommon(numberOfThreads,verbose);
     if (!parseForceOutput(out_fname,force)) return;
-    if (!ensureVTKorTCK(out_fname)) return;
+    if (!ensureNoTrk(out_fname)) return;
 
     auto filesToInc = resolveInputPatterns(inp_fnames);
     auto filesToExc = resolveInputPatterns(exc_fnames);
@@ -154,10 +154,10 @@ void merge(CLI::App* app)
 
     app->description("merges tractograms");
 
-    app->add_option("<output>",              out_fname,          "Output tractogram (.vtk, .tck)")
+    app->add_option("<output>",              out_fname,          "Output tractogram (.trx, .vtk, .tck)")
         ->required();
 
-    app->add_option("--include,-i",          inp_fnames,         "List of tractograms or wildcards (.vtk, .tck, .trk) to include in the output, e.g.1. inp1.vtk inp2.tck, e.g.2. inp*.vtk, e.g.3. inp1*.tck inp2*.vtk")
+    app->add_option("--include,-i",          inp_fnames,         "List of tractograms or wildcards (.trx, .vtk, .tck, .trk) to include in the output, e.g.1. inp1.vtk inp2.tck, e.g.2. inp*.vtk, e.g.3. inp1*.tck inp2*.vtk")
         ->required()
         ->delimiter(' ');
     

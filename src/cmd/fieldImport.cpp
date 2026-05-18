@@ -22,11 +22,12 @@ using namespace CMDARGS_FIELDIMPORT;
 
 void run_fieldImport()
 {
- 
-    parseCommon(numberOfThreads,verbose);
-    if (!ensureVTK(inp_tractogram_fname)) return;
 
-    NIBR::TractogramReader tractogram(inp_tractogram_fname);
+    parseCommon(numberOfThreads,verbose);
+    if (!ensureVTKorTRX(inp_tractogram_fname)) return;
+
+    bool isTrx = (getFileExtension(inp_tractogram_fname) == "trx");
+    NIBR::TractogramReader tractogram(inp_tractogram_fname, false, isTrx);
     if (!tractogram.isReady()) return;
 
     disp(MSG_DEBUG,"Streamline count: %d", tractogram.numberOfStreamlines);
@@ -65,8 +66,9 @@ void run_fieldImport()
 
     NIBR::disp(MSG_DETAIL,"Writing %d fields", fields.size());
 
-    writeTractogram(inp_tractogram_fname,tractogram.getTractogram(),fields);
-    
+    auto groups = isTrx ? tractogram.getGroups() : std::map<std::string,std::vector<uint32_t>>{};
+    writeTractogram(inp_tractogram_fname, tractogram.getTractogram(), fields, groups);
+
     for (size_t i=0; i< fields.size(); i++) {
         NIBR::disp(MSG_DETAIL,"Deleting field %d: %s", i, fields[i].name.c_str());
         clearField(fields[i],tractogram);
@@ -76,7 +78,7 @@ void run_fieldImport()
 
 void fieldImport(CLI::App* app)
 {
-    app->description("adds a new field with values read from a file (.vtk only)");
+    app->description("adds a new field with values read from a file (.trx or .vtk)");
     
     app->add_option("<input_tractogram>",           inp_tractogram_fname,   "Input tractogram")
         ->required()

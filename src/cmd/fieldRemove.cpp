@@ -17,9 +17,10 @@ void run_fieldRemove()
  
     parseCommon(numberOfThreads,verbose);
 
-    if (!ensureVTK(inp_tractogram)) return;
+    if (!ensureVTKorTRX(inp_tractogram)) return;
 
-    NIBR::TractogramReader tractogram(inp_tractogram);
+    bool isTrx = (getFileExtension(inp_tractogram) == "trx");
+    NIBR::TractogramReader tractogram(inp_tractogram, false, isTrx);
     if (!tractogram.isReady()) return;
 
     // Check if this field already exists
@@ -42,7 +43,8 @@ void run_fieldRemove()
     clearField(fields[fieldId],tractogram);
     fields.erase(fields.begin()+fieldId);
 
-    writeTractogram(inp_tractogram,tractogram.getTractogram(),fields);
+    auto groups = isTrx ? tractogram.getGroups() : std::map<std::string,std::vector<uint32_t>>{};
+    writeTractogram(inp_tractogram, tractogram.getTractogram(), fields, groups);
     
     for (size_t i=0; i< fields.size(); i++) {
         NIBR::disp(MSG_DETAIL,"Deleting field %d: %s", i, fields[i].name.c_str());
@@ -53,7 +55,7 @@ void run_fieldRemove()
 
 void fieldRemove(CLI::App* app)
 {
-    app->description("removes a field from a tractogram (.vtk only)");
+    app->description("removes a field from a tractogram (.trx or .vtk)");
     
     app->add_option("<input_tractogram>",    inp_tractogram,     "Input tractogram")
         ->required()

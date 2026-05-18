@@ -31,7 +31,6 @@ void run_track2surf()
     }
     
     // Initialize tractogram
-    if(!ensureVTKorTCK(inp_fname)) return;
     NIBR::TractogramReader tractogram(inp_fname);
     if(!tractogram.isReady()) return;
     
@@ -231,7 +230,7 @@ void track2surf(CLI::App* app)
 
     app->description("maps tractogram features on a surface");
 
-    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
     

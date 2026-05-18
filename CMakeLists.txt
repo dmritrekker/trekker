@@ -6,7 +6,7 @@ set(trekker_VERSION_PATCH 0)
 
 project(trekker VERSION ${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH} LANGUAGES CXX C)
 
-set(CMDNAME trekker_v${trekker_VERSION}-rc6)
+set(CMDNAME trekker_v${trekker_VERSION_MAJOR}.${trekker_VERSION_MINOR}.${trekker_VERSION_PATCH})
 message(STATUS ">> Building ${CMDNAME}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install")
@@ -25,14 +25,15 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_INCLUDE_PATH})
 link_directories(${CMAKE_LIBRARY_PATH})
 
-# Include external dependencies
 add_subdirectory(external)
 include_directories(${NIBRARY_INCLUDE_DIR})
 link_directories(${NIBRARY_LIBRARY_DIR})
 
+message(STATUS ">> NIBRARY_LIBRARY_DIR: ${NIBRARY_LIBRARY_DIR}")
+message(STATUS ">> NIBRARY_INCLUDE_DIR: ${NIBRARY_INCLUDE_DIR}")
+
 # List source files
-file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} 
-    "src/*.c*")
+file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS RELATIVE ${CMAKE_SOURCE_DIR} "src/*.c*")
 
 list(REMOVE_ITEM SRCS "main.cpp")
 
@@ -66,20 +67,17 @@ endif()
 
 if (UNIX)
 
-    # Optimize for native architecture
-    if (BUILD_NATIVE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-    endif()
-
-    # Debug messages
-    if(CMAKE_BUILD_TYPE MATCHES Debug)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+    # Architecture optimization
+    if(BUILD_NATIVE)
+        if(APPLE)
+            target_compile_options(${CMDNAME} PRIVATE -mcpu=native)  # Apple Silicon (ARM) Clang
+        else()
+            target_compile_options(${CMDNAME} PRIVATE -march=native) # Standard Linux x86/ARM
+        endif()
+    else()
+        target_compile_options(${CMDNAME} PRIVATE -mtune=generic)
     endif()
     
-endif()
-
-if (UNIX)
     # Thread support
     find_package(Threads)
     if(Threads_FOUND)
@@ -93,6 +91,7 @@ if (UNIX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
     endif()
+
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -153,3 +152,4 @@ add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -E echo "Uninstalling ${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
     COMMAND ${CMAKE_COMMAND} -E remove -f "${CMAKE_BINARY_DIR}/install/bin/${CMDNAME}"
 )
+

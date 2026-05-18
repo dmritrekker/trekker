@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     
     argv = app.ensure_utf8(argv);
 
-    app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2025, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
+    app.footer("----------" + TREKKER_EXE_STRING + "---------\n© Copyright 2026, Dogu Baran Aydogan, baran.aydogan@uef.fi\n");
     // app.failure_message(CLI::FailureMessage::help);
 
     app.require_subcommand(1);
@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     fieldImport(app.add_subcommand("fieldImport", ""));
     fieldRemove(app.add_subcommand("fieldRemove", ""));
     filter(app.add_subcommand("filter", ""));
+    harp(app.add_subcommand("harp", ""));
     img2track(app.add_subcommand("img2track", ""));
     info(app.add_subcommand("info", ""));
     merge(app.add_subcommand("merge", ""));
@@ -52,6 +53,7 @@ int main(int argc, char *argv[]) {
         "fieldImport",
         "fieldRemove",
         "filter",
+        "harp",
         "img2track",
         "info", 
         "merge",
