@@ -32,7 +32,7 @@ void run_purifibre()
     if (!parseForceOutput(out_tractogram_fname,force)) return;
     if (!parseForceOutput(out_fico,force)) return;
 
-    if (!ensureVTKorTCK(out_tractogram_fname)) return;
+    if (!ensureNoTrk(out_tractogram_fname)) return;
     if ((out_fico!="") && !ensureVTK(out_fico)) return;
 
     
@@ -83,9 +83,9 @@ void purifibre(CLI::App* app)
     
     app->description("purifibre removes spurious streamlines from tractograms");
     
-    app->add_option("<input_tractogram>", inp_tractogram_fname, "Input tractogram (.vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");
+    app->add_option("<input_tractogram>", inp_tractogram_fname, "Input tractogram (.trx, .vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");
 
-    app->add_option("<output_tractogram>", out_tractogram_fname, "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    app->add_option("<output_tractogram>", out_tractogram_fname, "Output tractogram (.trx, .vtk, .tck)")->required()->type_name("FILE");
     
     app->add_option("--trim,-t", trimFactor, "Trim excludes ends of streamlines from being analyzed. E.g., when trim is 10, 90%% of the streamline is analyzed. 5%% of the streamline length from each end is excluded from the computation. Default: 10.");
     

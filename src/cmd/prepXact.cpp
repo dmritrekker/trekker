@@ -195,6 +195,21 @@ void prepXact(CLI::App* app)
 
     const std::string info = "XACT output can be used for fiber tracking using the \033[1mtrack\033[0m command with the \033[1mxact\033[0m option for eXtended Anatomically Constrained Tractography (ACT)."
     "\n\nXACT builds on the original ACT framework [Smith2012] by including additional options for tractography and surface definitions for applying anatomical constraints to enhance the biological accuracy of tractography."
+    "\n\nThe input to \033[1mprepXact\033[0m is a Freesurfer folder containing the subject's anatomical segmentation and surface reconstruction results. The output is a combined surface mesh in .vtk format that contains multiple surfaces representing different anatomical regions, which can be used for XACT tractography and also for classifying streamlines using HARP."
+    "\n\nEach surface is assigned a unique label in the combined output, which can be used for applying anatomical constraints during tractography:"
+    "\n\n  \033[1m  1\033[0m: L_WM (Left White Matter)"
+    "\n  \033[1m  2\033[0m: R_WM (Right White Matter)"
+    "\n  \033[1m  3\033[0m: L_GM (Left Gray Matter)"
+    "\n  \033[1m  4\033[0m: R_GM (Right Gray Matter)"
+    "\n  \033[1m  5\033[0m: L_SUB (Left Subcortical)"
+    "\n  \033[1m  6\033[0m: R_SUB (Right Subcortical)"
+    "\n  \033[1m  7\033[0m: CSF (Cerebrospinal Fluid)"
+    "\n  \033[1m  8\033[0m: CER_WM (Cerebellar White Matter)"
+    "\n  \033[1m  9\033[0m: CER_GM (Cerebellar Gray Matter)"
+    "\n  \033[1m 10\033[0m: BS (Brain Stem)"
+    "\n  \033[1m 11\033[0m: I_BS (Inferior Brain Stem)"
+    "\n  \033[1m 12\033[0m: ABN (Abnormality)"
+    "\n  \033[1m 13\033[0m: BG (Background)\n\n"
     "\n\n\033[1mREFERENCES\033[0m:"
         "\n\n[Smith2012] Smith RE, Tournier JD, Calamante F, Connelly A. \"Anatomically-constrained tractography: improved diffusion MRI streamlines tractography through effective use of anatomical information.\" Neuroimage. 2012 Sep 1;62(3):1924-38.";
 

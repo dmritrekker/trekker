@@ -21,6 +21,13 @@ namespace CMDARGS_FILTER
     std::vector<std::string> seedList;
     std::vector<std::string> discardSeedList;
 
+    // Xact options
+    std::string xact_fname               = "";
+    bool xact_intracortical              = false;
+    bool xact_cranial                    = false;
+    bool xact_subcortical_deadend        = false;
+    bool xact_abnormality_deadend        = false;
+
     std::string saveDisc    = "";
 
     int numberOfThreads     =  0;
@@ -40,7 +47,12 @@ void run_filter()
     if (!parseForceOutput(out_fname,force)) return;
     if (saveDisc!="") { if (!parseForceOutput(saveDisc,force)) return; }
 
-    if (!ensureVTKorTCK(out_fname)) return;
+    if (!ensureNoTrk(out_fname)) return;
+
+    if ((xact_fname != "") && (!seedList.empty())) {
+        disp(MSG_ERROR, "--seed and --xact cannot be used together.");
+        return;
+    }
 
     // Initialize tractogram
     NIBR::TractogramReader reader(inp_fname);
@@ -63,6 +75,35 @@ void run_filter()
     if (seed.src != undef_src) {
         if(!pw.add(seed)) return;
     }
+
+    // =======================
+    // XACT
+    XactTrackOption                xact_opts = XACT_TRACK_OPT_UNSET;
+    if (xact_intracortical)        xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_INTRACORTICAL);
+    if (xact_cranial)              xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_CRANIAL);
+    if (xact_subcortical_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_SUBCORTICAL_DEADEND);
+    if (xact_abnormality_deadend)  xact_opts = static_cast<XactTrackOption>(xact_opts | XACT_ABNORMALITY_DEADEND);
+
+    std::vector<PathwayRule> xact_rules;
+
+    if (xact_fname != "") {
+        
+       auto [success,seed,rules] = parseXactInput(xact_fname, xact_opts); 
+    
+        if (!success) {
+            disp(MSG_ERROR, "Failed to parse xact rules from file: %s", xact_fname.c_str());
+            return; 
+        }
+            
+        if(!pw.add(seed)) {
+            disp(MSG_ERROR, "Failed to add xact seed rule from file: %s", xact_fname.c_str());
+            return;
+        }
+            
+        std::swap(rules, xact_rules);
+
+    }
+    // =======================
 
     std::vector<std::string> tmp;
     for (size_t n = 0; n < discardSeedList.size(); n++) {
@@ -87,9 +128,14 @@ void run_filter()
     if(!pw.setSeedTrials(seedTrials))   return;
  
     auto rules = parsePathwayInput(pathway);
-    if ((!pathway.empty()) && rules.empty())
+    if ((!pathway.empty()) && rules.empty() && xact_rules.empty())
         return;
+
     for (auto r : rules) {
+        if(!pw.add(r)) return;
+    }
+
+    for (auto r : xact_rules) {
         if(!pw.add(r)) return;
     }
 
@@ -226,8 +272,8 @@ void filter(CLI::App *app)
 
     app->description("filters tractograms");
 
-    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");   
-    app->add_option ("--output,-o",          out_fname,          "Output tractogram (.vtk, .tck)")->required()->type_name("FILE");
+    app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")->required()->check(CLI::ExistingFile)->type_name("");   
+    app->add_option ("--output,-o",          out_fname,          "Output tractogram (.trx, .vtk, .tck)")->required()->type_name("FILE");
 
     app->add_option("--pathway, -p",         pathway,            "Pathway rule")->multi_option_policy(CLI::MultiOptionPolicy::TakeAll);
     app->add_option("--seed, -s",            seedList,           "Seed definition")->multi_option_policy(CLI::MultiOptionPolicy::Throw);
@@ -241,6 +287,12 @@ void filter(CLI::App *app)
     // app->add_flag("--allowEdgeSeeds",        allowEdgeSeeds,     "Allows seeding at the edges of pathway rules. Default: false");
     app->add_option("--seed_trials",         seedTrials,         "Number of random trials for assigning seed. Default: 0");
     app->add_flag("--inOrder",               inOrder,            "If enabled all pathway requirements are going to be satisfied in the order that they are given. All pathway options should be defined for pathway_A/pathway_B in order to use this option");
+    
+    app->add_option ("--xact,-x",                        xact_fname,                     "Combined XACT surface mesh file created with prepXact (experimental).");
+    app->add_flag   ("--xact_intracortical",             xact_intracortical,             "Performs tractography also within the intracortical regions defined in the XACT file (l_gm + r_gm + cer_gm).");
+    app->add_flag   ("--xact_cranial",                   xact_cranial,                   "Performs tractography also within the cranial region defined in the XACT file (bg).");
+    app->add_flag   ("--xact_subcortical_deadend",       xact_subcortical_deadend,       "Streamlines are truncated before they exit subcortical regions (l_sub + r_sub).");
+    app->add_flag   ("--xact_abnormality_deadend",       xact_abnormality_deadend,       "Streamlines are truncated before they exit abnormality regions (abn).");
 
     app->add_option("--maxOut",              maxOut,             "Maximum number of output streamlines.");
 

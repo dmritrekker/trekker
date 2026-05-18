@@ -1,17 +1,17 @@
 # NIBRARY
 
-SET(NIBRARY_MIN_VERSION "0.4.4" CACHE STRING "Minimum nibrary version") 
+SET(NIBRARY_MIN_VERSION "0.5.1" CACHE STRING "Minimum nibrary version") 
 
 include("${CMAKE_CURRENT_LIST_DIR}/utils.cmake")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if (BUILD_SHARED_LIBS)
-        set(NIBRARY_LIBRARIES Nibrary geogram zlib dcm2niix++ CACHE INTERNAL "Nibrary libraries to link against")
+        set(NIBRARY_LIBRARIES Nibrary geogram zlib dcm2niix++ trx zip CACHE INTERNAL "Nibrary libraries to link against")
     else()
-        set(NIBRARY_LIBRARIES Nibrary geogram zlibstatic dcm2niix++ CACHE INTERNAL "Nibrary libraries to link against")
+        set(NIBRARY_LIBRARIES Nibrary geogram zlibstatic dcm2niix++ trx zip CACHE INTERNAL "Nibrary libraries to link against")
     endif()
 else()
-        set(NIBRARY_LIBRARIES Nibrary geogram z dcm2niix++ CACHE INTERNAL "Nibrary libraries to link against")
+        set(NIBRARY_LIBRARIES Nibrary geogram z dcm2niix++ trx zip CACHE INTERNAL "Nibrary libraries to link against")
 endif()
 
 if (NOT USE_SYSTEM_NIBRARY)
@@ -82,9 +82,11 @@ if (NOT USE_SYSTEM_NIBRARY)
             CMAKE_ARGS
                 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                 -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+                -DBUILD_NATIVE=${BUILD_NATIVE}
                 -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
                 -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
                 -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+                -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_C_FLAGS=$ENV{OpenMP_C_FLAGS}>
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_CXX_FLAGS=$ENV{OpenMP_CXX_FLAGS}>
                 $<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-DOpenMP_C_LIB_NAMES=$ENV{OpenMP_C_LIB_NAMES}>

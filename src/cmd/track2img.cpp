@@ -102,6 +102,8 @@ void run_track2img()
             std::cout << "Spherical harmonics order should be a positive even integer."  << std::endl << std::flush;
             return;
         }
+        sfRes = (sfRes>0) ? sfRes : 17;
+        NIBR::SF::init(true,sfRes);
     }
 
 
@@ -190,8 +192,8 @@ void run_track2img()
 
         if (shOrder>0) {
             NIBR::Image<float> out;
-            sf2sh(&out,&img,SF::getSFCoords(),shOrder);
-            out.write(replaceFileExtension(out_fname, "_SH.nii.gz"));
+            sf2sh(&out,&img,SF::getSFCoords(),shOrder,true);
+            out.write(removeFileExtension(out_fname) + "_SH.nii.gz");
         }
 
         img.write(out_fname);
@@ -201,13 +203,12 @@ void run_track2img()
             sfImg.read();
             sfImg.setOutsideVal(0.0f);
             sfImg.smooth(sfSmoothing);
-            sfImg.write(replaceFileExtension(out_fname, "_smooth.nii.gz"));
-            
+            sfImg.write(removeFileExtension(out_fname) + "_smooth.nii.gz");
 
             if (shOrder>0) {
                 NIBR::Image<float> smShOut;
-                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder);
-                smShOut.write(replaceFileExtension(out_fname, "_smooth_SH.nii.gz"));
+                sf2sh(&smShOut,&sfImg,SF::getSFCoords(),shOrder,true);
+                smShOut.write(removeFileExtension(out_fname) + "_smooth_SH.nii.gz");
             }
         }
         
@@ -352,11 +353,11 @@ void track2img(CLI::App* app)
 
     app->description("maps tractogram features on an image");
 
-    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.vtk, .tck, .trk)")
+    app->add_option("<input_tractogram>", inp_fname, "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineCount\", \"segmentLength\" or \"DEC_SegmentLength\".");
+    app->add_option("--feature", feature, "Name of output feature. Options are: \"streamlineCount\", \"segmentLength\" or \"DEC_segmentLength\".");
 
     app->add_option("--weights", weights, "A binary file for streamline weights. Values should have float datatype.")
         ->check(CLI::ExistingFile);

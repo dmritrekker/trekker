@@ -3,7 +3,8 @@
 #include "config.h"
 
 bool ensureVTK(std::string fname);
-bool ensureVTKorTCK(std::string fname);
+bool ensureVTKorTRX(std::string fname);
+bool ensureNoTrk(std::string fname);
 bool ensureSURF(std::string fname);
 bool ensureIMG(std::string fname);
 

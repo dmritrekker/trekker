@@ -47,30 +47,50 @@ void run_info()
 
     // Tractogram
     if ((ext == "vtk") ||
-        (ext == "tck") || 
-        (ext == "trk")) {
+        (ext == "tck") ||
+        (ext == "trk") ||
+        (ext == "trx")) {
 
         bool isTractogram = false;
+        bool isTrx = (ext == "trx");
 
         NIBR::disableTerminalOutput();
-        NIBR::TractogramReader tractogram(inp_fname);
+        NIBR::TractogramReader tractogram(inp_fname, false, isTrx);
         NIBR::enableTerminalOutput();
-        
+
         if (tractogram.isReady()) {
-            
-            if ((ext=="tck") || (ext == "trk")) {
-                 isTractogram = true;
+
+            if ((ext=="tck") || (ext == "trk") || (ext == "trx")) {
+                isTractogram = true;
             } else {
                 if (tractogram.numberOfStreamlines  > 0) {
                     isTractogram = true;
                 }
             }
-            
+
         }
 
         if (isTractogram) {
             disp(MSG_DETAIL, "Tractogram");
             tractogram.printInfo();
+
+            // TRX: print DPS/DPV fields and groups
+            if (isTrx) {
+                const auto& fields = tractogram.getTrxFields();
+                if (!fields.empty()) {
+                    disp(MSG_INFO, "Fields (%zu):", fields.size());
+                    for (const auto& f : fields) {
+                        const char* ownerStr = (f.owner == NIBR::STREAMLINE_OWNER) ? "DPS" : "DPV";
+                        disp(MSG_INFO, "  %-20s  %s  dim=%d", f.name.c_str(), ownerStr, f.dimension);
+                    }
+                }
+                auto groups = tractogram.getGroups();
+                if (!groups.empty()) {
+                    disp(MSG_INFO, "Groups (%zu):", groups.size());
+                    for (const auto& kv : groups)
+                        disp(MSG_INFO, "  %-20s  %zu streamlines", kv.first.c_str(), kv.second.size());
+                }
+            }
 
             disp(MSG_DETAIL,"Computing and plotting streamline length histogram.");
 

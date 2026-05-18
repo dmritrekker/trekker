@@ -1,6 +1,7 @@
 .vscode/
 .vs/
 .cache/
+.clangd
 releases/
 doc/build/
 build/
