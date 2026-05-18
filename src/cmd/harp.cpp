@@ -48,7 +48,7 @@ using namespace CMDARGS_HARP;
 
 // We will assign each streamline to one of the 4 courseclasses based on the pathways it matches.
 typedef enum {
-    L1_implausible,
+    L1_implausible = 1,
     L1_plausible,
     L2_implausible,
     L2_plausible
@@ -59,7 +59,7 @@ typedef enum {
 // The next 10 classes are L2 implausible trajectories.
 // The last 3 are L1 implausible classes.
 typedef enum {
-    L2_LN_GM___LN_GM = 0,
+    L2_LN_GM___LN_GM = 1,
     L2_LN_GM___RN_GM,
     L2_LN_GM___L_SUB,
     L2_LN_GM___R_SUB,
@@ -576,13 +576,78 @@ void run_harp()
 void harp(CLI::App* app)
 {
 
+    app->formatter(std::make_shared<CustomHelpFormatter>());
+ 
+    const std::string info = "HARP (Hierarchical Anatomical Refinement of Pathways) labels streamlines based on their end point connectivity and trajectory. It can be used to identify and filter out implausible streamlines that are likely to be false positives, as well as to classify plausible streamlines into different classes based on their end point connectivity patterns."
+        "\n\nThe classification is performed in two levels: L1 classification identifies implausible streamlines that either enter cerebrospinal fluid (CSF) or fail to terminate in white matter (WM), while L2 classification further categorizes the L1 plausible streamlines based on their specific end point connectivity patterns, e.g., whether they connect left and right hemisphere GM, or whether they connect to subcortical regions, etc."
+        "\n\nThe input tractogram is expected to be in the subject's native space, and the xact surface, which can be generated using the \033[1mprepXact\033[0m command, is expected to be in the same space as the tractogram. The xact surface should have a field named \'xact\' that defines the anatomical regions for each vertex (see the prepXact documentation)."
+        "\n\nThe output of HARP is a set of labels for each streamline, which can be used for filtering or further analysis. The default HARP output is a binary file containing the detailed class labels for each streamline, which has a total of 34 classes.\n"
+        "\nDetailed class labels:"
+        "\n  \033[1m  1\033[0m: L2_LN_GM___LN_GM"
+        "\n  \033[1m  2\033[0m: L2_LN_GM___RN_GM"
+        "\n  \033[1m  3\033[0m: L2_LN_GM___L_SUB"
+        "\n  \033[1m  4\033[0m: L2_LN_GM___R_SUB"
+        "\n  \033[1m  5\033[0m: L2_LN_GM___CER_GM"
+        "\n  \033[1m  6\033[0m: L2_LN_GM___BS"
+        "\n  \033[1m  7\033[0m: L2_RN_GM___RN_GM"
+        "\n  \033[1m  8\033[0m: L2_RN_GM___L_SUB"
+        "\n  \033[1m  9\033[0m: L2_RN_GM___R_SUB"
+        "\n  \033[1m 10\033[0m: L2_RN_GM___CER_GM"
+        "\n  \033[1m 11\033[0m: L2_RN_GM___BS"
+        "\n  \033[1m 12\033[0m: L2_L_SUB___L_SUB"
+        "\n  \033[1m 13\033[0m: L2_L_SUB___R_SUB"
+        "\n  \033[1m 14\033[0m: L2_L_SUB___CER_GM"
+        "\n  \033[1m 15\033[0m: L2_L_SUB___BS"
+        "\n  \033[1m 16\033[0m: L2_R_SUB___R_SUB"
+        "\n  \033[1m 17\033[0m: L2_R_SUB___CER_GM"
+        "\n  \033[1m 18\033[0m: L2_R_SUB___BS"
+        "\n  \033[1m 19\033[0m: L2_CER_GM___CER_GM"
+        "\n  \033[1m 20\033[0m: L2_CER_GM___BS"
+        "\n  \033[1m 21\033[0m: L2_BS___BS"
+        "\n  \033[1m 22\033[0m: L2_implausible_trj1"
+        "\n  \033[1m 23\033[0m: L2_implausible_trj2"
+        "\n  \033[1m 24\033[0m: L2_implausible_trj3"
+        "\n  \033[1m 25\033[0m: L2_implausible_trj4"
+        "\n  \033[1m 26\033[0m: L2_implausible_trj5"
+        "\n  \033[1m 27\033[0m: L2_implausible_trj6"
+        "\n  \033[1m 28\033[0m: L2_implausible_trj7"
+        "\n  \033[1m 29\033[0m: L2_implausible_trj8"
+        "\n  \033[1m 30\033[0m: L2_implausible_trj9"
+        "\n  \033[1m 31\033[0m: L2_implausible_trj10"
+        "\n  \033[1m 32\033[0m: L1_implausible_CSF_entry_and_WM_termination"
+        "\n  \033[1m 33\033[0m: L1_implausible_CSF_entry"
+        "\n  \033[1m 34\033[0m: L1_implausible_WM_termination\n"
+        "\nThe first 21 classes are for plausible streamlines and are defined based on their end point connectivity patterns, while the last 13 classes are for implausible streamlines and are defined based on the specific reasons for their implausibility."
+        "\n\nThe summary counts for each class can also be written to a CSV file using the \'--out_counts option\'."
+        "\n\nHARP can optionally write a separate binary file containing the following course class labels.\n"
+        "\nCourse class labels:"
+        "\n  \033[1m  1\033[0m: L1 implausible"
+        "\n  \033[1m  2\033[0m: L1 plausible"
+        "\n  \033[1m  3\033[0m: L2 implausible"
+        "\n  \033[1m  4\033[0m: L2 plausible\n"
+
+        "\n\n\033[1mNOTE 1\033[0m:The binary files containing the class labels can be used with the \033[1mselect\033[0m command. For example, to select only L2 plausible streamlines, you can use the command: \n"
+
+        "\n\033[1mtrekker select input_tractogram.trx output_L2_plausible.trx -l course_labels_obtained_with_HARP.bin,4  \033[0m"
+
+        "\n\n\033[1mNOTE 2\033[0m: If you intend to use HARP on whole-brain tractograms obtained with other tools, e.g. MRtrix ACT tractograms, please first use the \033[1mfilter\033[0m command with the \'--xact\' option. This trims the ends of the streamlines to ensure that the end points are correctly classified by HARP, e.g: \n"
+
+        "\n\033[1mtrekker filter input_tractogram_obtained_with_MRtrix_ACT.tck -o xact_compatible_tractogram.trx --xact xact_surface_created_with_prepXact.vtk \033[0m"
+        "\n\033[1mtrekker harp xact_compatible_tractogram.trx xact_surface_created_with_prepXact.vtk harp_labels.bin \033[0m"
+
+        "\n\n\033[1mREFERENCES\033[0m:"
+        "\n\n[Leserri2026] Leserri S, Rockland K.S., Aydogan D.B., “HARP: Hierarchical anatomical refinement of pathways for whole-brain tractography” (under review) 2026 "
+        "\n\n[Leserri2024] Leserri S, Aydogan D.B., “HARP: Hierarchical anatomical refinement of pathways in tractography”, Proceedings of the 27th Annual Meeting of the International Society of Magnetic Resonance in Medicine (ISMRM) 2024, doi: 10.58530/2024/2160.";
+
+    setInfo(app,info);
+
     app->description("applies harp");
 
     app->add_option("<input_tractogram>",    inp_fname,          "Input tractogram (.trx, .vtk, .tck, .trk)")
         ->required()
         ->check(CLI::ExistingFile);
 
-    app->add_option ("<xact>",               xact_fname,         "Combined xact surface mesh file created prepXact")
+    app->add_option ("<xact>",               xact_fname,         "Combined xact surface mesh file created prepXact (.vtk)")
         ->required()
         ->check(CLI::ExistingFile);
 
